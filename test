@@ -1,3 +1,37 @@
+from collections import Counter
+import xml.etree.ElementTree as ET
+
+# Load the XML file
+file_path = "file.xml"
+
+try:
+    tree = ET.parse(file_path)
+    root = tree.getroot()
+
+    # Collect all fullname values
+    fullnames = []
+    for element in root.iter('fullname'):
+        if element.text:
+            fullnames.append(element.text.strip())
+
+    # Count occurrences of each fullname
+    fullname_counts = Counter(fullnames)
+
+    # Display duplicate fullnames
+    print("Duplicate <fullname> values found:")
+    duplicates = {name: count for name, count in fullname_counts.items() if count > 1}
+    for name, count in duplicates.items():
+        print(f"Value: \"{name}\" appears {count} times")
+
+    if not duplicates:
+        print("No duplicate <fullname> values found.")
+
+except ET.ParseError as e:
+    print(f"XML parsing error: {e}")
+except FileNotFoundError:
+    print(f"File {file_path} not found.")
+
+
 public static void deleteDuplicateRecord(List<SObject> newObjects) {
     // Set to store unique keys for new records
     Set<String> newRecordKeys = new Set<String>();
