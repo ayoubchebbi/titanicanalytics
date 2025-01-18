@@ -1,65 +1,54 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Salesforce XML File Reader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duplicate Fullnames Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
-    <h1>XML File Reader</h1>
-    <input type="file" id="fileInput" accept=".xml">
-    <p id="fileName"></p>
+    <h1>Duplicate Fullnames Checker</h1>
+    <textarea id="jsonInput" rows="10" cols="50" placeholder="Paste your JSON data here"></textarea><br><br>
+    <button onclick="checkDuplicates()">Check for Duplicates</button>
+
+    <div id="result"></div>
+
     <script>
-        document.getElementById('fileInput').addEventListener('change', function () {
-            const file = this.files[0];
-            if (file) {
-                // Display the file name
-                document.getElementById('fileName').textContent = `Selected File: ${file.name}`;
+        function checkDuplicates() {
+            const jsonData = document.getElementById("jsonInput").value;
+            try {
+                const data = JSON.parse(jsonData);
+                const fullnames = data.map(item => item.fullname);
 
-                const reader = new FileReader();
-                
-                reader.onload = function () {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(reader.result, "text/xml");
+                // Find duplicates
+                const duplicates = fullnames.filter((name, index) => fullnames.indexOf(name) !== index);
+                const uniqueDuplicates = [...new Set(duplicates)];
 
-                    // Map to track duplicates based on fullname
-                    const fullnameMap = new Map();
-
-                    // Get all labels elements
-                    const labels = xmlDoc.getElementsByTagName('labels');
-
-                    // Iterate through each label and find the fullname
-                    for (let label of labels) {
-                        const fullnameElement = label.querySelector('fullname');
-                        if (fullnameElement) {
-                            const fullname = fullnameElement.textContent.trim();
-
-                            if (fullnameMap.has(fullname)) {
-                                fullnameMap.set(fullname, fullnameMap.get(fullname) + 1);
-                            } else {
-                                fullnameMap.set(fullname, 1);
-                            }
-                        }
-                    }
-
-                    // Display duplicate blocks in the console
-                    console.log("Duplicate fullname values:");
-                    fullnameMap.forEach((count, name) => {
-                        if (count > 1) {
-                            console.log(`Fullname: ${name}, Count: ${count}`);
-                        }
-                    });
-                };
-
-                reader.readAsText(file);
-            } else {
-                document.getElementById('fileName').textContent = "No file selected.";
+                const resultDiv = document.getElementById("result");
+                if (uniqueDuplicates.length > 0) {
+                    resultDiv.innerHTML = `<strong>Duplicate Fullnames:</strong><ul>` +
+                        uniqueDuplicates.map(name => `<li>${name}</li>`).join('') + `</ul>`;
+                } else {
+                    resultDiv.innerHTML = "No duplicates found.";
+                }
+            } catch (error) {
+                alert("Invalid JSON data.");
             }
-        });
+        }
     </script>
 </body>
 </html>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
