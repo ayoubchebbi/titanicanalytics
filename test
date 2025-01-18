@@ -1,3 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Read XML and Find Duplicates</title>
+</head>
+<body>
+    <h1>XML File Reader</h1>
+    <input type="file" id="fileInput" accept=".xml">
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function () {
+            const file = this.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function () {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(reader.result, "text/xml");
+
+                // Map to track duplicates
+                const fullnameMap = new Map();
+                const valises = xmlDoc.getElementsByTagName('valise');
+
+                // Iterate through each valise
+                for (let valise of valises) {
+                    const fullname = valise.querySelector('fullname').textContent.trim();
+
+                    if (fullnameMap.has(fullname)) {
+                        fullnameMap.set(fullname, fullnameMap.get(fullname) + 1);
+                    } else {
+                        fullnameMap.set(fullname, 1);
+                    }
+                }
+
+                // Display duplicate blocks
+                console.log("Duplicate valises based on fullname:");
+                fullnameMap.forEach((count, name) => {
+                    if (count > 1) {
+                        console.log(`Fullname: ${name}, Count: ${count}`);
+                    }
+                });
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
+
+
 from collections import Counter
 import xml.etree.ElementTree as ET
 
