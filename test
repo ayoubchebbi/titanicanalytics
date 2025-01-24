@@ -1,65 +1,15 @@
-<apex:page>
-    <style>
-        /* Style pour la liste déroulante */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 200px;
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            z-index: 1;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .checkbox-group {
-            margin-left: 15px;
-        }
-    </style>
-
-    <div class="dropdown">
-        <button>Liste déroulante</button>
-        <div class="dropdown-content">
-            <!-- Parent 1 -->
-            <div>
-                <input type="checkbox" id="parent1" onclick="toggleChildCheckboxes('group1', this)">
-                <label for="parent1">Parent 1</label>
-                <div class="checkbox-group" id="group1">
-                    <input type="checkbox" id="child1-1">
-                    <label for="child1-1">Child 1.1</label><br>
-                    <input type="checkbox" id="child1-2">
-                    <label for="child1-2">Child 1.2</label>
-                </div>
-            </div>
-            <!-- Parent 2 -->
-            <div>
-                <input type="checkbox" id="parent2" onclick="toggleChildCheckboxes('group2', this)">
-                <label for="parent2">Parent 2</label>
-                <div class="checkbox-group" id="group2">
-                    <input type="checkbox" id="child2-1">
-                    <label for="child2-1">Child 2.1</label><br>
-                    <input type="checkbox" id="child2-2">
-                    <label for="child2-2">Child 2.2</label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function toggleChildCheckboxes(groupId, parentCheckbox) {
-            const group = document.getElementById(groupId);
-            const checkboxes = group.querySelectorAll("input[type='checkbox']");
-            checkboxes.forEach((checkbox) => {
-                checkbox.checked = parentCheckbox.checked;
-            });
-        }
-    </script>
+<apex:page controller="PicklistController">
+    <h2>اختيار متعدد في Picklist</h2>
+    <apex:form >
+        <apex:outputLabel value="اختر القيم:" />
+        <select multiple="multiple" size="5" style="width: 200px;" id="picklist" >
+            <apex:repeat value="{!options}" var="option">
+                <option value="{!option.value}">{!option.label}</option>
+            </apex:repeat>
+        </select>
+        <br/><br/>
+        <apex:commandButton value="Submit" action="{!processSelectedValues}" />
+        <br/><br/>
+        <apex:outputText value="القيم المختارة: {!selectedValues}" />
+    </apex:form>
 </apex:page>
