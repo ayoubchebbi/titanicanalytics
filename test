@@ -1,181 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duplicate Fullnames Checker</title>
+<apex:page>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+        /* Style pour la liste déroulante */
+        .dropdown {
+            position: relative;
+            display: inline-block;
         }
-        #result {
-            margin-top: 20px;
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
             padding: 10px;
-            background-color: #f4f4f4;
-            border: 1px solid #ddd;
+            z-index: 1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .checkbox-group {
+            margin-left: 15px;
         }
     </style>
-</head>
-<body>
-    <h1>Duplicate Fullnames Checker</h1>
-    <textarea id="jsonInput" rows="10" cols="50" placeholder="Paste your JSON data here"></textarea><br><br>
-    <button onclick="checkDuplicates()">Check for Duplicates</button>
 
-    <div id="result"></div>
+    <div class="dropdown">
+        <button>Liste déroulante</button>
+        <div class="dropdown-content">
+            <!-- Parent 1 -->
+            <div>
+                <input type="checkbox" id="parent1" onclick="toggleChildCheckboxes('group1', this)">
+                <label for="parent1">Parent 1</label>
+                <div class="checkbox-group" id="group1">
+                    <input type="checkbox" id="child1-1">
+                    <label for="child1-1">Child 1.1</label><br>
+                    <input type="checkbox" id="child1-2">
+                    <label for="child1-2">Child 1.2</label>
+                </div>
+            </div>
+            <!-- Parent 2 -->
+            <div>
+                <input type="checkbox" id="parent2" onclick="toggleChildCheckboxes('group2', this)">
+                <label for="parent2">Parent 2</label>
+                <div class="checkbox-group" id="group2">
+                    <input type="checkbox" id="child2-1">
+                    <label for="child2-1">Child 2.1</label><br>
+                    <input type="checkbox" id="child2-2">
+                    <label for="child2-2">Child 2.2</label>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        function checkDuplicates() {
-            const jsonData = document.getElementById("jsonInput").value;
-            try {
-                const data = JSON.parse(jsonData);
-                const fullnames = data.map(item => item.fullname);
-
-                // Find duplicates
-                const duplicates = fullnames.filter((name, index) => fullnames.indexOf(name) !== index);
-                const uniqueDuplicates = [...new Set(duplicates)];
-
-                const resultDiv = document.getElementById("result");
-                if (uniqueDuplicates.length > 0) {
-                    resultDiv.innerHTML = `<strong>Duplicate Fullnames:</strong><ul>` +
-                        uniqueDuplicates.map(name => `<li>${name}</li>`).join('') + `</ul>`;
-                } else {
-                    resultDiv.innerHTML = "No duplicates found.";
-                }
-            } catch (error) {
-                alert("Invalid JSON data.");
-            }
+        function toggleChildCheckboxes(groupId, parentCheckbox) {
+            const group = document.getElementById(groupId);
+            const checkboxes = group.querySelectorAll("input[type='checkbox']");
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = parentCheckbox.checked;
+            });
         }
     </script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Salesforce XML File Reader</title>
-</head>
-<body>
-    <h1>XML File Reader</h1>
-    <input type="file" id="fileInput" accept=".xml">
-    <p id="fileName"></p>
-    <script>
-        document.getElementById('fileInput').addEventListener('change', function () {
-            const file = this.files[0];
-            if (file) {
-                // Display the file name
-                document.getElementById('fileName').textContent = `Selected File: ${file.name}`;
-
-                const reader = new FileReader();
-                
-                reader.onload = function () {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(reader.result, "text/xml");
-
-                    // Map to track duplicates based on fullname
-                    const fullnameMap = new Map();
-
-                    // Get all valise elements under labels
-                    const valises = xmlDoc.getElementsByTagName('valise');
-
-                    // Iterate through each valise
-                    for (let valise of valises) {
-                        const fullnameElement = valise.querySelector('fullname');
-                        if (fullnameElement) {
-                            const fullname = 
-from collections import Counter
-import xml.etree.ElementTree as ET
-
-# Load the XML file
-file_path = "file.xml"
-
-try:
-    tree = ET.parse(file_path)
-    root = tree.getroot()
-
-    # Collect all fullname values
-    fullnames = []
-    for element in root.iter('fullname'):
-        if element.text:
-            fullnames.append(element.text.strip())
-
-    # Count occurrences of each fullname
-    fullname_counts = Counter(fullnames)
-
-    # Display duplicate fullnames
-    print("Duplicate <fullname> values found:")
-    duplicates = {name: count for name, count in fullname_counts.items() if count > 1}
-    for name, count in duplicates.items():
-        print(f"Value: \"{name}\" appears {count} times")
-
-    if not duplicates:
-        print("No duplicate <fullname> values found.")
-
-except ET.ParseError as e:
-    print(f"XML parsing error: {e}")
-except FileNotFoundError:
-    print(f"File {file_path} not found.")
-
-
-public static void deleteDuplicateRecord(List<SObject> newObjects) {
-    // Set to store unique keys for new records
-    Set<String> newRecordKeys = new Set<String>();
-
-    // Map to store existing records with their keys for quick lookup
-    Map<String, WOMCO_PatientStockControlItem__c> existingRecordMap = new Map<String, WOMCO_PatientStockControlItem__c>();
-
-    // List to collect records that need to be deleted
-    List<WOMCO_PatientStockControlItem__c> recordsToDelete = new List<WOMCO_PatientStockControlItem__c>();
-
-    // Sets to store unique field values for querying existing records
-    Set<String> uniqueSerialNumbers = new Set<String>();
-    Set<String> uniqueProducts = new Set<String>();
-    Set<String> uniqueControlStocks = new Set<String>();
-
-    // Loop through the incoming records to generate unique keys
-    for (WOMCO_PatientStockControlItem__c newItem : (List<WOMCO_PatientStockControlItem__c>) newObjects) {
-        // Create a composite key using fields
-        String key = newItem.WOMCO_Product__c + '|' + newItem.WOMCO_SerialNumber__c + '|' + newItem.WOMCO_PatientStockControl__c;
-        
-        // If the key is not already in the set, add it and collect unique field values
-        if (!newRecordKeys.contains(key)) {
-            newRecordKeys.add(key);
-            uniqueSerialNumbers.add(newItem.WOMCO_SerialNumber__c);
-            uniqueProducts.add(newItem.WOMCO_Product__c);
-            uniqueControlStocks.add(newItem.WOMCO_PatientStockControl__c);
-        }
-    }
-
-    // If there are new unique keys, proceed to query existing records
-    if (!newRecordKeys.isEmpty()) {
-        // Query existing records that match the collected unique field values
-        List<WOMCO_PatientStockControlItem__c> existingRecords = [
-            SELECT Id, WOMCO_Product__c, WOMCO_SerialNumber__c, WOMCO_PatientStockControl__c
-            FROM WOMCO_PatientStockControlItem__c
-            WHERE WOMCO_Product__c IN :uniqueProducts
-              AND WOMCO_SerialNumber__c IN :uniqueSerialNumbers
-              AND WOMCO_PatientStockControl__c IN :uniqueControlStocks
-        ];
-
-        // Populate the map with existing records for quick access using their composite keys
-        for (WOMCO_PatientStockControlItem__c existingItem : existingRecords) {
-            String key = existingItem.WOMCO_Product__c + '|' + existingItem.WOMCO_SerialNumber__c + '|' + existingItem.WOMCO_PatientStockControl__c;
-            existingRecordMap.put(key, existingItem);
-        }
-
-        // Identify records in the database that have the same keys as the new ones
-        for (WOMCO_PatientStockControlItem__c newItem : (List<WOMCO_PatientStockControlItem__c>) newObjects) {
-            String key = newItem.WOMCO_Product__c + '|' + newItem.WOMCO_SerialNumber__c + '|' + newItem.WOMCO_PatientStockControl__c;
-
-            // If the key exists in the map, add the corresponding database record to the deletion list
-            if (existingRecordMap.containsKey(key)) {
-                recordsToDelete.add(existingRecordMap.get(key));
-            }
-        }
-
-        // Perform the deletion of identified records
-        if (!recordsToDelete.isEmpty()) {
-            Database.delete(recordsToDelete, false); // Use partial delete to continue on errors
-        }
-    }
-}
+</apex:page>
