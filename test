@@ -1,15 +1,46 @@
-<apex:page controller="PicklistController">
-    <h2>اختيار متعدد في Picklist</h2>
-    <apex:form >
-        <apex:outputLabel value="اختر القيم:" />
-        <select multiple="multiple" size="5" style="width: 200px;" id="picklist" >
-            <apex:repeat value="{!options}" var="option">
-                <option value="{!option.value}">{!option.label}</option>
-            </apex:repeat>
-        </select>
-        <br/><br/>
-        <apex:commandButton value="Submit" action="{!processSelectedValues}" />
-        <br/><br/>
-        <apex:outputText value="القيم المختارة: {!selectedValues}" />
+
+<apex:page controller="CheckboxController">
+    <apex:form id="form">
+        <apex:repeat value="{!checkboxItems}" var="item">
+            <apex:inputCheckbox value="{!item.checked}" id="{!item.id}">
+                <apex:actionSupport event="onclick" action="{!handleCheckboxChange}" reRender="outputPanel">
+                    <apex:param name="checkboxId" value="{!item.id}" assignTo="{!selectedCheckboxId}" />
+                </apex:actionSupport>
+            </apex:inputCheckbox>
+            <apex:outputText value="{!item.name}" />
+            <br/>
+        </apex:repeat>
+        <apex:outputPanel id="outputPanel">
+            <apex:outputText value="Selected Checkbox ID: {!selectedCheckboxId}" />
+        </apex:outputPanel>
     </apex:form>
 </apex:page>
+
+
+
+
+public class CheckboxController {
+    public class CheckboxItem {
+        public String id { get; set; }
+        public String name { get; set; }
+        public Boolean checked { get; set; }
+    }
+
+    public List<CheckboxItem> checkboxItems { get; set; }
+    public String selectedCheckboxId { get; set; }
+
+    public CheckboxController() {
+        // Exemple de données statiques
+        checkboxItems = new List<CheckboxItem>{
+            new CheckboxItem{ id = '1', name = 'Option 1', checked = false },
+            new CheckboxItem{ id = '2', name = 'Option 2', checked = false },
+            new CheckboxItem{ id = '3', name = 'Option 3', checked = false }
+        };
+    }
+
+    public void handleCheckboxChange() {
+        // Logique lorsque la case est cochée
+        System.debug('Selected Checkbox ID: ' + selectedCheckboxId);
+    }
+}
+
