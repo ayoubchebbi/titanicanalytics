@@ -1,46 +1,52 @@
-
-<apex:page controller="CheckboxController">
-    <apex:form id="form">
-        <apex:repeat value="{!checkboxItems}" var="item">
-            <apex:inputCheckbox value="{!item.checked}" id="{!item.id}">
-                <apex:actionSupport event="onclick" action="{!handleCheckboxChange}" reRender="outputPanel">
-                    <apex:param name="checkboxId" value="{!item.id}" assignTo="{!selectedCheckboxId}" />
-                </apex:actionSupport>
-            </apex:inputCheckbox>
-            <apex:outputText value="{!item.name}" />
-            <br/>
-        </apex:repeat>
-        <apex:outputPanel id="outputPanel">
-            <apex:outputText value="Selected Checkbox ID: {!selectedCheckboxId}" />
-        </apex:outputPanel>
-    </apex:form>
-</apex:page>
-
-
-
-
 public class CheckboxController {
+    // Inner class to represent each checkbox
     public class CheckboxItem {
         public String id { get; set; }
         public String name { get; set; }
         public Boolean checked { get; set; }
     }
 
+    // List of checkboxes
     public List<CheckboxItem> checkboxItems { get; set; }
-    public String selectedCheckboxId { get; set; }
+    
+    // List to store selected checkbox IDs
+    public List<String> selectedCheckboxIds { get; set; }
+    
+    // ID of the current checkbox being clicked
+    public String currentCheckboxId { get; set; }
 
     public CheckboxController() {
-        // Exemple de données statiques
+        // Initialize checkbox data
         checkboxItems = new List<CheckboxItem>{
             new CheckboxItem{ id = '1', name = 'Option 1', checked = false },
             new CheckboxItem{ id = '2', name = 'Option 2', checked = false },
             new CheckboxItem{ id = '3', name = 'Option 3', checked = false }
         };
+        selectedCheckboxIds = new List<String>();
     }
 
+    // Handle checkbox changes
     public void handleCheckboxChange() {
-        // Logique lorsque la case est cochée
-        System.debug('Selected Checkbox ID: ' + selectedCheckboxId);
+        // Find the checkbox that was clicked
+        CheckboxItem clickedItem = checkboxItems
+            .stream()
+            .filter(item -> item.id == currentCheckboxId)
+            .findFirst()
+            .orElse(null);
+
+        if (clickedItem != null) {
+            if (clickedItem.checked) {
+                // Add the ID to the list if checked
+                if (!selectedCheckboxIds.contains(currentCheckboxId)) {
+                    selectedCheckboxIds.add(currentCheckboxId);
+                }
+            } else {
+                // Remove the ID from the list if unchecked
+                selectedCheckboxIds.remove(currentCheckboxId);
+            }
+        }
+
+        // Debug output (optional)
+        System.debug('Updated Selected IDs: ' + selectedCheckboxIds);
     }
 }
-
