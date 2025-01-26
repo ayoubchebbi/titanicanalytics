@@ -1,52 +1,64 @@
+<apex:page controller="CheckboxController">
+    <h2>Select Your Options</h2>
+    
+    <!-- Create a form with checkboxes dynamically -->
+    <apex:form>
+        <apex:pageMessages />
+        
+        <apex:repeat value="{!checkboxOptions}" var="option">
+            <!-- Bind checkbox value to the wrapper object and set checked state -->
+            <apex:inputCheckbox value="{!option.isChecked}" id="{!option.value}" label="{!option.label}" />
+        </apex:repeat>
+        
+        <!-- Button to trigger JS function -->
+        <apex:commandButton value="Submit" onclick="captureCheckboxValues(); return false;" />
+    </apex:form>
+    
+    <!-- Output Area -->
+    <div id="output"></div>
+
+    <script type="text/javascript">
+        function captureCheckboxValues() {
+            // Array to store selected values
+            var selectedValues = [];
+            
+            // Loop through all checkboxes to check if they are checked
+            var checkboxes = document.querySelectorAll("input[type='checkbox']");
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    selectedValues.push(checkbox.id); // Push the checkbox id
+                }
+            });
+            
+            // Display the selected checkboxes
+            document.getElementById('output').innerHTML = "Selected checkboxes: " + selectedValues.join(', ');
+        }
+    </script>
+</apex:page>
 public class CheckboxController {
-    // Inner class to represent each checkbox
-    public class CheckboxItem {
-        public String id { get; set; }
-        public String name { get; set; }
-        public Boolean checked { get; set; }
+    // Wrapper class to hold label and checked state
+    public class CheckboxWrapper {
+        public String label { get; set; }
+        public String value { get; set; }
+        public Boolean isChecked { get; set; }
+        
+        public CheckboxWrapper(String value, String label, Boolean isChecked) {
+            this.value = value;
+            this.label = label;
+            this.isChecked = isChecked;
+        }
     }
 
-    // List of checkboxes
-    public List<CheckboxItem> checkboxItems { get; set; }
-    
-    // List to store selected checkbox IDs
-    public List<String> selectedCheckboxIds { get; set; }
-    
-    // ID of the current checkbox being clicked
-    public String currentCheckboxId { get; set; }
+    public List<CheckboxWrapper> checkboxOptions { get; set; }
 
     public CheckboxController() {
-        // Initialize checkbox data
-        checkboxItems = new List<CheckboxItem>{
-            new CheckboxItem{ id = '1', name = 'Option 1', checked = false },
-            new CheckboxItem{ id = '2', name = 'Option 2', checked = false },
-            new CheckboxItem{ id = '3', name = 'Option 3', checked = false }
-        };
-        selectedCheckboxIds = new List<String>();
-    }
-
-    // Handle checkbox changes
-    public void handleCheckboxChange() {
-        // Find the checkbox that was clicked
-        CheckboxItem clickedItem = checkboxItems
-            .stream()
-            .filter(item -> item.id == currentCheckboxId)
-            .findFirst()
-            .orElse(null);
-
-        if (clickedItem != null) {
-            if (clickedItem.checked) {
-                // Add the ID to the list if checked
-                if (!selectedCheckboxIds.contains(currentCheckboxId)) {
-                    selectedCheckboxIds.add(currentCheckboxId);
-                }
-            } else {
-                // Remove the ID from the list if unchecked
-                selectedCheckboxIds.remove(currentCheckboxId);
-            }
-        }
-
-        // Debug output (optional)
-        System.debug('Updated Selected IDs: ' + selectedCheckboxIds);
+        // Create a list of CheckboxWrapper objects
+        checkboxOptions = new List<CheckboxWrapper>();
+        
+        // Add options with their default checked state
+        checkboxOptions.add(new CheckboxWrapper('Option1', 'Option 1', true));  // Checked by default
+        checkboxOptions.add(new CheckboxWrapper('Option2', 'Option 2', false)); // Unchecked by default
+        checkboxOptions.add(new CheckboxWrapper('Option3', 'Option 3', true));  // Checked by default
+        checkboxOptions.add(new CheckboxWrapper('Option4', 'Option 4', false)); // Unchecked by default
     }
 }
