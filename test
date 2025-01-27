@@ -1,64 +1,57 @@
-<apex:page controller="CheckboxController">
-    <h2>Select Your Options</h2>
-    
-    <!-- Create a form with checkboxes dynamically -->
-    <apex:form>
-        <apex:pageMessages />
-        
-        <apex:repeat value="{!checkboxOptions}" var="option">
-            <!-- Bind checkbox value to the wrapper object and set checked state -->
-            <apex:inputCheckbox value="{!option.isChecked}" id="{!option.value}" label="{!option.label}" />
-        </apex:repeat>
-        
-        <!-- Button to trigger JS function -->
-        <apex:commandButton value="Submit" onclick="captureCheckboxValues(); return false;" />
-    </apex:form>
-    
-    <!-- Output Area -->
-    <div id="output"></div>
+<div class="dropdown-container">
+  <button id="dropdownButton" class="dropdown-btn">Menu</button>
+  <div id="dropdownContent" class="dropdown-content">
+    <label><input type="checkbox"> Option 1</label><br>
+    <label><input type="checkbox"> Option 2</label><br>
+    <label><input type="checkbox"> Option 3</label><br>
+  </div>
+</div>
 
-    <script type="text/javascript">
-        function captureCheckboxValues() {
-            // Array to store selected values
-            var selectedValues = [];
-            
-            // Loop through all checkboxes to check if they are checked
-            var checkboxes = document.querySelectorAll("input[type='checkbox']");
-            checkboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    selectedValues.push(checkbox.id); // Push the checkbox id
-                }
-            });
-            
-            // Display the selected checkboxes
-            document.getElementById('output').innerHTML = "Selected checkboxes: " + selectedValues.join(', ');
-        }
-    </script>
-</apex:page>
-public class CheckboxController {
-    // Wrapper class to hold label and checked state
-    public class CheckboxWrapper {
-        public String label { get; set; }
-        public String value { get; set; }
-        public Boolean isChecked { get; set; }
-        
-        public CheckboxWrapper(String value, String label, Boolean isChecked) {
-            this.value = value;
-            this.label = label;
-            this.isChecked = isChecked;
-        }
-    }
-
-    public List<CheckboxWrapper> checkboxOptions { get; set; }
-
-    public CheckboxController() {
-        // Create a list of CheckboxWrapper objects
-        checkboxOptions = new List<CheckboxWrapper>();
-        
-        // Add options with their default checked state
-        checkboxOptions.add(new CheckboxWrapper('Option1', 'Option 1', true));  // Checked by default
-        checkboxOptions.add(new CheckboxWrapper('Option2', 'Option 2', false)); // Unchecked by default
-        checkboxOptions.add(new CheckboxWrapper('Option3', 'Option 3', true));  // Checked by default
-        checkboxOptions.add(new CheckboxWrapper('Option4', 'Option 4', false)); // Unchecked by default
-    }
+<style>
+.dropdown-container {
+  position: relative;
 }
+
+.dropdown-btn {
+  cursor: pointer;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: none; /* Hidden by default */
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.dropdown-content.active {
+  display: block; /* Show when active */
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdownButton = document.getElementById('dropdownButton');
+  const dropdownContent = document.getElementById('dropdownContent');
+
+  // Toggle dropdown visibility when button is clicked
+  dropdownButton.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent click from closing dropdown
+    dropdownContent.classList.toggle('active');
+  });
+
+  // Prevent closing when clicking inside the dropdown
+  dropdownContent.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent the dropdown from closing
+  });
+
+  // Close the dropdown when clicking anywhere else on the page
+  document.addEventListener('click', () => {
+    dropdownContent.classList.remove('active');
+  });
+});
+</script>
