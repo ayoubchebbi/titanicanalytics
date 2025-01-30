@@ -1,57 +1,155 @@
-<div class="dropdown-container">
-  <button id="dropdownButton" class="dropdown-btn">Menu</button>
-  <div id="dropdownContent" class="dropdown-content">
-    <label><input type="checkbox"> Option 1</label><br>
-    <label><input type="checkbox"> Option 2</label><br>
-    <label><input type="checkbox"> Option 3</label><br>
-  </div>
-</div>
-
-<style>
-.dropdown-container {
-  position: relative;
+// Apex Controller
+public class ServiceTerritoryResourceController {
+    // Map to store Service Territory and its related Service Resources
+    public Map<String, List<SelectOption>> territoryResourceMap { get; set; }
+    
+    // Wrapper class to handle selection state
+    public class TerritoryWrapper {
+        public Boolean selected { get; set; }
+        public String territoryId { get; set; }
+        public String territoryName { get; set; }
+        public List<ResourceWrapper> resources { get; set; }
+        
+        public TerritoryWrapper() {
+            selected = false;
+            resources = new List<ResourceWrapper>();
+        }
+    }
+    
+    public class ResourceWrapper {
+        public Boolean selected { get; set; }
+        public String resourceId { get; set; }
+        public String resourceName { get; set; }
+        
+        public ResourceWrapper() {
+            selected = false;
+        }
+    }
+    
+    // List to store territory wrappers for the page
+    public List<TerritoryWrapper> territoryWrappers { get; set; }
+    
+    // Constructor
+    public ServiceTerritoryResourceController() {
+        loadTerritoryResources();
+        initializeWrappers();
+    }
+    
+    // Method to load territory and resource data
+    private void loadTerritoryResources() {
+        territoryResourceMap = new Map<String, List<SelectOption>>();
+        
+        // Query Service Territories
+        for(ServiceTerritory st : [SELECT Id, Name, 
+                                 (SELECT Id, Name FROM ServiceResources) 
+                                 FROM ServiceTerritory]) {
+            List<SelectOption> resources = new List<SelectOption>();
+            
+            // Add resources for each territory
+            for(ServiceResource sr : st.ServiceResources) {
+                resources.add(new SelectOption(sr.Id, sr.Name));
+            }
+            
+            territoryResourceMap.put(st.Id, resources);
+        }
+    }
+    
+    // Initialize wrapper objects
+    private void initializeWrappers() {
+        territoryWrappers = new List<TerritoryWrapper>();
+        
+        for(ServiceTerritory st : [SELECT Id, Name FROM ServiceTerritory]) {
+            TerritoryWrapper tw = new TerritoryWrapper();
+            tw.territoryId = st.Id;
+            tw.territoryName = st.Name;
+            
+            // Add resource wrappers
+            List<SelectOption> resources = territoryResourceMap.get(st.Id);
+            if(resources != null) {
+                for(SelectOption opt : resources) {
+                    ResourceWrapper rw = new ResourceWrapper();
+                    rw.resourceId = opt.getValue();
+                    rw.resourceName = opt.getLabel();
+                    tw.resources.add(rw);
+                }
+            }
+            
+            territoryWrappers.add(tw);
+        }
+    }
+    
+    // Method to handle territory selection
+    public void territorySelected() {
+        for(TerritoryWrapper tw : territoryWrappers) {
+            if(tw.selected) {
+                // Select all resources under this territory
+                for(ResourceWrapper rw : tw.resources) {
+                    rw.selected = true;
+                }
+            }
+        }
+    }
+    
+    // Method to update map with new values
+    public void updateMap() {
+        // Reset current selections
+        for(TerritoryWrapper tw : territoryWrappers) {
+            tw.selected = false;
+            for(ResourceWrapper rw : tw.resources) {
+                rw.selected = false;
+            }
+        }
+        
+        // Reload territory resources
+        loadTerritoryResources();
+        initializeWrappers();
+    }
 }
 
-.dropdown-btn {
-  cursor: pointer;
-}
 
-.dropdown-content {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  display: none; /* Hidden by default */
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-
-.dropdown-content.active {
-  display: block; /* Show when active */
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const dropdownButton = document.getElementById('dropdownButton');
-  const dropdownContent = document.getElementById('dropdownContent');
-
-  // Toggle dropdown visibility when button is clicked
-  dropdownButton.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent click from closing dropdown
-    dropdownContent.classList.toggle('active');
-  });
-
-  // Prevent closing when clicking inside the dropdown
-  dropdownContent.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent the dropdown from closing
-  });
-
-  // Close the dropdown when clicking anywhere else on the page
-  document.addEventListener('click', () => {
-    dropdownContent.classList.remove('active');
-  });
-});
-</script>
+<apex:page controller="ServiceTerritoryResourceController">
+    <apex:form >
+        <apex:pageBlock title="Service Territory and Resource Selection">
+            <!-- Refresh button -->
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Refresh Map" action="{!updateMap}" rerender="selectionPanel"/>
+            </apex:pageBlockButtons>
+            
+            <!-- Selection panel -->
+            <apex:outputPanel id="selectionPanel">
+                <apex:repeat value="{!territoryWrappers}" var="territory">
+                    <div class="territory-section">
+                        <!-- Territory checkbox -->
+                        <apex:inputCheckbox value="{!territory.selected}">
+                            <apex:actionSupport event="onchange" 
+                                              action="{!territorySelected}" 
+                                              rerender="selectionPanel"/>
+                        </apex:inputCheckbox>
+                        <apex:outputText value="{!territory.territoryName}" style="font-weight: bold;"/>
+                        
+                        <!-- Resources list -->
+                        <div class="resource-list" style="margin-left: 20px;">
+                            <apex:repeat value="{!territory.resources}" var="resource">
+                                <div>
+                                    <apex:inputCheckbox value="{!resource.selected}"/>
+                                    <apex:outputText value="{!resource.resourceName}"/>
+                                </div>
+                            </apex:repeat>
+                        </div>
+                    </div>
+                </apex:repeat>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <style>
+        .territory-section {
+            margin: 10px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .resource-list {
+            margin-top: 5px;
+        }
+    </style>
+</apex:page>
