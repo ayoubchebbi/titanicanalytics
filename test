@@ -1,3 +1,17 @@
+<apex:page>
+    <apex:form>
+        <apex:commandButton value="Save" action="{!save}" styleClass="slds-button slds-button_icon" >
+            <apex:facet name="icon">
+                <span class="slds-icon slds-icon_small slds-icon-standard-account">
+                    <lightning:icon name="standard:account" size="small" />
+                </span>
+            </apex:facet>
+        </apex:commandButton>
+    </apex:form>
+</apex:page>
+
+
+
 <template>
     <div class="slds-box slds-p-around_medium">
         <!-- Title and Right-Aligned Button -->
