@@ -1,205 +1,59 @@
-<apex:page>
-    <apex:form>
-        <apex:commandButton value="Save" action="{!save}" styleClass="slds-button slds-button_icon" >
-            <apex:facet name="icon">
-                <span class="slds-icon slds-icon_small slds-icon-standard-account">
-                    <lightning:icon name="standard:account" size="small" />
-                </span>
-            </apex:facet>
-        </apex:commandButton>
-    </apex:form>
-</apex:page>
-
-
-
-<template>
-    <div class="slds-box slds-p-around_medium">
-        <!-- Title and Right-Aligned Button -->
-        <div class="slds-grid slds-grid_align-spread">
-            <h2 class="slds-text-title_bold">Filter</h2>
-            <lightning-button-icon 
-                icon-name="utility:new_window"
-                alternative-text="Open in new page"
-                variant="bare"
-                class="slds-m-left_small"
-                onclick={handleOpenPage}>
-            </lightning-button-icon>
-        </div>
-
-        <!-- Input Field -->
-        <div class="slds-m-top_medium">
-            <lightning-input 
-                label="Enter text" 
-                value={inputValue} 
-                onchange={handleInputChange}>
-            </lightning-input>
-        </div>
-
-        <!-- Button -->
-        <div class="slds-m-top_medium">
-            <lightning-button 
-                label="Submit" 
-                variant="brand" 
-                onclick={handleSubmit}>
-            </lightning-button>
-        </div>
-    </div>
-</template>
-
-
-
-// Apex Controller
-public class ServiceTerritoryResourceController {
-    // Map to store Service Territory and its related Service Resources
-    public Map<String, List<SelectOption>> territoryResourceMap { get; set; }
-    
-    // Wrapper class to handle selection state
-    public class TerritoryWrapper {
-        public Boolean selected { get; set; }
-        public String territoryId { get; set; }
-        public String territoryName { get; set; }
-        public List<ResourceWrapper> resources { get; set; }
-        
-        public TerritoryWrapper() {
-            selected = false;
-            resources = new List<ResourceWrapper>();
-        }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://lightningdesignsystem.com/assets/styles/slds.min.css">
+  <title>SLDS Block Example with JS</title>
+  <style>
+    .custom-block {
+      display: flex;
+      align-items: center;
+      border: 2px solid red;
+      padding: 10px;
+      width: 300px;
     }
-    
-    public class ResourceWrapper {
-        public Boolean selected { get; set; }
-        public String resourceId { get; set; }
-        public String resourceName { get; set; }
-        
-        public ResourceWrapper() {
-            selected = false;
-        }
+    .name {
+      margin-left: 10px;
+      font-size: 16px;
     }
-    
-    // List to store territory wrappers for the page
-    public List<TerritoryWrapper> territoryWrappers { get; set; }
-    
-    // Constructor
-    public ServiceTerritoryResourceController() {
-        loadTerritoryResources();
-        initializeWrappers();
+    .slds-box {
+      width: 40px;
+      height: 40px;
     }
-    
-    // Method to load territory and resource data
-    private void loadTerritoryResources() {
-        territoryResourceMap = new Map<String, List<SelectOption>>();
-        
-        // Query Service Territories
-        for(ServiceTerritory st : [SELECT Id, Name, 
-                                 (SELECT Id, Name FROM ServiceResources) 
-                                 FROM ServiceTerritory]) {
-            List<SelectOption> resources = new List<SelectOption>();
-            
-            // Add resources for each territory
-            for(ServiceResource sr : st.ServiceResources) {
-                resources.add(new SelectOption(sr.Id, sr.Name));
-            }
-            
-            territoryResourceMap.put(st.Id, resources);
-        }
-    }
-    
-    // Initialize wrapper objects
-    private void initializeWrappers() {
-        territoryWrappers = new List<TerritoryWrapper>();
-        
-        for(ServiceTerritory st : [SELECT Id, Name FROM ServiceTerritory]) {
-            TerritoryWrapper tw = new TerritoryWrapper();
-            tw.territoryId = st.Id;
-            tw.territoryName = st.Name;
-            
-            // Add resource wrappers
-            List<SelectOption> resources = territoryResourceMap.get(st.Id);
-            if(resources != null) {
-                for(SelectOption opt : resources) {
-                    ResourceWrapper rw = new ResourceWrapper();
-                    rw.resourceId = opt.getValue();
-                    rw.resourceName = opt.getLabel();
-                    tw.resources.add(rw);
-                }
-            }
-            
-            territoryWrappers.add(tw);
-        }
-    }
-    
-    // Method to handle territory selection
-    public void territorySelected() {
-        for(TerritoryWrapper tw : territoryWrappers) {
-            if(tw.selected) {
-                // Select all resources under this territory
-                for(ResourceWrapper rw : tw.resources) {
-                    rw.selected = true;
-                }
-            }
-        }
-    }
-    
-    // Method to update map with new values
-    public void updateMap() {
-        // Reset current selections
-        for(TerritoryWrapper tw : territoryWrappers) {
-            tw.selected = false;
-            for(ResourceWrapper rw : tw.resources) {
-                rw.selected = false;
-            }
-        }
-        
-        // Reload territory resources
-        loadTerritoryResources();
-        initializeWrappers();
-    }
-}
+  </style>
+</head>
+<body>
 
+  <div id="container"></div>
 
-<apex:page controller="ServiceTerritoryResourceController">
-    <apex:form >
-        <apex:pageBlock title="Service Territory and Resource Selection">
-            <!-- Refresh button -->
-            <apex:pageBlockButtons location="top">
-                <apex:commandButton value="Refresh Map" action="{!updateMap}" rerender="selectionPanel"/>
-            </apex:pageBlockButtons>
-            
-            <!-- Selection panel -->
-            <apex:outputPanel id="selectionPanel">
-                <apex:repeat value="{!territoryWrappers}" var="territory">
-                    <div class="territory-section">
-                        <!-- Territory checkbox -->
-                        <apex:inputCheckbox value="{!territory.selected}">
-                            <apex:actionSupport event="onchange" 
-                                              action="{!territorySelected}" 
-                                              rerender="selectionPanel"/>
-                        </apex:inputCheckbox>
-                        <apex:outputText value="{!territory.territoryName}" style="font-weight: bold;"/>
-                        
-                        <!-- Resources list -->
-                        <div class="resource-list" style="margin-left: 20px;">
-                            <apex:repeat value="{!territory.resources}" var="resource">
-                                <div>
-                                    <apex:inputCheckbox value="{!resource.selected}"/>
-                                    <apex:outputText value="{!resource.resourceName}"/>
-                                </div>
-                            </apex:repeat>
-                        </div>
-                    </div>
-                </apex:repeat>
-            </apex:outputPanel>
-        </apex:pageBlock>
-    </apex:form>
-    
-    <style>
-        .territory-section {
-            margin: 10px 0;
-            padding: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        .resource-list {
-            margin-top: 5px;
-        }
-    </style>
-</apex:page>
+  <script>
+    // Function to create the block with the name and red box
+    function createBlock(name) {
+      // Create the custom block container
+      const block = document.createElement('div');
+      block.className = 'custom-block';
+
+      // Create the red box
+      const redBox = document.createElement('div');
+      redBox.className = 'slds-box';
+
+      // Create the name element
+      const nameElement = document.createElement('div');
+      nameElement.className = 'name';
+      nameElement.innerText = name;
+
+      // Append the red box and name to the block
+      block.appendChild(redBox);
+      block.appendChild(nameElement);
+
+      // Append the block to the container
+      document.getElementById('container').appendChild(block);
+    }
+
+    // Call the function to create the block with a name
+    createBlock('John Doe');
+  </script>
+
+</body>
+</html>
