@@ -1,3 +1,39 @@
+<template>
+    <div class="slds-box slds-p-around_medium">
+        <!-- Title and Right-Aligned Button -->
+        <div class="slds-grid slds-grid_align-spread">
+            <h2 class="slds-text-title_bold">Filter</h2>
+            <lightning-button-icon 
+                icon-name="utility:new_window"
+                alternative-text="Open in new page"
+                variant="bare"
+                class="slds-m-left_small"
+                onclick={handleOpenPage}>
+            </lightning-button-icon>
+        </div>
+
+        <!-- Input Field -->
+        <div class="slds-m-top_medium">
+            <lightning-input 
+                label="Enter text" 
+                value={inputValue} 
+                onchange={handleInputChange}>
+            </lightning-input>
+        </div>
+
+        <!-- Button -->
+        <div class="slds-m-top_medium">
+            <lightning-button 
+                label="Submit" 
+                variant="brand" 
+                onclick={handleSubmit}>
+            </lightning-button>
+        </div>
+    </div>
+</template>
+
+
+
 // Apex Controller
 public class ServiceTerritoryResourceController {
     // Map to store Service Territory and its related Service Resources
