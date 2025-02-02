@@ -1,59 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://lightningdesignsystem.com/assets/styles/slds.min.css">
-  <title>SLDS Block Example with JS</title>
-  <style>
-    .custom-block {
-      display: flex;
-      align-items: center;
-      border: 2px solid red;
-      padding: 10px;
-      width: 300px;
-    }
-    .name {
-      margin-left: 10px;
-      font-size: 16px;
-    }
-    .slds-box {
-      width: 40px;
-      height: 40px;
-    }
-  </style>
-</head>
-<body>
+<apex:page controller="TerritoryController">
+    <apex:includeLightning />
 
-  <div id="container"></div>
+    <script>
+        function refreshViewVehicleStock(TerritoryId) {
+            if (!TerritoryId) return;
 
-  <script>
-    // Function to create the block with the name and red box
-    function createBlock(name) {
-      // Create the custom block container
-      const block = document.createElement('div');
-      block.className = 'custom-block';
+            var divViewStock = document.getElementById('lightningvf');
+            divViewStock.innerHTML = "Loading..."; // Afficher un message temporaire
 
-      // Create the red box
-      const redBox = document.createElement('div');
-      redBox.className = 'slds-box';
+            $Lightning.use("c:FSCIT_includeViewVehicleStockonVFPage", function() {
+                $Lightning.createComponent("c:prdcoViewVehiclesStock",
+                    { "recordId" : TerritoryId },
+                    "lightningvf",
+                    function(cmp) {
+                        console.log("Component loaded for TerritoryId:", TerritoryId);
+                    }
+                );
+            });
+        }
+    </script>
 
-      // Create the name element
-      const nameElement = document.createElement('div');
-      nameElement.className = 'name';
-      nameElement.innerText = name;
+    <apex:form>
+        <apex:pageBlock title="Select a Territory">
+            <apex:selectList id="territorySelector" size="1" onchange="refreshViewVehicleStock(this.value)">
+                <apex:selectOptions value="{!territories}"/>
+            </apex:selectList>
+        </apex:pageBlock>
+    </apex:form>
 
-      // Append the red box and name to the block
-      block.appendChild(redBox);
-      block.appendChild(nameElement);
+    <div id="lightningvf"></div>
 
-      // Append the block to the container
-      document.getElementById('container').appendChild(block);
-    }
-
-    // Call the function to create the block with a name
-    createBlock('John Doe');
-  </script>
-
-</body>
-</html>
+</apex:page>
