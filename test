@@ -1,33 +1,28 @@
-<apex:page controller="TerritoryController">
-    <apex:includeLightning />
-
-    <script>
-        function refreshViewVehicleStock(TerritoryId) {
-            if (!TerritoryId) return;
-
-            var divViewStock = document.getElementById('lightningvf');
-            divViewStock.innerHTML = "Loading..."; // Afficher un message temporaire
-
-            $Lightning.use("c:FSCIT_includeViewVehicleStockonVFPage", function() {
-                $Lightning.createComponent("c:prdcoViewVehiclesStock",
-                    { "recordId" : TerritoryId },
-                    "lightningvf",
-                    function(cmp) {
-                        console.log("Component loaded for TerritoryId:", TerritoryId);
-                    }
-                );
-            });
-        }
-    </script>
-
+<apex:page controller="VfPageController">
     <apex:form>
-        <apex:pageBlock title="Select a Territory">
-            <apex:selectList id="territorySelector" size="1" onchange="refreshViewVehicleStock(this.value)">
-                <apex:selectOptions value="{!territories}"/>
+        <apex:pageBlock title="Select an Option">
+            <apex:selectList value="{!selectedValue}" size="1" id="vfCombobox" onchange="handleChange(this.value)">
+                <apex:selectOptions value="{!options}"/>
+                <apex:selectOption itemLabel="Yes" itemValue="Yes"/>
+                <apex:selectOption itemLabel="No" itemValue="No"/>
             </apex:selectList>
         </apex:pageBlock>
     </apex:form>
 
-    <div id="lightningvf"></div>
-
+    <script>
+        function handleChange(value) {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.VfPageController.executeMethod}',
+                value,
+                function(result, event) {
+                    if (event.status) {
+                        console.log('Selected:', value);
+                    } else {
+                        console.error('Error calling Apex method.');
+                    }
+                },
+                { escape: false }
+            );
+        }
+    </script>
 </apex:page>
