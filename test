@@ -1,28 +1,24 @@
-<apex:page controller="VfPageController">
-    <apex:form>
-        <apex:pageBlock title="Select an Option">
-            <apex:selectList value="{!selectedValue}" size="1" id="vfCombobox" onchange="handleChange(this.value)">
-                <apex:selectOptions value="{!options}"/>
-                <apex:selectOption itemLabel="Yes" itemValue="Yes"/>
-                <apex:selectOption itemLabel="No" itemValue="No"/>
-            </apex:selectList>
-        </apex:pageBlock>
-    </apex:form>
+<apex:page controller="TerritoryController">
+    <h2>Select a Territory</h2>
 
-    <script>
-        function handleChange(value) {
-            Visualforce.remoting.Manager.invokeAction(
-                '{!$RemoteAction.VfPageController.executeMethod}',
-                value,
-                function(result, event) {
-                    if (event.status) {
-                        console.log('Selected:', value);
-                    } else {
-                        console.error('Error calling Apex method.');
-                    }
-                },
-                { escape: false }
-            );
-        }
-    </script>
+    <!-- Check if the list is not empty -->
+    <apex:outputPanel rendered="{!NOT(ISNULL(serviceTerritorItems))}">
+        <!-- apex:selectList to create a dropdown -->
+        <apex:form>
+            <apex:selectList value="{!selectedTerritoryValue}" size="1">
+                <apex:selectOptions value="{!serviceTerritorItems}" itemValue="value" itemLabel="label"/>
+            </apex:selectList>
+            <apex:commandButton value="Submit" action="{!saveSelectedTerritory}" rerender="outputPanel"/>
+        </apex:form>
+    </apex:outputPanel>
+
+    <!-- If the list is empty, show this message -->
+    <apex:outputPanel rendered="{!ISNULL(serviceTerritorItems)}">
+        <p>No items available</p>
+    </apex:outputPanel>
+
+    <apex:outputPanel id="outputPanel">
+        <h3>You selected: {!selectedTerritoryValue}</h3>
+    </apex:outputPanel>
+
 </apex:page>
