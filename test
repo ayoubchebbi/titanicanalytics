@@ -1,29 +1,19 @@
-<apex:page controller="TerritoryController">
-    <h2>Select a Territory</h2>
+function refreshViewVehicleStock(TerritoryId) {
+    var divViewStock = document.getElementById('lightningvf');
+    if (!divViewStock) {
+        console.error("Div element 'lightningvf' not found.");
+        return;
+    }
+    divViewStock.innerHTML = ""; // Clear previous content
 
-    <!-- Check if the list is not empty -->
-    <apex:outputPanel rendered="{!NOT(ISNULL(serviceTerritorItems))}">
-        <apex:form>
-            <!-- apex:selectList to create a dropdown -->
-            <apex:selectList value="{!selectedTerritoryValue}" size="1">
-                <apex:selectOption itemLabel="Select an option" itemValue=""/>
-                
-                <!-- Generate options using apex:selectOption for each item -->
-                <apex:repeat value="{!serviceTerritorItems}" var="item">
-                    <apex:selectOption itemLabel="{!item.label}" itemValue="{!item.value}"/>
-                </apex:repeat>
-            </apex:selectList>
-            <apex:commandButton value="Submit" action="{!saveSelectedTerritory}" rerender="outputPanel"/>
-        </apex:form>
-    </apex:outputPanel>
-
-    <!-- If the list is empty, show this message -->
-    <apex:outputPanel rendered="{!ISNULL(serviceTerritorItems)}">
-        <p>No items available</p>
-    </apex:outputPanel>
-
-    <apex:outputPanel id="outputPanel">
-        <h3>You selected: {!selectedTerritoryValue}</h3>
-    </apex:outputPanel>
-
-</apex:page>
+    // Call the component
+    $Lightning.use("c:FSCIT_includeViewVehicleStockonVFPage", function() {
+        $Lightning.createComponent("c:prdcoViewVehiclesStock", { "recordId": TerritoryId }, "lightningvf", function(cmp, error) {
+            if (error) {
+                console.error("Error creating component:", error);
+            } else {
+                // do some stuff
+            }
+        });
+    });
+}
