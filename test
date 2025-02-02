@@ -3,10 +3,15 @@
 
     <!-- Check if the list is not empty -->
     <apex:outputPanel rendered="{!NOT(ISNULL(serviceTerritorItems))}">
-        <!-- apex:selectList to create a dropdown -->
         <apex:form>
+            <!-- apex:selectList to create a dropdown -->
             <apex:selectList value="{!selectedTerritoryValue}" size="1">
-                <apex:selectOptions value="{!serviceTerritorItems}" itemValue="value" itemLabel="label"/>
+                <apex:selectOption itemLabel="Select an option" itemValue=""/>
+                
+                <!-- Generate options using apex:selectOption for each item -->
+                <apex:repeat value="{!serviceTerritorItems}" var="item">
+                    <apex:selectOption itemLabel="{!item.label}" itemValue="{!item.value}"/>
+                </apex:repeat>
             </apex:selectList>
             <apex:commandButton value="Submit" action="{!saveSelectedTerritory}" rerender="outputPanel"/>
         </apex:form>
