@@ -1,110 +1,13 @@
-public with sharing class CORE_SM_WorkOrder {
+// Get all Custom Permissions assigned to the current user
+Set<String> availableCPs = new Set<String>();
 
-    /**
-     * Updates Work Orders to "No Further Action Required" status based on certain conditions.
-     */
-    public static void getNoFurtherActionRequired(List<WorkOrder> workOrders, Map<Id, SObject> oldObjectsMap) {
-        List<WorkOrder> woToUpdate = new List<WorkOrder>();
-        Set<Id> woParentIds = new Set<Id>();
-
-        // Loop through each work order
-        for (WorkOrder newWo : workOrders) {
-            WorkOrder oldWo = (WorkOrder) oldObjectsMap.get(newWo.Id);
-
-            // Check if the condition is met to update the Work Order
-            if (isNfrTrue(newWo, oldWo)) {
-                try {
-                    // Ensure Service Appointment relationship exists to avoid NullPointerException
-                    if (newWo.TEKCO_ServiceAppointment__r != null) {
-                        // Assign EndDate based on available data
-                        newWo.EndDate = newWo.TEKCO_ServiceAppointment__r.ActualEndTime__c != null ?
-                                        newWo.TEKCO_ServiceAppointment__r.ActualEndTime__c :
-                                        newWo.TEKCO_ServiceAppointment__r.ScheduledTime__c;
-                    }
-
-                    // Handle Start Date to prevent null errors
-                    if (newWo.StartDate == null || (newWo.EndDate != null && newWo.StartDate > newWo.EndDate)) {
-                        newWo.StartDate = newWo.EndDate != null ? newWo.EndDate.addHours(-1) : DateTime.now();
-                    }
-
-                    // Update Work Order status
-                    if (newWo.Status == WorkOrderHelper.STATUS_PARTIALLY_COMPLETED) {
-                        newWo.Status = WorkOrderHelper.STATUS_CLOSED;
-                    } else if (newWo.Status == WorkOrderHelper.STATUS_CANNOT_COMPLETE) {
-                        newWo.Status = WorkOrderHelper.STATUS_CANCELED;
-                    }
-
-                    // Add to update list
-                    woToUpdate.add(newWo);
-                } catch (Exception e) {
-                    System.debug('Error updating Work Order: ' + e.getMessage());
-                }
-            }
-        }
-
-        // Perform bulk update to avoid multiple DML operations
-        if (!woToUpdate.isEmpty()) {
-            update woToUpdate;
-        }
-    }
-
-    /**
-     * Determines whether a Work Order qualifies as "No Further Intervention Required."
-     * Ensures that the new value is true and different from the previous one.
-     */
-    private static boolean isNfrTrue(WorkOrder newWo, WorkOrder oldWo) {
-        return newWo.FSCO_NoFurtherInterventionRequired__c &&
-               newWo.FSCO_NoFurtherInterventionRequired__c != oldWo.FSCO_NoFurtherInterventionRequired__c;
+for (SetupEntityAccess sea : [SELECT SetupEntityId, SetupEntityType FROM SetupEntityAccess WHERE Parent.UserOrGroupId = :UserInfo.getUserId()]) {
+    if (sea.SetupEntityType == 'CustomPermission') {
+        availableCPs.add(sea.SetupEntityId);
     }
 }
 
+// Fetch CP names
+List<CustomPermission> customPermissions = [SELECT Id, DeveloperName FROM CustomPermission WHERE Id IN :availableCPs];
 
-@isTest
-private class CORE_SM_WorkOrderTest {
-
-    @testSetup
-    static void setupTestData() {
-        // Create Sample Work Orders
-        List<WorkOrder> workOrders = new List<WorkOrder>();
-
-        for (Integer i = 0; i < 5; i++) {
-            WorkOrder wo = new WorkOrder(
-                Name = 'Test Work Order ' + i,
-                Status = WorkOrderHelper.STATUS_PARTIALLY_COMPLETED,
-                FSCO_NoFurtherInterventionRequired__c = false
-            );
-            workOrders.add(wo);
-        }
-
-        insert workOrders;
-    }
-
-    @isTest
-    static void testGetNoFurtherActionRequired() {
-        // Retrieve Test Work Orders
-        List<WorkOrder> workOrders = [SELECT Id, Status, FSCO_NoFurtherInterventionRequired__c FROM WorkOrder];
-
-        // Simulate Status Change
-        for (WorkOrder wo : workOrders) {
-            wo.FSCO_NoFurtherInterventionRequired__c = true;
-        }
-
-        // Simulate oldObjectsMap
-        Map<Id, SObject> oldObjectsMap = new Map<Id, SObject>();
-        for (WorkOrder wo : workOrders) {
-            oldObjectsMap.put(wo.Id, wo.clone(false, true));
-        }
-
-        Test.startTest();
-        CORE_SM_WorkOrder.getNoFurtherActionRequired(workOrders, oldObjectsMap);
-        Test.stopTest();
-
-        // Retrieve Updated Work Orders
-        List<WorkOrder> updatedWorkOrders = [SELECT Id, Status FROM WorkOrder];
-
-        // Validate Updates
-        for (WorkOrder wo : updatedWorkOrders) {
-            System.assertEquals(WorkOrderHelper.STATUS_CLOSED, wo.Status, 'Status should be updated to CLOSED.');
-        }
-    }
-}
+System.debug('Custom Permissions for current user: ' + customPermissions);
