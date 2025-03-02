@@ -1,1 +1,85 @@
 
+@IsTest static void copyLineItemsFromParentAndTreatItOnChildWorkOrderCreation() {
+    // Setup parent work orders - these are inserted internally (param=true)
+    List<WorkOrder> parentWorkOrdersUnfinished = Test_WorkOrderBunchHelper.generateWorkOrders(true);
+    List<WorkOrder> parentWorkOrdersCompleted = Test_WorkOrderBunchHelper.generateWorkOrders(true);
+    
+    // Setup child work orders - NOT inserted yet (param=false)
+    List<WorkOrder> childWorkOrdersUnfinished = Test_WorkOrderBunchHelper.generateWorkOrders(false);
+    List<WorkOrder> childWorkOrdersCompleted = Test_WorkOrderBunchHelper.generateWorkOrders(false);
+    
+    // Link children to parents
+    for (Integer i = 0; i < childWorkOrdersUnfinished.size(); i++) {
+        childWorkOrdersUnfinished.get(i).ParentWorkOrderId = parentWorkOrdersUnfinished.get(i).Id;
+    }
+    
+    for (Integer i = 0; i < childWorkOrdersCompleted.size(); i++) {
+        childWorkOrdersCompleted.get(i).ParentWorkOrderId = parentWorkOrdersCompleted.get(i).Id;
+    }
+    
+    // Test case 1: Unfinished items
+    List<WorkOrderLineItem> parentLineItemsUnfinished = Test_WorkOrderLineItemHelper.createDummyItems(
+            parentWorkOrdersUnfinished,
+            LINE_ITEMS_COUNT,
+            false
+    );
+    
+    Boolean switcher = true;
+    for (WorkOrderLineItem item : parentLineItemsUnfinished) {
+        item.Status = switcher ? WorkOrderLineItemHelper.STATUS_NEW : WorkOrderLineItemHelper.STATUS_CANNOT_COMPLETE;
+        switcher = !switcher;
+    }
+    insert parentLineItemsUnfinished;
+    
+    // Test case 2: Completed items
+    List<WorkOrderLineItem> parentLineItemsCompleted = Test_WorkOrderLineItemHelper.createDummyItems(
+            parentWorkOrdersCompleted,
+            LINE_ITEMS_COUNT,
+            false
+    );
+    
+    switcher = true;
+    for (WorkOrderLineItem item : parentLineItemsCompleted) {
+        item.Status = switcher ? WorkOrderLineItemHelper.STATUS_CANCELED : WorkOrderLineItemHelper.STATUS_CLOSED;
+        switcher = !switcher;
+    }
+    insert parentLineItemsCompleted;
+    
+    Test.startTest();
+    // Insert child work orders - we need to handle this insert ourselves since param=false
+    insert childWorkOrdersUnfinished;
+    insert childWorkOrdersCompleted;
+    Test.stopTest();
+    
+    // Verify results for unfinished items
+    childWorkOrdersUnfinished = [SELECT Id, (SELECT Id FROM WorkOrderLineItems) FROM WorkOrder WHERE Id = :childWorkOrdersUnfinished];
+    for (WorkOrder order : childWorkOrdersUnfinished) {
+        Assert.areEqual(LINE_ITEMS_COUNT, order.WorkOrderLineItems.size(), 
+            'Unfinished line items should be copied to child work orders');
+    }
+    
+    // Verify parent work orders are treated (unfinished case)
+    Integer treatedParentsCountUnfinished = [
+            SELECT COUNT()
+            FROM WorkOrder
+            WHERE Id = :parentWorkOrdersUnfinished AND Status = :WorkOrderHelper.STATUS_TREATED
+    ];
+    Assert.areEqual(parentWorkOrdersUnfinished.size(), treatedParentsCountUnfinished, 
+        'All parent work orders should be marked as treated (unfinished case)');
+    
+    // Verify results for completed items
+    childWorkOrdersCompleted = [SELECT Id, (SELECT Id FROM WorkOrderLineItems) FROM WorkOrder WHERE Id = :childWorkOrdersCompleted];
+    for (WorkOrder order : childWorkOrdersCompleted) {
+        Assert.isTrue(order.WorkOrderLineItems.isEmpty(), 
+            'Completed line items should not be copied to child work orders');
+    }
+    
+    // Verify parent work orders are treated (completed case)
+    Integer treatedParentsCountCompleted = [
+            SELECT COUNT()
+            FROM WorkOrder
+            WHERE Id = :parentWorkOrdersCompleted AND Status = :WorkOrderHelper.STATUS_TREATED
+    ];
+    Assert.areEqual(parentWorkOrdersCompleted.size(), treatedParentsCountCompleted, 
+        'All parent work orders should be marked as treated (completed case)');
+}
