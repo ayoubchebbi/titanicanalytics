@@ -1,33 +1,97 @@
-public EmergencyCheckWrapper getEmergencyCheck(Id saId) {
-    EmergencyCheckWrapper emergencyCheckWrapper = new EmergencyCheckWrapper();
-
-    // Single optimized SOQL query using Relationship Queries
-    List<ServiceAppointment> saList = [
-        SELECT Id, Latitude, Longitude, Status, AppointmentNumber, 
-               ServiceTerritoryId,
-               (SELECT Id, ServiceResource.Name, ServiceResource.LastKnownLatitude, 
-                       ServiceResource.LastKnownLongitude 
-                FROM ServiceTerritory.ServiceTerritoryMembers)
-        FROM ServiceAppointment
-        WHERE Id = :saId
-    ];
-
-    // Ensure the list is not empty before accessing elements
-    if (!saList.isEmpty()) {
-        ServiceAppointment sa = saList[0];  // Fetch first record safely
-
-        emergencyCheckWrapper.appointmentNumber = sa.AppointmentNumber;
-        emergencyCheckWrapper.latitude = sa.Latitude;
-        emergencyCheckWrapper.longitude = sa.Longitude;
-        emergencyCheckWrapper.status = sa.Status;
-
-        // Populate Service Territory Members safely
-        List<ServiceTerritoryMember> stmList = new List<ServiceTerritoryMember>();
-        for (ServiceTerritoryMember stm : sa.ServiceTerritory.ServiceTerritoryMembers) {
-            stmList.add(stm);
+public class ServiceAppointmentMapController {
+    // Property to store the Service Appointment ID from URL parameter
+    public Id serviceAppointmentId { get; set; }
+    public ServiceAppointment serviceAppointment { get; set; }
+    public ServiceResource serviceResource { get; set; }
+    public ServiceTerritory serviceTerritory { get; set; }
+    
+    // Constructor
+    public ServiceAppointmentMapController() {
+        // Get the Service Appointment ID from URL parameter
+        serviceAppointmentId = ApexPages.currentPage().getParameters().get('saId');
+        
+        if (serviceAppointmentId != null) {
+            loadServiceAppointmentData();
         }
-        emergencyCheckWrapper.stmList = stmList;
     }
-
-    return emergencyCheckWrapper;
+    
+    // Method to load Service Appointment and related data
+    private void loadServiceAppointmentData() {
+        try {
+            // Query Service Appointment with related data
+            serviceAppointment = [SELECT Id, Status, ServiceTerritoryId, 
+                                 ServiceTerritory.Name, ServiceTerritory.Latitude, 
+                                 ServiceTerritory.Longitude,
+                                 ServiceResourceId, Latitude, Longitude, Street, City, 
+                                 State, PostalCode, Country,
+                                 ServiceResource.Name 
+                                 FROM ServiceAppointment 
+                                 WHERE Id = :serviceAppointmentId LIMIT 1];
+            
+            if (serviceAppointment.ServiceResourceId != null) {
+                serviceResource = [SELECT Id, Name, LastKnownLatitude, 
+                                  LastKnownLongitude, LastKnownLocationDate
+                                  FROM ServiceResource 
+                                  WHERE Id = :serviceAppointment.ServiceResourceId];
+            }
+            
+            if (serviceAppointment.ServiceTerritoryId != null) {
+                serviceTerritory = [SELECT Id, Name, Latitude, Longitude, 
+                                   OperatingHoursId, Address
+                                   FROM ServiceTerritory 
+                                   WHERE Id = :serviceAppointment.ServiceTerritoryId];
+            }
+        } catch (Exception e) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 
+                                 'Error loading data: ' + e.getMessage()));
+        }
+    }
+    
+    // Return data for JavaScript in the VF page
+    public String getServiceAppointmentJSON() {
+        Map<String, Object> saData = new Map<String, Object>();
+        
+        if (serviceAppointment != null) {
+            saData.put('id', serviceAppointment.Id);
+            saData.put('status', serviceAppointment.Status);
+            saData.put('latitude', serviceAppointment.Latitude);
+            saData.put('longitude', serviceAppointment.Longitude);
+            saData.put('address', new Map<String, String>{
+                'street' => serviceAppointment.Street,
+                'city' => serviceAppointment.City,
+                'state' => serviceAppointment.State,
+                'postalCode' => serviceAppointment.PostalCode,
+                'country' => serviceAppointment.Country
+            });
+        }
+        
+        return JSON.serialize(saData);
+    }
+    
+    public String getServiceResourceJSON() {
+        if (serviceResource == null) return '{}';
+        
+        Map<String, Object> srData = new Map<String, Object>{
+            'id' => serviceResource.Id,
+            'name' => serviceResource.Name,
+            'latitude' => serviceResource.LastKnownLatitude,
+            'longitude' => serviceResource.LastKnownLongitude,
+            'lastKnownDate' => serviceResource.LastKnownLocationDate
+        };
+        
+        return JSON.serialize(srData);
+    }
+    
+    public String getServiceTerritoryJSON() {
+        if (serviceTerritory == null) return '{}';
+        
+        Map<String, Object> stData = new Map<String, Object>{
+            'id' => serviceTerritory.Id,
+            'name' => serviceTerritory.Name,
+            'latitude' => serviceTerritory.Latitude,
+            'longitude' => serviceTerritory.Longitude
+        };
+        
+        return JSON.serialize(stData);
+    }
 }
