@@ -1,36 +1,33 @@
-<apex:page standardController="ServiceAppointment" extensions="ServiceAppointmentController">
-    <script>
-        function getSelectedAppointments() {
-            // Access the Lightning Console API
-            let workspaceAPI = window.top.lwc.workspaceAPI;
-            workspaceAPI.getFocusedTabInfo().then(function(response) {
-                let focusedTabId = response.tabId;
-                workspaceAPI.getSelectedRows(focusedTabId).then(function(selectedRows) {
-                    let selectedIds = selectedRows.map(row => row.Id);
-                    console.log("Selected Service Appointment IDs:", selectedIds);
+public EmergencyCheckWrapper getEmergencyCheck(Id saId) {
+    EmergencyCheckWrapper emergencyCheckWrapper = new EmergencyCheckWrapper();
 
-                    // Call Apex method to process these IDs
-                    getIdsFromApex(selectedIds);
-                });
-            });
+    // Single optimized SOQL query using Relationship Queries
+    List<ServiceAppointment> saList = [
+        SELECT Id, Latitude, Longitude, Status, AppointmentNumber, 
+               ServiceTerritoryId,
+               (SELECT Id, ServiceResource.Name, ServiceResource.LastKnownLatitude, 
+                       ServiceResource.LastKnownLongitude 
+                FROM ServiceTerritory.ServiceTerritoryMembers)
+        FROM ServiceAppointment
+        WHERE Id = :saId
+    ];
+
+    // Ensure the list is not empty before accessing elements
+    if (!saList.isEmpty()) {
+        ServiceAppointment sa = saList[0];  // Fetch first record safely
+
+        emergencyCheckWrapper.appointmentNumber = sa.AppointmentNumber;
+        emergencyCheckWrapper.latitude = sa.Latitude;
+        emergencyCheckWrapper.longitude = sa.Longitude;
+        emergencyCheckWrapper.status = sa.Status;
+
+        // Populate Service Territory Members safely
+        List<ServiceTerritoryMember> stmList = new List<ServiceTerritoryMember>();
+        for (ServiceTerritoryMember stm : sa.ServiceTerritory.ServiceTerritoryMembers) {
+            stmList.add(stm);
         }
+        emergencyCheckWrapper.stmList = stmList;
+    }
 
-        function getIdsFromApex(ids) {
-            Visualforce.remoting.Manager.invokeAction(
-                "{!$RemoteAction.ServiceAppointmentController.getSelectedServiceAppointments}",
-                ids,
-                function(result, event) {
-                    if (event.status) {
-                        console.log("Data from Apex:", result);
-                    } else {
-                        console.log("Error:", event.message);
-                    }
-                }
-            );
-        }
-    </script>
-
-    <apex:form>
-        <apex:commandButton value="Get Selected Appointments" onclick="getSelectedAppointments(); return false;"/>
-    </apex:form>
-</apex:page>
+    return emergencyCheckWrapper;
+}
