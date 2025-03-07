@@ -1,97 +1,14 @@
-public class ServiceAppointmentMapController {
-    // Property to store the Service Appointment ID from URL parameter
-    public Id serviceAppointmentId { get; set; }
-    public ServiceAppointment serviceAppointment { get; set; }
-    public ServiceResource serviceResource { get; set; }
-    public ServiceTerritory serviceTerritory { get; set; }
-    
-    // Constructor
-    public ServiceAppointmentMapController() {
-        // Get the Service Appointment ID from URL parameter
-        serviceAppointmentId = ApexPages.currentPage().getParameters().get('saId');
-        
-        if (serviceAppointmentId != null) {
-            loadServiceAppointmentData();
+public static String generateUrl(String baseUrl, Map<String, String> params) {
+    List<String> queryParams = new List<String>();
+
+    for (String key : params.keySet()) {
+        if (params.get(key) != null && params.get(key).trim() != '') {
+            queryParams.add(EncodingUtil.urlEncode(key, 'UTF-8') + '=' + EncodingUtil.urlEncode(params.get(key), 'UTF-8'));
         }
     }
-    
-    // Method to load Service Appointment and related data
-    private void loadServiceAppointmentData() {
-        try {
-            // Query Service Appointment with related data
-            serviceAppointment = [SELECT Id, Status, ServiceTerritoryId, 
-                                 ServiceTerritory.Name, ServiceTerritory.Latitude, 
-                                 ServiceTerritory.Longitude,
-                                 ServiceResourceId, Latitude, Longitude, Street, City, 
-                                 State, PostalCode, Country,
-                                 ServiceResource.Name 
-                                 FROM ServiceAppointment 
-                                 WHERE Id = :serviceAppointmentId LIMIT 1];
-            
-            if (serviceAppointment.ServiceResourceId != null) {
-                serviceResource = [SELECT Id, Name, LastKnownLatitude, 
-                                  LastKnownLongitude, LastKnownLocationDate
-                                  FROM ServiceResource 
-                                  WHERE Id = :serviceAppointment.ServiceResourceId];
-            }
-            
-            if (serviceAppointment.ServiceTerritoryId != null) {
-                serviceTerritory = [SELECT Id, Name, Latitude, Longitude, 
-                                   OperatingHoursId, Address
-                                   FROM ServiceTerritory 
-                                   WHERE Id = :serviceAppointment.ServiceTerritoryId];
-            }
-        } catch (Exception e) {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 
-                                 'Error loading data: ' + e.getMessage()));
-        }
+
+    if (!queryParams.isEmpty()) {
+        return baseUrl + '?' + String.join(queryParams, '&');
     }
-    
-    // Return data for JavaScript in the VF page
-    public String getServiceAppointmentJSON() {
-        Map<String, Object> saData = new Map<String, Object>();
-        
-        if (serviceAppointment != null) {
-            saData.put('id', serviceAppointment.Id);
-            saData.put('status', serviceAppointment.Status);
-            saData.put('latitude', serviceAppointment.Latitude);
-            saData.put('longitude', serviceAppointment.Longitude);
-            saData.put('address', new Map<String, String>{
-                'street' => serviceAppointment.Street,
-                'city' => serviceAppointment.City,
-                'state' => serviceAppointment.State,
-                'postalCode' => serviceAppointment.PostalCode,
-                'country' => serviceAppointment.Country
-            });
-        }
-        
-        return JSON.serialize(saData);
-    }
-    
-    public String getServiceResourceJSON() {
-        if (serviceResource == null) return '{}';
-        
-        Map<String, Object> srData = new Map<String, Object>{
-            'id' => serviceResource.Id,
-            'name' => serviceResource.Name,
-            'latitude' => serviceResource.LastKnownLatitude,
-            'longitude' => serviceResource.LastKnownLongitude,
-            'lastKnownDate' => serviceResource.LastKnownLocationDate
-        };
-        
-        return JSON.serialize(srData);
-    }
-    
-    public String getServiceTerritoryJSON() {
-        if (serviceTerritory == null) return '{}';
-        
-        Map<String, Object> stData = new Map<String, Object>{
-            'id' => serviceTerritory.Id,
-            'name' => serviceTerritory.Name,
-            'latitude' => serviceTerritory.Latitude,
-            'longitude' => serviceTerritory.Longitude
-        };
-        
-        return JSON.serialize(stData);
-    }
+    return baseUrl;
 }
