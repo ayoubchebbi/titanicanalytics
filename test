@@ -1,14 +1,8 @@
-public static String generateUrl(String baseUrl, Map<String, String> params) {
-    List<String> queryParams = new List<String>();
+String dateString = '03-10-2025'; // Example date in MM-dd-yyyy
+List<String> dateParts = dateString.split('-');
+Integer month = Integer.valueOf(dateParts[0]);
+Integer day = Integer.valueOf(dateParts[1]);
+Integer year = Integer.valueOf(dateParts[2]);
 
-    for (String key : params.keySet()) {
-        if (params.get(key) != null && params.get(key).trim() != '') {
-            queryParams.add(EncodingUtil.urlEncode(key, 'UTF-8') + '=' + EncodingUtil.urlEncode(params.get(key), 'UTF-8'));
-        }
-    }
-
-    if (!queryParams.isEmpty()) {
-        return baseUrl + '?' + String.join(queryParams, '&');
-    }
-    return baseUrl;
-}
+Date formattedDate = Date.newInstance(year, month, day);
+System.debug('Converted Date: ' + formattedDate);
