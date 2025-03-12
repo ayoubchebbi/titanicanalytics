@@ -1,8 +1,67 @@
-String dateString = '03-10-2025'; // Example date in MM-dd-yyyy
-List<String> dateParts = dateString.split('-');
-Integer month = Integer.valueOf(dateParts[0]);
-Integer day = Integer.valueOf(dateParts[1]);
-Integer year = Integer.valueOf(dateParts[2]);
+Here’s a structured Post-Deployment Step description for your process:
 
-Date formattedDate = Date.newInstance(year, month, day);
-System.debug('Converted Date: ' + formattedDate);
+
+---
+
+Post-Deployment Step: Updating generatebatch__c Field for Accounts
+
+Objective
+
+After deployment, update the generatebatch__c field in the Account object to true using Salesforce Inspector.
+
+Steps
+
+1. Export Data from Salesforce:
+
+Open Salesforce Inspector in your Salesforce environment.
+
+Click on Data Export.
+
+Enter the following SOQL query:
+
+SELECT Id FROM Account
+
+Click Run to execute the query.
+
+
+
+2. Copy and Edit Data in Excel:
+
+Click Copy Excel and paste the data into an Excel file.
+
+Add a column named generatebatch__c if it’s not present.
+
+Update all values in the generatebatch__c column to true.
+
+Save the file.
+
+
+
+3. Import Updated Data into Salesforce:
+
+Open Salesforce Inspector again and click Data Import.
+
+Fill out the form:
+
+Object: Account
+
+Action: Update
+
+Data: Paste the modified Excel content here.
+
+
+Click Run Update to apply the changes.
+
+
+
+
+Validation
+
+After running the update, re-run the Data Export query to verify that all generatebatch__c values are set to true.
+
+
+
+---
+
+Let me know if you need modifications!
+
