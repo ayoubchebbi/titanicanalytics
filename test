@@ -1,3 +1,8 @@
+/* myDataTable.css */
+.custom-datatable .slds-table tbody tr:hover th,
+.custom-datatable .slds-table tbody tr:hover td {
+    color: yourDesiredColor !important; /* Replace with your desired text color */
+}
 // myDataTable.js
 import { LightningElement, wire, api } from 'lwc';
 import getRecords from '@salesforce/apex/YourApexController.getRecords';
