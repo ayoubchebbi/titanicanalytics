@@ -1,23 +1,8 @@
- <!-- Legend section under the table -->
-    <div class="slds-m-top_medium">
-        <div class="slds-grid slds-wrap">
-            <!-- Success Legend -->
-            <div class="slds-col slds-size_1-of-3 slds-text-align_center">
-                <!-- Using a span as a color indicator -->
-                <span class="slds-theme_success" style="display:inline-block;width:1rem;height:1rem;margin-right:0.5rem;"></span>
-                <span>Success</span>
-            </div>
+SELECT DeveloperName, MasterLabel 
+FROM CustomObject 
+WHERE MasterLabel = 'Your_Label'
 
-            <!-- Error Legend -->
-            <div class="slds-col slds-size_1-of-3 slds-text-align_center">
-                <span class="slds-theme_error" style="display:inline-block;width:1rem;height:1rem;margin-right:0.5rem;"></span>
-                <span>Error</span>
-            </div>
 
-            <!-- Warning Legend -->
-            <div class="slds-col slds-size_1-of-3 slds-text-align_center">
-                <span class="slds-theme_warning" style="display:inline-block;width:1rem;height:1rem;margin-right:0.5rem;"></span>
-                <span>Warning</span>
-            </div>
-        </div>
-    </div>
+SELECT EntityDefinition.QualifiedApiName, QualifiedApiName, Label 
+FROM FieldDefinition 
+WHERE Label = 'Your_Label'
