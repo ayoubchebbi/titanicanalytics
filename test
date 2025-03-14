@@ -1,8 +1,39 @@
-SELECT DeveloperName, MasterLabel 
-FROM CustomObject 
-WHERE MasterLabel = 'Your_Label'
+// Step 1: Fetch and Update Custom Labels (Simulating Lock)
+List<Metadata.CustomLabel> labelsToUpdate = new List<Metadata.CustomLabel>();
+List<String> labelNames = new List<String>{'Label1', 'Label2'}; // Add your Custom Labels here
 
+for (String labelName : labelNames) {
+    try {
+        List<CustomLabel> customLabel = [SELECT Id, Name, Value FROM CustomLabel WHERE Name = :labelName LIMIT 1];
+        if (!customLabel.isEmpty()) {
+            Metadata.CustomLabel labelMetadata = new Metadata.CustomLabel();
+            labelMetadata.fullName = labelName;
+            labelMetadata.value = customLabel[0].Value + '_LOCKED';
+            labelMetadata.language = 'en_US';
+            labelMetadata.protected = true;
+            labelsToUpdate.add(labelMetadata);
+        }
+    } catch (Exception e) {
+        System.debug('Error retrieving label: ' + e.getMessage());
+    }
+}
 
-SELECT EntityDefinition.QualifiedApiName, QualifiedApiName, Label 
-FROM FieldDefinition 
-WHERE Label = 'Your_Label'
+// Deploy metadata changes
+if (!labelsToUpdate.isEmpty()) {
+    Metadata.DeployContainer container = new Metadata.DeployContainer();
+    for (Metadata.CustomLabel label : labelsToUpdate) {
+        container.addMetadata(label);
+    }
+    Id jobId = Metadata.Operations.enqueueDeployment(container, null);
+    System.debug('Metadata Deployment Job ID: ' + jobId);
+}
+
+// Step 2: Execute a SOQL Query and Display Data Block
+String soqlQuery = 'SELECT Id, Name, Value FROM CustomLabel LIMIT 5'; // Modify SOQL as needed
+List<CustomLabel> customLabels = Database.query(soqlQuery);
+
+System.debug('====== Custom Labels Data Block ======');
+for (CustomLabel label : customLabels) {
+    System.debug('| ' + label.Id + ' | ' + label.Name + ' | ' + label.Value + ' |');
+}
+System.debug('====================================');
