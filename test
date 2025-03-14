@@ -1,63 +1,32 @@
-/* myDataTable.css */
-.custom-datatable .slds-table tbody tr:hover th,
-.custom-datatable .slds-table tbody tr:hover td {
-    color: yourDesiredColor !important; /* Replace with your desired text color */
-}
-// myDataTable.js
-import { LightningElement, wire, api } from 'lwc';
-import getRecords from '@salesforce/apex/YourApexController.getRecords';
+<apex:page controller="StudentController">
+    <apex:form>
+        <!-- Search Box for Filtering -->
+        <input type="text" id="searchField" onkeyup="filterList()" placeholder="Search Name..." />
+        
+        <!-- List of Students -->
+        <ul id="studentList">
+            <apex:repeat value="{!stlist}" var="student">
+                <li class="student-item">{!student}</li>
+            </apex:repeat>
+        </ul>
+    </apex:form>
 
-export default class MyDataTable extends LightningElement {
-    @api recordId;
-    data = [];
-    columns = [
-        { label: 'Name', fieldName: 'name' },
-        { label: 'Status', fieldName: 'status' },
-        // Add other columns as needed
-    ];
+    <script>
+        function filterList() {
+            var input, filter, ul, li, i, txtValue;
+            input = document.getElementById("searchField");
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("studentList");
+            li = ul.getElementsByTagName("li");
 
-    @wire(getRecords, { recordId: '$recordId' })
-    wiredRecords({ error, data }) {
-        if (data) {
-            this.data = data;
-            this.processData();
-        } else if (error) {
-            console.error('Error fetching records', error);
+            for (i = 0; i < li.length; i++) {
+                txtValue = li[i].textContent || li[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
         }
-    }
-
-    processData() {
-        // Add a CSS class based on status
-        this.data = this.data.map(item => {
-            return {
-                ...item,
-                rowClass: this.getRowClass(item.status)
-            };
-        });
-    }
-
-    getRowClass(status) {
-        switch(status) {
-            case 'Open':
-                return 'slds-is-selected';
-            case 'Closed':
-                return 'closed-row';
-            case 'Pending':
-                return 'pending-row';
-            default:
-                return '';
-        }
-    }
-}
-
-<!-- myDataTable.html -->
-<template>
-    <div class="slds-card">
-        <lightning-datatable
-            key-field="id"
-            data={data}
-            columns={columns}
-            class="my-datatable"
-        ></lightning-datatable>
-    </div>
-</template>
+    </script>
+</apex:page>
