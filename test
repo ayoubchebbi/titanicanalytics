@@ -1,32 +1,42 @@
-<apex:page controller="StudentController">
+<apex:page controller="YourController">
     <apex:form>
         <!-- Search Box for Filtering -->
-        <input type="text" id="searchField" onkeyup="filterList()" placeholder="Search Name..." />
-        
-        <!-- List of Students -->
-        <ul id="studentList">
-            <apex:repeat value="{!stlist}" var="student">
-                <li class="student-item">{!student}</li>
+        <input type="text" id="searchField" onkeyup="filterList()" placeholder="Search Territory..." />
+
+        <ul class="slds-has-inline-block-links_space" id="territoryList">
+            <!-- "Select All" Checkbox -->
+            <li class="slds-p-around_x-small border-bottom">
+                <apex:inputCheckbox value="{!isSelectAllTer}" id="selectAllTer" styleClass="selectAllTerParent" onchange="selectAllElements(this, 'territoryElement')">
+                    <apex:actionSupport event="onclick" action="{!selectAllTerritories}" reRender="selectedDrivers, vehicleStock" onComplete="refreshDriverList('{!JSENCODE(driversList)}');"></apex:actionSupport>
+                </apex:inputCheckbox>
+                <apex:outputLabel value="Select all" for="selectAllTer"/>
+            </li>
+
+            <!-- List of Territories -->
+            <apex:repeat value="{!serviceTerritoryItems}" var="item">
+                <li class="slds-p-around_x-small territory-item">
+                    <apex:inputCheckbox styleClass="territoryElement" value="{!item.checked}" onChange="updateTerritoriesList(this, '{!item.value}');">
+                        <apex:actionSupport event="onclick" action="{!onChangeServiceTerritory}" reRender="selectedDrivers, vehicleStock" onComplete="refreshDriverList('{!JSENCODE(driversList)}');"></apex:actionSupport>
+                    </apex:inputCheckbox>
+                    <input type="hidden" value="{!item.value}" class="territoryElementHidden" />
+                    <apex:outputLabel value="{!item.label}" class="territory-label"/>
+                </li>
             </apex:repeat>
         </ul>
     </apex:form>
 
     <script>
         function filterList() {
-            var input, filter, ul, li, i, txtValue;
-            input = document.getElementById("searchField");
-            filter = input.value.toUpperCase();
-            ul = document.getElementById("studentList");
-            li = ul.getElementsByTagName("li");
+            let input = document.getElementById("searchField").value.toUpperCase();
+            let items = document.querySelectorAll(".territory-item");
 
-            for (i = 0; i < li.length; i++) {
-                txtValue = li[i].textContent || li[i].innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    li[i].style.display = "";
-                } else {
-                    li[i].style.display = "none";
+            items.forEach(item => {
+                let label = item.querySelector(".territory-label");
+                if (label) {
+                    let text = label.innerText || label.textContent;
+                    item.style.display = text.toUpperCase().includes(input) ? "" : "none";
                 }
-            }
+            });
         }
     </script>
 </apex:page>
