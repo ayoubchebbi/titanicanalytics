@@ -1,3 +1,10 @@
+String template = 'Hello {0}, you have {1} new messages.';
+List<String> values = new List<String>{'Alice', '5'};
+
+String result = String.format(template, values);
+System.debug(result); // Output: Hello Alice, you have 5 new messages.
+
+
 // Step 1: Fetch and Update Custom Labels (Simulating Lock)
 List<Metadata.CustomLabel> labelsToUpdate = new List<Metadata.CustomLabel>();
 List<String> labelNames = new List<String>{'Label1', 'Label2'}; // Add your Custom Labels here
