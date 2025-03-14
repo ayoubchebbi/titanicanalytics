@@ -1,42 +1,23 @@
-<apex:page controller="YourController">
-    <apex:form>
-        <!-- Search Box for Filtering -->
-        <input type="text" id="searchField" onkeyup="filterList()" placeholder="Search Territory..." />
+ <!-- Legend section under the table -->
+    <div class="slds-m-top_medium">
+        <div class="slds-grid slds-wrap">
+            <!-- Success Legend -->
+            <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                <!-- Using a span as a color indicator -->
+                <span class="slds-theme_success" style="display:inline-block;width:1rem;height:1rem;margin-right:0.5rem;"></span>
+                <span>Success</span>
+            </div>
 
-        <ul class="slds-has-inline-block-links_space" id="territoryList">
-            <!-- "Select All" Checkbox -->
-            <li class="slds-p-around_x-small border-bottom">
-                <apex:inputCheckbox value="{!isSelectAllTer}" id="selectAllTer" styleClass="selectAllTerParent" onchange="selectAllElements(this, 'territoryElement')">
-                    <apex:actionSupport event="onclick" action="{!selectAllTerritories}" reRender="selectedDrivers, vehicleStock" onComplete="refreshDriverList('{!JSENCODE(driversList)}');"></apex:actionSupport>
-                </apex:inputCheckbox>
-                <apex:outputLabel value="Select all" for="selectAllTer"/>
-            </li>
+            <!-- Error Legend -->
+            <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                <span class="slds-theme_error" style="display:inline-block;width:1rem;height:1rem;margin-right:0.5rem;"></span>
+                <span>Error</span>
+            </div>
 
-            <!-- List of Territories -->
-            <apex:repeat value="{!serviceTerritoryItems}" var="item">
-                <li class="slds-p-around_x-small territory-item">
-                    <apex:inputCheckbox styleClass="territoryElement" value="{!item.checked}" onChange="updateTerritoriesList(this, '{!item.value}');">
-                        <apex:actionSupport event="onclick" action="{!onChangeServiceTerritory}" reRender="selectedDrivers, vehicleStock" onComplete="refreshDriverList('{!JSENCODE(driversList)}');"></apex:actionSupport>
-                    </apex:inputCheckbox>
-                    <input type="hidden" value="{!item.value}" class="territoryElementHidden" />
-                    <apex:outputLabel value="{!item.label}" class="territory-label"/>
-                </li>
-            </apex:repeat>
-        </ul>
-    </apex:form>
-
-    <script>
-        function filterList() {
-            let input = document.getElementById("searchField").value.toUpperCase();
-            let items = document.querySelectorAll(".territory-item");
-
-            items.forEach(item => {
-                let label = item.querySelector(".territory-label");
-                if (label) {
-                    let text = label.innerText || label.textContent;
-                    item.style.display = text.toUpperCase().includes(input) ? "" : "none";
-                }
-            });
-        }
-    </script>
-</apex:page>
+            <!-- Warning Legend -->
+            <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                <span class="slds-theme_warning" style="display:inline-block;width:1rem;height:1rem;margin-right:0.5rem;"></span>
+                <span>Warning</span>
+            </div>
+        </div>
+    </div>
