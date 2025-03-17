@@ -1,46 +1,270 @@
-String template = 'Hello {0}, you have {1} new messages.';
-List<String> values = new List<String>{'Alice', '5'};
-
-String result = String.format(template, values);
-System.debug(result); // Output: Hello Alice, you have 5 new messages.
-
-
-// Step 1: Fetch and Update Custom Labels (Simulating Lock)
-List<Metadata.CustomLabel> labelsToUpdate = new List<Metadata.CustomLabel>();
-List<String> labelNames = new List<String>{'Label1', 'Label2'}; // Add your Custom Labels here
-
-for (String labelName : labelNames) {
-    try {
-        List<CustomLabel> customLabel = [SELECT Id, Name, Value FROM CustomLabel WHERE Name = :labelName LIMIT 1];
-        if (!customLabel.isEmpty()) {
-            Metadata.CustomLabel labelMetadata = new Metadata.CustomLabel();
-            labelMetadata.fullName = labelName;
-            labelMetadata.value = customLabel[0].Value + '_LOCKED';
-            labelMetadata.language = 'en_US';
-            labelMetadata.protected = true;
-            labelsToUpdate.add(labelMetadata);
+/**
+ * @description       : Test class for FSCO_EmergencyCheckController
+ * @author            : 
+ * @group             : 
+ * @last modified on  : 17-03-2025
+ * @last modified by  : 
+ **/
+@isTest
+private class FSCO_EmergencyCheckControllerTest {
+    
+    // Test data setup
+    private static String TERRITORY_ID = 'territoryId';
+    private static String SA_ID = 'saId';
+    private static String START_DATE = '03-17-2025';
+    
+    @TestSetup
+    static void setupTestData() {
+        // Create test data
+        User testUser = createTestUser();
+        System.runAs(testUser) {
+            // Create ServiceTerritory
+            ServiceTerritory territory = createServiceTerritory();
+            
+            // Create ServiceResource
+            ServiceResource resource = createServiceResource();
+            
+            // Link resource to territory
+            ServiceTerritoryMember stm = createServiceTerritoryMember(territory.Id, resource.Id);
+            
+            // Create Location for resource
+            Location location = createLocation();
+            
+            // Update ServiceResource with Location
+            resource.LocationId = location.Id;
+            update resource;
+            
+            // Create ProductItem at Location
+            ProductItem productItem = createProductItem(location.Id);
+            
+            // Create emergency Work Order
+            WorkOrder workOrder = createWorkOrder();
+            
+            // Create emergency Service Appointment
+            ServiceAppointment emergencySA = createServiceAppointment(workOrder.Id, territory.Id, true);
+            
+            // Create non-emergency Service Appointment
+            ServiceAppointment nonEmergencySA = createServiceAppointment(workOrder.Id, territory.Id, false);
+            
+            // Create Work Order Line Item
+            WorkOrderLineItem woli = createWorkOrderLineItem(workOrder.Id, productItem.TEKCO_ProductCode__c);
         }
-    } catch (Exception e) {
-        System.debug('Error retrieving label: ' + e.getMessage());
     }
-}
-
-// Deploy metadata changes
-if (!labelsToUpdate.isEmpty()) {
-    Metadata.DeployContainer container = new Metadata.DeployContainer();
-    for (Metadata.CustomLabel label : labelsToUpdate) {
-        container.addMetadata(label);
+    
+    @isTest
+    static void testConstructorWithValidEmergencyAppointment() {
+        // Get test data
+        ServiceAppointment emergencySA = [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = true LIMIT 1];
+        
+        // Set page parameters
+        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
+        ApexPages.currentPage().getParameters().put('id', emergencySA.Id);
+        ApexPages.currentPage().getParameters().put('start', '03-17-2025');
+        
+        // Start test
+        Test.startTest();
+        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(emergencySA));
+        Test.stopTest();
+        
+        // Verify
+        System.assertEquals(false, controller.hasError, 'Should not have error with valid emergency appointment');
+        System.assertEquals(true, controller.hasValidServiceAppointment, 'Should have valid service appointment');
+        System.assert(controller.iframeUrl.contains('isEmergencyCheck=true'), 'URL should indicate emergency check');
     }
-    Id jobId = Metadata.Operations.enqueueDeployment(container, null);
-    System.debug('Metadata Deployment Job ID: ' + jobId);
-}
-
-// Step 2: Execute a SOQL Query and Display Data Block
-String soqlQuery = 'SELECT Id, Name, Value FROM CustomLabel LIMIT 5'; // Modify SOQL as needed
-List<CustomLabel> customLabels = Database.query(soqlQuery);
-
-System.debug('====== Custom Labels Data Block ======');
-for (CustomLabel label : customLabels) {
-    System.debug('| ' + label.Id + ' | ' + label.Name + ' | ' + label.Value + ' |');
-}
-System.debug('====================================');
+    
+    @isTest
+    static void testConstructorWithNonEmergencyAppointment() {
+        // Get test data
+        ServiceAppointment nonEmergencySA = [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = false LIMIT 1];
+        
+        // Set page parameters
+        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
+        ApexPages.currentPage().getParameters().put('id', nonEmergencySA.Id);
+        
+        // Start test
+        Test.startTest();
+        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(nonEmergencySA));
+        Test.stopTest();
+        
+        // Verify
+        System.assertEquals(true, controller.hasError, 'Should have error with non-emergency appointment');
+        System.assertEquals(FSCO_EmergencyCheckController.ERROR_NOT_EMERGENCY, controller.errorMessage, 'Should show correct error message');
+    }
+    
+    @isTest
+    static void testConstructorWithMultipleAppointments() {
+        // Set page parameters for multiple service appointments
+        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
+        ApexPages.currentPage().getParameters().put('services', 'multiple');
+        
+        // Start test
+        Test.startTest();
+        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
+        Test.stopTest();
+        
+        // Verify
+        System.assertEquals(true, controller.hasError, 'Should have error with multiple appointments');
+        System.assertEquals(FSCO_EmergencyCheckController.ERROR_MULTIPLE_APPOINTMENTS, controller.errorMessage, 'Should show multiple appointments error');
+    }
+    
+    @isTest
+    static void testConstructorWithNoAppointment() {
+        // Set page parameters with no id
+        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
+        
+        // Start test
+        Test.startTest();
+        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
+        Test.stopTest();
+        
+        // Verify
+        System.assertEquals(false, controller.hasError, 'Should not have error with no appointment');
+        System.assertEquals(false, controller.hasValidServiceAppointment, 'Should not have valid service appointment');
+        System.assert(controller.iframeUrl.contains('isEmergencyCheck=false'), 'URL should indicate not emergency check');
+    }
+    
+    @isTest
+    static void testGetWoliByServiceAppointment() {
+        // Get test data
+        ServiceAppointment sa = [SELECT Id, ServiceTerritoryId, SchedStartTime FROM ServiceAppointment LIMIT 1];
+        
+        // Start test
+        Test.startTest();
+        List<FSCO_EmergencyCheckController.WoliWrapper> results = FSCO_EmergencyCheckController.getWoliByServiceAppointment(
+            sa.ServiceTerritoryId, 
+            sa.SchedStartTime
+        );
+        Test.stopTest();
+        
+        // Verify
+        System.assertNotEquals(null, results, 'Results should not be null');
+    }
+    
+    @isTest
+    static void testGetWoliByServiceAppointmentNoResults() {
+        // Use non-existent service territory ID
+        Id nonExistentId = '0MZ000000000000';
+        Datetime testDate = Datetime.now();
+        
+        // Start test
+        Test.startTest();
+        List<FSCO_EmergencyCheckController.WoliWrapper> results = FSCO_EmergencyCheckController.getWoliByServiceAppointment(
+            nonExistentId, 
+            testDate
+        );
+        Test.stopTest();
+        
+        // Verify
+        System.assertEquals(0, results.size(), 'Results should be empty for non-existent territory');
+    }
+    
+    @isTest
+    static void testGetSRByServiceAppointment() {
+        // Get test data
+        ServiceAppointment sa = [SELECT Id, ServiceTerritoryId FROM ServiceAppointment LIMIT 1];
+        WorkOrderLineItem woli = [SELECT Id, CUSBR_ProductCode__c FROM WorkOrderLineItem LIMIT 1];
+        
+        // Create test wrapper
+        List<FSCO_EmergencyCheckController.WoliWrapper> woliWrappers = new List<FSCO_EmergencyCheckController.WoliWrapper>();
+        FSCO_EmergencyCheckController.WoliWrapper wrapper = new FSCO_EmergencyCheckController.WoliWrapper();
+        wrapper.productCode = woli.CUSBR_ProductCode__c;
+        wrapper.quantity = 5;
+        woliWrappers.add(wrapper);
+        
+        // Start test
+        Test.startTest();
+        List<FSCO_EmergencyCheckController.ProductWrapper> results = FSCO_EmergencyCheckController.getSRByServiceAppointment(
+            sa.ServiceTerritoryId,
+            sa.Id,
+            woliWrappers
+        );
+        Test.stopTest();
+        
+        // Verify
+        System.assertNotEquals(null, results, 'Results should not be null');
+    }
+    
+    @isTest
+    static void testGetSRByServiceAppointmentNoResults() {
+        // Use non-existent service territory ID
+        Id nonExistentId = '0MZ000000000000';
+        Id saId = [SELECT Id FROM ServiceAppointment LIMIT 1].Id;
+        
+        // Start test
+        Test.startTest();
+        List<FSCO_EmergencyCheckController.ProductWrapper> results = FSCO_EmergencyCheckController.getSRByServiceAppointment(
+            nonExistentId,
+            saId,
+            new List<FSCO_EmergencyCheckController.WoliWrapper>()
+        );
+        Test.stopTest();
+        
+        // Verify
+        System.assertEquals(0, results.size(), 'Results should be empty for non-existent territory');
+    }
+    
+    @isTest
+    static void testParseStartDate() {
+        // Set page parameters
+        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
+        ApexPages.currentPage().getParameters().put('id', [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = true LIMIT 1].Id);
+        ApexPages.currentPage().getParameters().put('start', '3-5-2025'); // Testing with single digits
+        
+        // Start test
+        Test.startTest();
+        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
+        Test.stopTest();
+        
+        // Verify
+        System.assert(controller.iframeUrl.contains('selectedDate=2025-03-05'), 'Date should be correctly formatted in URL');
+    }
+    
+    @isTest
+    static void testInvalidStartDate() {
+        // Set page parameters
+        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
+        ApexPages.currentPage().getParameters().put('id', [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = true LIMIT 1].Id);
+        ApexPages.currentPage().getParameters().put('start', 'invalid-date');
+        
+        // Start test
+        Test.startTest();
+        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
+        Test.stopTest();
+        
+        // Verify - still works but date will be null
+        System.assertEquals(false, controller.hasError, 'Controller should still process with invalid date');
+    }
+    
+    // Helper methods to create test data
+    private static User createTestUser() {
+        Profile p = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
+        String uniqueUserName = 'standarduser' + DateTime.now().getTime() + '@testorg.com';
+        
+        User u = new User(
+            Alias = 'standt',
+            Email = 'standarduser@testorg.com',
+            EmailEncodingKey = 'UTF-8',
+            LastName = 'Testing',
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey = 'en_US',
+            ProfileId = p.Id,
+            TimeZoneSidKey = 'America/Los_Angeles',
+            UserName = uniqueUserName
+        );
+        
+        insert u;
+        return u;
+    }
+    
+    private static ServiceTerritory createServiceTerritory() {
+        ServiceTerritory territory = new ServiceTerritory(
+            Name = 'Test Territory',
+            IsActive = true,
+            OperatingHoursId = createOperatingHours().Id
+        );
+        insert territory;
+        return territory;
+    }
+    
+    private static OperatingHours createOperatingHours() {
+        OperatingHours
