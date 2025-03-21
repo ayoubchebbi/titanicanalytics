@@ -1,270 +1,244 @@
-/**
- * @description       : Test class for FSCO_EmergencyCheckController
- * @author            : 
- * @group             : 
- * @last modified on  : 17-03-2025
- * @last modified by  : 
- **/
-@isTest
-private class FSCO_EmergencyCheckControllerTest {
-    
-    // Test data setup
-    private static String TERRITORY_ID = 'territoryId';
-    private static String SA_ID = 'saId';
-    private static String START_DATE = '03-17-2025';
-    
-    @TestSetup
-    static void setupTestData() {
-        // Create test data
-        User testUser = createTestUser();
-        System.runAs(testUser) {
-            // Create ServiceTerritory
-            ServiceTerritory territory = createServiceTerritory();
-            
-            // Create ServiceResource
-            ServiceResource resource = createServiceResource();
-            
-            // Link resource to territory
-            ServiceTerritoryMember stm = createServiceTerritoryMember(territory.Id, resource.Id);
-            
-            // Create Location for resource
-            Location location = createLocation();
-            
-            // Update ServiceResource with Location
-            resource.LocationId = location.Id;
-            update resource;
-            
-            // Create ProductItem at Location
-            ProductItem productItem = createProductItem(location.Id);
-            
-            // Create emergency Work Order
-            WorkOrder workOrder = createWorkOrder();
-            
-            // Create emergency Service Appointment
-            ServiceAppointment emergencySA = createServiceAppointment(workOrder.Id, territory.Id, true);
-            
-            // Create non-emergency Service Appointment
-            ServiceAppointment nonEmergencySA = createServiceAppointment(workOrder.Id, territory.Id, false);
-            
-            // Create Work Order Line Item
-            WorkOrderLineItem woli = createWorkOrderLineItem(workOrder.Id, productItem.TEKCO_ProductCode__c);
+// Salesforce Duplicate Detector Extension for VSCode
+
+// Extension manifest (package.json)
+{
+  "name": "salesforce-duplicate-detector",
+  "displayName": "Salesforce Duplicate Detector",
+  "description": "Detects duplicate elements in Salesforce metadata files",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:xml",
+    "workspaceContains:**/package.xml",
+    "workspaceContains:**/*.xml"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "salesforce-duplicate-detector.scan",
+        "title": "Scan for Salesforce Metadata Duplicates"
+      }
+    ],
+    "configuration": {
+      "title": "Salesforce Duplicate Detector",
+      "properties": {
+        "salesforceDuplicateDetector.enableAutoScan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic scanning for duplicates when saving files"
         }
+      }
     }
-    
-    @isTest
-    static void testConstructorWithValidEmergencyAppointment() {
-        // Get test data
-        ServiceAppointment emergencySA = [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = true LIMIT 1];
-        
-        // Set page parameters
-        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
-        ApexPages.currentPage().getParameters().put('id', emergencySA.Id);
-        ApexPages.currentPage().getParameters().put('start', '03-17-2025');
-        
-        // Start test
-        Test.startTest();
-        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(emergencySA));
-        Test.stopTest();
-        
-        // Verify
-        System.assertEquals(false, controller.hasError, 'Should not have error with valid emergency appointment');
-        System.assertEquals(true, controller.hasValidServiceAppointment, 'Should have valid service appointment');
-        System.assert(controller.iframeUrl.contains('isEmergencyCheck=true'), 'URL should indicate emergency check');
+  }
+}
+
+// Extension main file (extension.js)
+const vscode = require('vscode');
+const fs = require('fs');
+const path = require('path');
+const xml2js = require('xml2js');
+
+/**
+ * @param {vscode.ExtensionContext} context
+ */
+function activate(context) {
+  console.log('Salesforce Duplicate Detector is now active');
+
+  // Register the scan command
+  let scanCommand = vscode.commands.registerCommand('salesforce-duplicate-detector.scan', () => {
+    scanForDuplicates();
+  });
+  
+  // Register the file save event
+  let saveListener = vscode.workspace.onDidSaveTextDocument((document) => {
+    const config = vscode.workspace.getConfiguration('salesforceDuplicateDetector');
+    if (config.get('enableAutoScan') && isSalesforceMetadataFile(document.fileName)) {
+      scanForDuplicates();
     }
-    
-    @isTest
-    static void testConstructorWithNonEmergencyAppointment() {
-        // Get test data
-        ServiceAppointment nonEmergencySA = [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = false LIMIT 1];
-        
-        // Set page parameters
-        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
-        ApexPages.currentPage().getParameters().put('id', nonEmergencySA.Id);
-        
-        // Start test
-        Test.startTest();
-        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(nonEmergencySA));
-        Test.stopTest();
-        
-        // Verify
-        System.assertEquals(true, controller.hasError, 'Should have error with non-emergency appointment');
-        System.assertEquals(FSCO_EmergencyCheckController.ERROR_NOT_EMERGENCY, controller.errorMessage, 'Should show correct error message');
+  });
+
+  context.subscriptions.push(scanCommand, saveListener);
+}
+
+function deactivate() {}
+
+/**
+ * Checks if the file is a Salesforce metadata file
+ * @param {string} fileName 
+ */
+function isSalesforceMetadataFile(fileName) {
+  const salesforceFileTypes = [
+    'package.xml',
+    'CustomLabels.labels',
+    'translations',
+    'permissionset',
+    'layout',
+    'object',
+    'workflow',
+    'profile'
+  ];
+  
+  return salesforceFileTypes.some(type => fileName.endsWith(type) || fileName.includes(`.${type}-meta.xml`));
+}
+
+/**
+ * Scans the workspace for duplicate elements in Salesforce metadata files
+ */
+async function scanForDuplicates() {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) {
+    vscode.window.showErrorMessage('No workspace folder found.');
+    return;
+  }
+  
+  const duplicatesFound = [];
+  
+  // Get all XML files in the workspace
+  const xmlFiles = await findSalesforceMetadataFiles(workspaceFolders[0].uri.fsPath);
+  
+  // Process each file to check for duplicates
+  for (const filePath of xmlFiles) {
+    try {
+      const duplicates = await checkFileForDuplicates(filePath);
+      duplicatesFound.push(...duplicates.map(d => ({ ...d, filePath })));
+    } catch (error) {
+      console.error(`Error processing file ${filePath}:`, error);
     }
+  }
+  
+  // Show results
+  if (duplicatesFound.length > 0) {
+    const outputChannel = vscode.window.createOutputChannel('Salesforce Duplicate Detector');
+    outputChannel.clear();
+    outputChannel.appendLine('=== Duplicate Elements Detected ===');
     
-    @isTest
-    static void testConstructorWithMultipleAppointments() {
-        // Set page parameters for multiple service appointments
-        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
-        ApexPages.currentPage().getParameters().put('services', 'multiple');
-        
-        // Start test
-        Test.startTest();
-        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
-        Test.stopTest();
-        
-        // Verify
-        System.assertEquals(true, controller.hasError, 'Should have error with multiple appointments');
-        System.assertEquals(FSCO_EmergencyCheckController.ERROR_MULTIPLE_APPOINTMENTS, controller.errorMessage, 'Should show multiple appointments error');
+    duplicatesFound.forEach(duplicate => {
+      outputChannel.appendLine(`\nFile: ${duplicate.filePath}`);
+      outputChannel.appendLine(`Element: ${duplicate.element}`);
+      outputChannel.appendLine(`Identifier: ${duplicate.identifier}`);
+      outputChannel.appendLine(`Count: ${duplicate.count}`);
+    });
+    
+    outputChannel.show();
+    
+    // Show notification
+    vscode.window.showWarningMessage(
+      `Found ${duplicatesFound.length} duplicate elements in Salesforce metadata.`,
+      'Show Details'
+    ).then(selection => {
+      if (selection === 'Show Details') {
+        outputChannel.show();
+      }
+    });
+  } else {
+    vscode.window.showInformationMessage('No duplicate elements found in Salesforce metadata.');
+  }
+}
+
+/**
+ * Finds all Salesforce metadata files in the workspace
+ * @param {string} rootPath 
+ */
+async function findSalesforceMetadataFiles(rootPath) {
+  const xmlFiles = [];
+  
+  // Helper function to recursively find files
+  async function findXmlFiles(dirPath) {
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name);
+      
+      if (entry.isDirectory()) {
+        // Skip node_modules and .git directories
+        if (entry.name !== 'node_modules' && entry.name !== '.git') {
+          await findXmlFiles(fullPath);
+        }
+      } else if (isSalesforceMetadataFile(entry.name)) {
+        xmlFiles.push(fullPath);
+      }
     }
+  }
+  
+  await findXmlFiles(rootPath);
+  return xmlFiles;
+}
+
+/**
+ * Checks a file for duplicate elements
+ * @param {string} filePath 
+ */
+async function checkFileForDuplicates(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const parser = new xml2js.Parser({ explicitArray: true });
+  
+  try {
+    const result = await parser.parseStringPromise(content);
+    return findDuplicatesInObject(result);
+  } catch (error) {
+    console.error(`Error parsing XML file ${filePath}:`, error);
+    return [];
+  }
+}
+
+/**
+ * Finds duplicate elements in an XML object
+ * @param {Object} obj 
+ */
+function findDuplicatesInObject(obj) {
+  const duplicates = [];
+  
+  // Elements to check for duplicates based on file type
+  const elementsToCheck = {
+    'Package': { identifierField: 'members', elementName: 'types' },
+    'CustomLabels': { identifierField: 'fullName', elementName: 'labels' },
+    'CustomObject': { identifierField: 'fullName', elementName: 'fields' },
+    'Profile': { identifierField: 'field', elementName: 'fieldPermissions' },
+    'PermissionSet': { identifierField: 'field', elementName: 'fieldPermissions' },
+    'Translations': { identifierField: 'name', elementName: 'labels' }
+  };
+  
+  // Process the root element
+  const rootElementName = Object.keys(obj)[0];
+  const rootElement = obj[rootElementName];
+  
+  if (elementsToCheck[rootElementName]) {
+    const { elementName, identifierField } = elementsToCheck[rootElementName];
     
-    @isTest
-    static void testConstructorWithNoAppointment() {
-        // Set page parameters with no id
-        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
-        
-        // Start test
-        Test.startTest();
-        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
-        Test.stopTest();
-        
-        // Verify
-        System.assertEquals(false, controller.hasError, 'Should not have error with no appointment');
-        System.assertEquals(false, controller.hasValidServiceAppointment, 'Should not have valid service appointment');
-        System.assert(controller.iframeUrl.contains('isEmergencyCheck=false'), 'URL should indicate not emergency check');
+    if (rootElement[elementName] && Array.isArray(rootElement[elementName])) {
+      // Get counts of each identifier
+      const counts = {};
+      
+      rootElement[elementName].forEach(element => {
+        if (element[identifierField]) {
+          const identifier = element[identifierField][0];
+          counts[identifier] = (counts[identifier] || 0) + 1;
+        }
+      });
+      
+      // Find duplicates
+      for (const [identifier, count] of Object.entries(counts)) {
+        if (count > 1) {
+          duplicates.push({
+            element: elementName,
+            identifier,
+            count
+          });
+        }
+      }
     }
-    
-    @isTest
-    static void testGetWoliByServiceAppointment() {
-        // Get test data
-        ServiceAppointment sa = [SELECT Id, ServiceTerritoryId, SchedStartTime FROM ServiceAppointment LIMIT 1];
-        
-        // Start test
-        Test.startTest();
-        List<FSCO_EmergencyCheckController.WoliWrapper> results = FSCO_EmergencyCheckController.getWoliByServiceAppointment(
-            sa.ServiceTerritoryId, 
-            sa.SchedStartTime
-        );
-        Test.stopTest();
-        
-        // Verify
-        System.assertNotEquals(null, results, 'Results should not be null');
-    }
-    
-    @isTest
-    static void testGetWoliByServiceAppointmentNoResults() {
-        // Use non-existent service territory ID
-        Id nonExistentId = '0MZ000000000000';
-        Datetime testDate = Datetime.now();
-        
-        // Start test
-        Test.startTest();
-        List<FSCO_EmergencyCheckController.WoliWrapper> results = FSCO_EmergencyCheckController.getWoliByServiceAppointment(
-            nonExistentId, 
-            testDate
-        );
-        Test.stopTest();
-        
-        // Verify
-        System.assertEquals(0, results.size(), 'Results should be empty for non-existent territory');
-    }
-    
-    @isTest
-    static void testGetSRByServiceAppointment() {
-        // Get test data
-        ServiceAppointment sa = [SELECT Id, ServiceTerritoryId FROM ServiceAppointment LIMIT 1];
-        WorkOrderLineItem woli = [SELECT Id, CUSBR_ProductCode__c FROM WorkOrderLineItem LIMIT 1];
-        
-        // Create test wrapper
-        List<FSCO_EmergencyCheckController.WoliWrapper> woliWrappers = new List<FSCO_EmergencyCheckController.WoliWrapper>();
-        FSCO_EmergencyCheckController.WoliWrapper wrapper = new FSCO_EmergencyCheckController.WoliWrapper();
-        wrapper.productCode = woli.CUSBR_ProductCode__c;
-        wrapper.quantity = 5;
-        woliWrappers.add(wrapper);
-        
-        // Start test
-        Test.startTest();
-        List<FSCO_EmergencyCheckController.ProductWrapper> results = FSCO_EmergencyCheckController.getSRByServiceAppointment(
-            sa.ServiceTerritoryId,
-            sa.Id,
-            woliWrappers
-        );
-        Test.stopTest();
-        
-        // Verify
-        System.assertNotEquals(null, results, 'Results should not be null');
-    }
-    
-    @isTest
-    static void testGetSRByServiceAppointmentNoResults() {
-        // Use non-existent service territory ID
-        Id nonExistentId = '0MZ000000000000';
-        Id saId = [SELECT Id FROM ServiceAppointment LIMIT 1].Id;
-        
-        // Start test
-        Test.startTest();
-        List<FSCO_EmergencyCheckController.ProductWrapper> results = FSCO_EmergencyCheckController.getSRByServiceAppointment(
-            nonExistentId,
-            saId,
-            new List<FSCO_EmergencyCheckController.WoliWrapper>()
-        );
-        Test.stopTest();
-        
-        // Verify
-        System.assertEquals(0, results.size(), 'Results should be empty for non-existent territory');
-    }
-    
-    @isTest
-    static void testParseStartDate() {
-        // Set page parameters
-        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
-        ApexPages.currentPage().getParameters().put('id', [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = true LIMIT 1].Id);
-        ApexPages.currentPage().getParameters().put('start', '3-5-2025'); // Testing with single digits
-        
-        // Start test
-        Test.startTest();
-        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
-        Test.stopTest();
-        
-        // Verify
-        System.assert(controller.iframeUrl.contains('selectedDate=2025-03-05'), 'Date should be correctly formatted in URL');
-    }
-    
-    @isTest
-    static void testInvalidStartDate() {
-        // Set page parameters
-        Test.setCurrentPage(Page.FSCIT_BingMapShowRoute);
-        ApexPages.currentPage().getParameters().put('id', [SELECT Id FROM ServiceAppointment WHERE WOMCO_Emergency__c = true LIMIT 1].Id);
-        ApexPages.currentPage().getParameters().put('start', 'invalid-date');
-        
-        // Start test
-        Test.startTest();
-        FSCO_EmergencyCheckController controller = new FSCO_EmergencyCheckController(new ApexPages.StandardController(new ServiceAppointment()));
-        Test.stopTest();
-        
-        // Verify - still works but date will be null
-        System.assertEquals(false, controller.hasError, 'Controller should still process with invalid date');
-    }
-    
-    // Helper methods to create test data
-    private static User createTestUser() {
-        Profile p = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
-        String uniqueUserName = 'standarduser' + DateTime.now().getTime() + '@testorg.com';
-        
-        User u = new User(
-            Alias = 'standt',
-            Email = 'standarduser@testorg.com',
-            EmailEncodingKey = 'UTF-8',
-            LastName = 'Testing',
-            LanguageLocaleKey = 'en_US',
-            LocaleSidKey = 'en_US',
-            ProfileId = p.Id,
-            TimeZoneSidKey = 'America/Los_Angeles',
-            UserName = uniqueUserName
-        );
-        
-        insert u;
-        return u;
-    }
-    
-    private static ServiceTerritory createServiceTerritory() {
-        ServiceTerritory territory = new ServiceTerritory(
-            Name = 'Test Territory',
-            IsActive = true,
-            OperatingHoursId = createOperatingHours().Id
-        );
-        insert territory;
-        return territory;
-    }
-    
-    private static OperatingHours createOperatingHours() {
-        OperatingHours
+  }
+  
+  return duplicates;
+}
+
+module.exports = {
+  activate,
+  deactivate
+};
