@@ -1,3 +1,40 @@
+public static void handleChangeMaintenancePlan(
+    List<HealthCloudGA__CarePlanTemplateTask__c> newCPTTList,
+    Map<Id, HealthCloudGA__CarePlanTemplateTask__c> oldCPTTList
+) {
+    Map<Id, Boolean> cptMap = new Map<Id, Boolean>();
+    List<MaintenancePlan__c> mpToUpdate = new List<MaintenancePlan__c>();
+
+    for (HealthCloudGA__CarePlanTemplateTask__c item : newCPTTList) {
+        Boolean newValue = item.MPCOD_DoesGenerateUponCompletion__c;
+        Boolean oldValue = oldCPTTList.get(item.Id)?.MPCOD_DoesGenerateUponCompletion__c;
+
+        if (newValue != oldValue) {
+            cptMap.put(item.Id, newValue);
+        }
+    }
+
+    if (!cptMap.isEmpty()) {
+        List<MaintenancePlan__c> mpList = [
+            SELECT Id, DoesGenerateUponCompletion__c, CPECO_CarePlanTemplateTask__c
+            FROM MaintenancePlan__c
+            WHERE CPECO_CarePlanTemplateTask__c IN :cptMap.keySet()
+        ];
+
+        for (MaintenancePlan__c mp : mpList) {
+            mp.DoesGenerateUponCompletion__c = cptMap.get(mp.CPECO_CarePlanTemplateTask__c);
+            mpToUpdate.add(mp);
+        }
+
+        if (!mpToUpdate.isEmpty()) {
+            Database.update(mpToUpdate);
+        }
+    }
+}
+
+
+
+
 // Get all <name> elements
 const names = Array.from(document.querySelectorAll('name')).map(el => el.textContent);
 
