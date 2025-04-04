@@ -1,52 +1,19 @@
-public static void handleChangeMaintenancePlan(
-    List<HealthCloudGA__CarePlanTemplateTask__c> newCPTTList,
-    Map<Id, HealthCloudGA__CarePlanTemplateTask__c> oldCPTTList
-) {
-    Map<Id, Boolean> cptMap = new Map<Id, Boolean>();
-    List<MaintenancePlan__c> mpToUpdate = new List<MaintenancePlan__c>();
-
-    for (HealthCloudGA__CarePlanTemplateTask__c item : newCPTTList) {
-        Boolean newValue = item.MPCOD_DoesGenerateUponCompletion__c;
-        Boolean oldValue = oldCPTTList.get(item.Id)?.MPCOD_DoesGenerateUponCompletion__c;
-
-        if (newValue != oldValue) {
-            cptMap.put(item.Id, newValue);
+public static List<EventWrapper> sortEventsByType(List<EventWrapper> events) {
+    events.sort(new Comparator<EventWrapper> {
+        public Integer compare(EventWrapper a, EventWrapper b) {
+            // 1 doit venir avant -1, donc tri décroissant
+            return b.type.compareTo(a.type);
         }
-    }
-
-    if (!cptMap.isEmpty()) {
-        List<MaintenancePlan__c> mpList = [
-            SELECT Id, DoesGenerateUponCompletion__c, CPECO_CarePlanTemplateTask__c
-            FROM MaintenancePlan__c
-            WHERE CPECO_CarePlanTemplateTask__c IN :cptMap.keySet()
-        ];
-
-        for (MaintenancePlan__c mp : mpList) {
-            mp.DoesGenerateUponCompletion__c = cptMap.get(mp.CPECO_CarePlanTemplateTask__c);
-            mpToUpdate.add(mp);
-        }
-
-        if (!mpToUpdate.isEmpty()) {
-            Database.update(mpToUpdate);
-        }
-    }
+    });
+    return events;
 }
 
+List<EventWrapper> events = new List<EventWrapper>{
+    new EventWrapper(-1, 'E1'),
+    new EventWrapper(1, 'E2'),
+    new EventWrapper(1, 'E3'),
+    new EventWrapper(-1, 'E4')
+};
 
-
-
-// Get all <name> elements
-const names = Array.from(document.querySelectorAll('name')).map(el => el.textContent);
-
-// Count duplicates
-const counts = {};
-names.forEach(name => {
-  counts[name] = (counts[name] || 0) + 1;
-});
-
-// Show duplicates
-const duplicates = Object.entries(counts).filter(([key, value]) => value > 1);
-console.log("Duplicate <name> elements:");
-duplicates.forEach(([name, count]) => {
-  console.log(`"${name}" appears ${count} times`);
-});
+List<EventWrapper> sortedEvents = sortEventsByType(events);
+// Résultat : E2, E3, E1, E4
