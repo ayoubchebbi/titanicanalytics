@@ -1,19 +1,20 @@
-public static List<EventWrapper> sortEventsByType(List<EventWrapper> events) {
-    events.sort(new Comparator<EventWrapper> {
-        public Integer compare(EventWrapper a, EventWrapper b) {
-            // 1 doit venir avant -1, donc tri décroissant
-            return b.type.compareTo(a.type);
+public static List<Event> trierEvents(List<Event> events) {
+    List<Event> eventsType1 = new List<Event>();
+    List<Event> eventsTypeNeg1 = new List<Event>();
+    
+    // Séparer les événements en deux listes selon leur type
+    for(Event evt : events) {
+        if(evt.type == 1) {
+            eventsType1.add(evt);
+        } else if(evt.type == -1) {
+            eventsTypeNeg1.add(evt);
         }
-    });
-    return events;
+    }
+    
+    // Combiner les deux listes avec type 1 en premier
+    List<Event> eventsTries = new List<Event>();
+    eventsTries.addAll(eventsType1);
+    eventsTries.addAll(eventsTypeNeg1);
+    
+    return eventsTries;
 }
-
-List<EventWrapper> events = new List<EventWrapper>{
-    new EventWrapper(-1, 'E1'),
-    new EventWrapper(1, 'E2'),
-    new EventWrapper(1, 'E3'),
-    new EventWrapper(-1, 'E4')
-};
-
-List<EventWrapper> sortedEvents = sortEventsByType(events);
-// Résultat : E2, E3, E1, E4
