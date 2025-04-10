@@ -1,78 +1,10 @@
-{
-  "registerStartTime": {
-    "en": "Enter start time",
-    "fr": "Saisissez l'heure de début",
-    "it": "Inserisci l'orario di inizio"
-  },
-  "registerEndTime": {
-    "en": "Enter end time",
-    "fr": "Saisissez l'heure de fin",
-    "it": "Inserisci l'orario di fine"
-  },
-  "invalidHour": {
-    "en": "Invalid hour. Please enter a value between 0 and 23.",
-    "fr": "Heure invalide. Veuillez saisir une valeur entre 0 et 23.",
-    "it": "Ora non valida. Inserisci un valore tra 0 e 23."
-  },
-  "invalidMinute": {
-    "en": "Invalid minute. Please enter a value between 0 and 59.",
-    "fr": "Minute invalide. Veuillez saisir une valeur entre 0 et 59.",
-    "it": "Minuto non valido. Inserisci un valore tra 0 e 59."
-  },
-  "starttimeEmptyError": {
-    "en": "Start time is required.",
-    "fr": "L'heure de début est requise.",
-    "it": "L'orario di inizio è obbligatorio."
-  },
-  "stHigerEt": {
-    "en": "Start time must be earlier than end time.",
-    "fr": "L'heure de début doit être antérieure à l'heure de fin.",
-    "it": "L'orario di inizio deve essere precedente all'orario di fine."
-  },
-  "timeFutureError": {
-    "en": "Time cannot be in the future. Please enter a valid time.",
-    "fr": "L'heure ne peut pas être dans le futur. Veuillez entrer une heure valide.",
-    "it": "L'orario non può essere nel futuro. Inserisci un orario valido."
-  },
-  "noTimeSheetFound": {
-    "en": "No timesheet found for today.",
-    "fr": "Aucune feuille de temps trouvée pour aujourd'hui.",
-    "it": "Nessun timesheet trovato per oggi."
-  },
-  "failedToSave": {
-    "en": "Failed to save time: {0}",
-    "fr": "Échec de l'enregistrement de l'heure : {0}",
-    "it": "Salvataggio dell'orario non riuscito: {0}"
-  },
-  "addedDateSuccess": {
-    "en": "Date registered successfully.",
-    "fr": "Date enregistrée avec succès.",
-    "it": "Data registrata con successo."
-  }
-}
+// First time: today at 00:00
+const startOfDay = new Date();
+startOfDay.setHours(0, 0, 0, 0);
 
+// Second time: today at 23:59
+const endOfDay = new Date();
+endOfDay.setHours(23, 59, 0, 0);
 
-
-
-
-
-public static List<Event> trierEvents(List<Event> events) {
-    List<Event> eventsType1 = new List<Event>();
-    List<Event> eventsTypeNeg1 = new List<Event>();
-    
-    // Séparer les événements en deux listes selon leur type
-    for(Event evt : events) {
-        if(evt.type == 1) {
-            eventsType1.add(evt);
-        } else if(evt.type == -1) {
-            eventsTypeNeg1.add(evt);
-        }
-    }
-    
-    // Combiner les deux listes avec type 1 en premier
-    List<Event> eventsTries = new List<Event>();
-    eventsTries.addAll(eventsType1);
-    eventsTries.addAll(eventsTypeNeg1);
-    
-    return eventsTries;
-}
+console.log("Start of day:", startOfDay);
+console.log("End of day:", endOfDay);
