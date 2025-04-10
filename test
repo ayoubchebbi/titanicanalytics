@@ -1,10 +1,12 @@
-// First time: today at 00:00
-const startOfDay = new Date();
-startOfDay.setHours(0, 0, 0, 0);
+onst today = new Date();
 
-// Second time: today at 23:59
-const endOfDay = new Date();
-endOfDay.setHours(23, 59, 0, 0);
+// Array of day names
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-console.log("Start of day:", startOfDay);
-console.log("End of day:", endOfDay);
+// Get the day name
+const dayName = daysOfWeek[today.getDay()];
+
+// Display the result
+console.log("Today is " + dayName);
+
+// For a more concise approach, you
