@@ -1,40 +1,59 @@
-import { LightningElement, api } from 'lwc';
-import { gql, graphql } from 'lightning/uiGraphQLApi';
+lGot it! You're referring to the standard Salesforce Field Service Timesheet feature. Here's a clean and clear set of post-deployment steps to create and assign a Timesheet Template through Setup:
 
-const MY_QUERY = gql`
-    query GetMyData($date: String!, $timesheetId: ID!) {
-        myData(date: $date, timesheetId: $timesheetId) {
-            id
-            name
-        }
-    }
-`;
 
-export default class MyComponent extends LightningElement {
-    @api date;
-    @api timesheetId;
+---
 
-    connectedCallback() {
-        // Only works if `date` and `timesheetId` are already available!
-        if (this.date && this.timesheetId) {
-            this.fetchData(this.date, this.timesheetId);
-        } else {
-            console.warn('date or timesheetId not set yet in connectedCallback');
-        }
-    }
+Post-Deployment Steps: Create and Assign Timesheet Template
 
-    async fetchData(date, timesheetId) {
-        try {
-            const result = await graphql({
-                query: MY_QUERY,
-                variables: {
-                    date,
-                    timesheetId
-                }
-            });
-            console.log('GraphQL result:', result.data.myData);
-        } catch (error) {
-            console.error('GraphQL error:', error);
-        }
-    }
-}
+Step 1: Create a Timesheet Template
+
+1. Go to Setup.
+
+
+2. In the Quick Find Box, type Time Sheet Settings and click on it.
+
+
+3. Click New.
+
+
+4. Fill in the following fields:
+
+Template Name: e.g., Standard Weekly Timesheet
+
+Start Day of Week: e.g., Monday
+
+Number of Working Days: e.g., 5
+
+Hours per Working Day: e.g., 8
+
+Any other fields as needed (based on your org setup)
+
+
+
+5. Click Save.
+
+
+
+Step 2: Assign Timesheet Template to a Profile
+
+1. Still in Time Sheet Settings, go to the newly created template.
+
+
+2. Scroll to the Assigned Profiles related list.
+
+
+3. Click New.
+
+
+4. Choose the Profile to which you want to assign this template (e.g., Field Service Mobile User).
+
+
+5. Click Save.
+
+
+
+
+---
+
+Would you like me to also write this in a checklist format or as a script for documentation or deployment guides?
+
