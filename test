@@ -1,45 +1,40 @@
-/**
- * @description Updates TimeSheet records with Brand and Country values from associated ServiceResource
- * @param updatedObjects List of TimeSheet records being processed
- * @param oldObjectsMap Map of old TimeSheet records (before update)
- */
-public static void setTimeSheetCountryBrand(List<TimeSheet> updatedObjects, Map<Id, TimeSheet> oldObjectsMap) {
-    
-    Set<Id> srId = new Set<Id>();
-    
-    // For insert trigger, add all ServiceResourceIds
-    // For update trigger, only add ids if ServiceResourceId changed
-    for(TimeSheet ts : updatedObjects) {
-        if(oldObjectsMap == null || // Insert trigger
-           (ts.ServiceResourceId != null && 
-            ts.ServiceResourceId != ((TimeSheet)oldObjectsMap.get(ts.Id)).ServiceResourceId)) {
-            srId.add(ts.ServiceResourceId);
+import { LightningElement, api } from 'lwc';
+import { gql, graphql } from 'lightning/uiGraphQLApi';
+
+const MY_QUERY = gql`
+    query GetMyData($date: String!, $timesheetId: ID!) {
+        myData(date: $date, timesheetId: $timesheetId) {
+            id
+            name
         }
     }
-    
-    if(srId.isEmpty()) {
-        return;
+`;
+
+export default class MyComponent extends LightningElement {
+    @api date;
+    @api timesheetId;
+
+    connectedCallback() {
+        // Only works if `date` and `timesheetId` are already available!
+        if (this.date && this.timesheetId) {
+            this.fetchData(this.date, this.timesheetId);
+        } else {
+            console.warn('date or timesheetId not set yet in connectedCallback');
+        }
     }
-    
-    // Query ServiceResource records
-    Map<Id, ServiceResource> srMap = new Map<Id, ServiceResource>([
-        SELECT Id, TEKCO_Brand__c, TEKCO_Country__c
-        FROM ServiceResource 
-        WHERE Id IN :srId
-    ]);
-    
-    // Update TimeSheet records with corresponding ServiceResource data
-    for(TimeSheet ts : updatedObjects) {
-        // Process only if insert or ServiceResourceId changed
-        if(oldObjectsMap == null || 
-           (ts.ServiceResourceId != null && 
-            ts.ServiceResourceId != ((TimeSheet)oldObjectsMap.get(ts.Id)).ServiceResourceId)) {
-            
-            if(srMap.containsKey(ts.ServiceResourceId)) {
-                ServiceResource sr = srMap.get(ts.ServiceResourceId);
-                ts.TEKCO_Brand__c = sr.TEKCO_Brand__c;
-                ts.TEKCO_Country__c = sr.TEKCO_Country__c;
-            }
+
+    async fetchData(date, timesheetId) {
+        try {
+            const result = await graphql({
+                query: MY_QUERY,
+                variables: {
+                    date,
+                    timesheetId
+                }
+            });
+            console.log('GraphQL result:', result.data.myData);
+        } catch (error) {
+            console.error('GraphQL error:', error);
         }
     }
 }
