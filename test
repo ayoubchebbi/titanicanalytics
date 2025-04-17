@@ -1,42 +1,58 @@
-// Find all options that are not in valueChecked
-        this.unselectedOptions = this.options.filter(option => {
-            const optionValue = option.value || option.id;
-            return !this.valueChecked.includes(optionValue);
-        });
-// workorderHelper.js
 import { LightningElement, api } from 'lwc';
-import { getRecord } from 'lightning/uiRecordApi';
+import graphql from '@salesforce/apex/GraphQL';
 
-export default class WorkorderHelper extends LightningElement {
-    @api apiValue; // { id: '...', type: '...' }
+export default class WorkorderFetcher extends LightningElement {
+    @api apiValue;
+    workOrderId;
 
-    async getWorkOrderId() {
-        if (!this.apiValue || this.apiValue.type !== 'ServiceAppointment') {
-            console.warn('Not a ServiceAppointment. No WorkOrderId to fetch.');
-            return null;
-        }
-
-        try {
-            const record = await getRecord({ 
-                recordId: this.apiValue.id, 
-                fields: ['ServiceAppointment.WorkOrderId'] 
-            });
-
-            const workOrderId = record.fields.WorkOrderId.value;
-            console.log('Fetched WorkOrderId:', workOrderId);
-            return workOrderId;
-
-        } catch (error) {
-            console.error('Error fetching WorkOrderId:', error);
-            return null;
-        }
+    async connectedCallback() {
+        await this.fetchWorkOrderId();
     }
 
-    connectedCallback() {
-        this.getWorkOrderId().then(result => {
-            if (result) {
-                // Do something with the workOrderId
+    async fetchWorkOrderId() {
+        if (this.apiValue?.type !== 'ServiceAppointment') {
+            console.log('Not a ServiceAppointment, skipping.');
+            return null;
+        }
+
+        const query = `
+          query GetWorkOrderId($saId: ID!) {
+            uiapi {
+              query {
+                ServiceAppointment(where: { Id: { eq: $saId } }) {
+                  edges {
+                    node {
+                      WorkOrderId {
+                        value
+                      }
+                    }
+                  }
+                }
+              }
             }
-        });
+          }
+        `;
+
+        const variables = {
+            saId: this.apiValue.id
+        };
+
+        try {
+            const result = await graphql(query, variables);
+            const edges = result?.data?.uiapi?.query?.ServiceAppointment?.edges;
+
+            if (edges?.length > 0) {
+                this.workOrderId = edges[0].node.WorkOrderId.value;
+                console.log('WorkOrderId:', this.workOrderId);
+                return this.workOrderId;
+            } else {
+                console.log('No WorkOrder found.');
+                return null;
+            }
+
+        } catch (error) {
+            console.error('GraphQL Error:', error);
+            return null;
+        }
     }
 }
