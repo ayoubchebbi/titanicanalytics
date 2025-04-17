@@ -1,49 +1,21 @@
-import { LightningElement, wire, track } from 'lwc';
-import { getListUi } from 'lightning/uiListApi';
-import { updateRecord } from 'lightning/uiRecordApi';
-import ACCOUNT_OBJECT from '@salesforce/schema/Account';
-import ID_FIELD from '@salesforce/schema/Account.Id';
-import NAME_FIELD from '@salesforce/schema/Account.Name';
+handleCheckboxChange(event) {
+    const value = this.item.value; // or whatever identifies the item
+    const checked = event.target.checked;
 
-export default class UpdateAccountsWithPromise extends LightningElement {
-    @track accounts = [];
+    const customEvent = new CustomEvent('changestatusvalue', {
+        detail: { value, checked }
+    });
 
-    @wire(getListUi, {
-        objectApiName: ACCOUNT_OBJECT,
-        listViewApiName: 'AllAccounts'
-    })
-    wiredList({ data, error }) {
-        if (data) {
-            this.accounts = data.records.records.map(record => ({
-                Id: record.fields.Id.value,
-                Name: record.fields.Name.value
-            }));
-        } else if (error) {
-            console.error(error);
-        }
-    }
+    this.dispatchEvent(customEvent);
+}
 
-    handleChange(event) {
-        const index = event.target.dataset.index;
-        this.accounts[index].Name = event.target.value;
-    }
 
-    async handleSave() {
-        const updatePromises = [];
+handleChangeStatusValue(event) {
+    const { value, checked } = event.detail;
 
-        this.accounts.forEach(record => {
-            const fields = {};
-            fields[ID_FIELD.fieldApiName] = record.Id;
-            fields[NAME_FIELD.fieldApiName] = record.Name;
-
-            updatePromises.push(updateRecord({ fields }));
-        });
-
-        try {
-            await Promise.all(updatePromises);
-            alert('All records updated successfully!');
-        } catch (error) {
-            console.error('Error updating some records:', error);
-        }
+    if (checked) {
+        this.signatureQuestionnaireList.push(value);
+    } else {
+        this.signatureQuestionnaireList = this.signatureQuestionnaireList.filter(item => item !== value);
     }
 }
