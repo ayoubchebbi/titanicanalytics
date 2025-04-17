@@ -1,58 +1,49 @@
-import { LightningElement, api } from 'lwc';
-import graphql from '@salesforce/apex/GraphQL';
+import { LightningElement, wire, track } from 'lwc';
+import { getListUi } from 'lightning/uiListApi';
+import { updateRecord } from 'lightning/uiRecordApi';
+import ACCOUNT_OBJECT from '@salesforce/schema/Account';
+import ID_FIELD from '@salesforce/schema/Account.Id';
+import NAME_FIELD from '@salesforce/schema/Account.Name';
 
-export default class WorkorderFetcher extends LightningElement {
-    @api apiValue;
-    workOrderId;
+export default class UpdateAccountsWithPromise extends LightningElement {
+    @track accounts = [];
 
-    async connectedCallback() {
-        await this.fetchWorkOrderId();
+    @wire(getListUi, {
+        objectApiName: ACCOUNT_OBJECT,
+        listViewApiName: 'AllAccounts'
+    })
+    wiredList({ data, error }) {
+        if (data) {
+            this.accounts = data.records.records.map(record => ({
+                Id: record.fields.Id.value,
+                Name: record.fields.Name.value
+            }));
+        } else if (error) {
+            console.error(error);
+        }
     }
 
-    async fetchWorkOrderId() {
-        if (this.apiValue?.type !== 'ServiceAppointment') {
-            console.log('Not a ServiceAppointment, skipping.');
-            return null;
-        }
+    handleChange(event) {
+        const index = event.target.dataset.index;
+        this.accounts[index].Name = event.target.value;
+    }
 
-        const query = `
-          query GetWorkOrderId($saId: ID!) {
-            uiapi {
-              query {
-                ServiceAppointment(where: { Id: { eq: $saId } }) {
-                  edges {
-                    node {
-                      WorkOrderId {
-                        value
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `;
+    async handleSave() {
+        const updatePromises = [];
 
-        const variables = {
-            saId: this.apiValue.id
-        };
+        this.accounts.forEach(record => {
+            const fields = {};
+            fields[ID_FIELD.fieldApiName] = record.Id;
+            fields[NAME_FIELD.fieldApiName] = record.Name;
+
+            updatePromises.push(updateRecord({ fields }));
+        });
 
         try {
-            const result = await graphql(query, variables);
-            const edges = result?.data?.uiapi?.query?.ServiceAppointment?.edges;
-
-            if (edges?.length > 0) {
-                this.workOrderId = edges[0].node.WorkOrderId.value;
-                console.log('WorkOrderId:', this.workOrderId);
-                return this.workOrderId;
-            } else {
-                console.log('No WorkOrder found.');
-                return null;
-            }
-
+            await Promise.all(updatePromises);
+            alert('All records updated successfully!');
         } catch (error) {
-            console.error('GraphQL Error:', error);
-            return null;
+            console.error('Error updating some records:', error);
         }
     }
 }
