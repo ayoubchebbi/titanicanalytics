@@ -1,178 +1,25 @@
-// Modern implementation of map functionality
-
 /**
  * Generate a pin SVG with modern styling
  * @param {string} strokeColor - Color for the pin stroke
- * @param {string} fillColor - Color for the pin fill
- * @param {boolean} isSelected - Whether the pin should appear selected
+ * @param {string} circleColor - Color for the pin fill
  * @returns {string} - Data URL of the SVG
  */
-function generatePinSvg(strokeColor, fillColor, isSelected = false) {
-  // Create a more modern pin shape with shadow effect and smooth corners
-  const pinSize = isSelected ? 36 : 30;
-  const pinRadius = isSelected ? 15 : 12;
-  const strokeWidth = isSelected ? 3 : 2;
-  
-  // Create SVG with drop shadow filter
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${pinSize}" height="${pinSize}" viewBox="0 0 ${pinSize} ${pinSize}">
+function generatePinSvg(strokeColor, circleColor) {
+  // Create a more modern pin SVG with enhanced styling
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
     <defs>
       <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
         <feDropShadow dx="1" dy="1" stdDeviation="1" flood-opacity="0.3" />
       </filter>
     </defs>
-    <circle cx="${pinSize/2}" cy="${pinSize/2}" r="${pinRadius}" 
-      fill="${fillColor}" 
+    <circle cx="15" cy="15" r="12" 
+      fill="${circleColor}" 
       stroke="${strokeColor}" 
-      stroke-width="${strokeWidth}"
+      stroke-width="2"
       filter="url(#shadow)"
-      opacity="${isSelected ? '1' : '0.9'}"
+      opacity="0.9"
     />
-    ${isSelected ? `<circle cx="${pinSize/2}" cy="${pinSize/2}" r="5" fill="#ffffff" />` : ''}
   </svg>`;
 
   return `data:image/svg+xml;base64,${btoa(svg)}`;
-}
-
-/**
- * Create a route with modern styling
- * @param {Array} points - Array of route points
- * @param {Object} warehouse - Warehouse location
- * @param {string} color - Route color
- * @param {Object} driverPosition - Driver's current position
- * @param {Array} newSAList - List of service areas
- * @param {Object} colorMap - Map of colors
- * @returns {Object} - The created route
- */
-function createRoute(points, warehouse, color, driverPosition, newSAList, colorMap) {
-  // Initialize route options with modern styling
-  const routeOptions = {
-    routeMode: Microsoft.Maps.Directions.RouteMode.driving,
-    routeColor: color,
-    routeWidth: 5,
-    routeOpacity: 0.8,
-    distanceUnit: Microsoft.Maps.Directions.DistanceUnit.miles,
-    durationUnit: Microsoft.Maps.Directions.TimeUnit.minute
-  };
-  
-  // Add warehouse as the start point
-  const waypointWarehouse = new Microsoft.Maps.Directions.Waypoint(warehouse);
-  waypointWarehouse.isViaPoint = false;
-  
-  // Initialize direction manager with modern options
-  directionsManager[pathIndex] = new Microsoft.Maps.Directions.DirectionsManager(map);
-  directionsManager[pathIndex].setRequestOptions({ maxRoutes: 1 });
-  directionsManager[pathIndex].setRenderOptions({ 
-    waypointPushpinOptions: { 
-      visible: false 
-    }, 
-    itineraryContainer: document.getElementById('routeItinerary')
-  });
-  
-  // Add warehouse waypoint
-  directionsManager[pathIndex].addWaypoint(waypointWarehouse);
-  
-  // Add route points as waypoints
-  points.forEach(point => {
-    const waypoint = new Microsoft.Maps.Directions.Waypoint(point);
-    waypoint.isViaPoint = true;
-    directionsManager[pathIndex].addWaypoint(waypoint);
-  });
-  
-  // Calculate directions
-  directionsManager[pathIndex].calculateDirections();
-  
-  // Add route to the map and return reference
-  return {
-    route: directionsManager[pathIndex],
-    color: color
-  };
-}
-
-/**
- * Create a legend entry with modern styling
- * @param {string} driverName - Name of the driver
- * @param {string} color - Color associated with the driver
- * @param {HTMLElement} legendNode - DOM node for the legend
- * @returns {HTMLElement} - The created legend item
- */
-function createLegendEntry(driverName, color, legendNode) {
-  // Create the container for this legend item with modern styling
-  const legendItem = document.createElement('div');
-  legendItem.className = 'legend-item';
-  legendItem.setAttribute('data-driver', driverName);
-  
-  // Apply modern styling
-  legendItem.style.display = 'flex';
-  legendItem.style.alignItems = 'center';
-  legendItem.style.padding = '8px 12px';
-  legendItem.style.margin = '4px 0';
-  legendItem.style.borderRadius = '6px';
-  legendItem.style.backgroundColor = '#f8f9fa';
-  legendItem.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-  legendItem.style.transition = 'all 0.2s ease';
-  legendItem.style.cursor = 'pointer';
-  
-  // Add hover effect
-  legendItem.addEventListener('mouseover', () => {
-    legendItem.style.backgroundColor = '#e9ecef';
-  });
-  legendItem.addEventListener('mouseout', () => {
-    legendItem.style.backgroundColor = '#f8f9fa';
-  });
-  
-  // Create the color dot with modern styling
-  const colorDot = document.createElement('span');
-  colorDot.style.display = 'inline-block';
-  colorDot.style.width = '16px';
-  colorDot.style.height = '16px';
-  colorDot.style.borderRadius = '50%';
-  colorDot.style.backgroundColor = color;
-  colorDot.style.marginRight = '12px';
-  colorDot.style.boxShadow = '0 1px 2px rgba(0,0,0,0.2)';
-  
-  // Create the driver name with modern styling
-  const driverNameSpan = document.createElement('span');
-  driverNameSpan.textContent = driverName;
-  driverNameSpan.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-  driverNameSpan.style.fontSize = '14px';
-  driverNameSpan.style.fontWeight = '500';
-  driverNameSpan.style.color = '#212529';
-  
-  // Assemble the legend item
-  legendItem.appendChild(colorDot);
-  legendItem.appendChild(driverNameSpan);
-  
-  // Add the legend item to the legend node
-  legendNode.appendChild(legendItem);
-  
-  return legendItem;
-}
-
-// Initialize the map with modern styling
-function initializeModernMap(containerId) {
-  // Create map with modern styling
-  const map = new Microsoft.Maps.Map(document.getElementById(containerId), {
-    credentials: 'YOUR_BING_MAPS_KEY',
-    center: new Microsoft.Maps.Location(37.0902, -95.7129), // Default to US center
-    zoom: 4,
-    mapTypeId: Microsoft.Maps.MapTypeId.road,
-    showDashboard: false,
-    showScalebar: true,
-    showTermsLink: false,
-    enableClickableLogo: false,
-    customMapStyle: {
-      elements: {
-        area: { fillColor: '#f8f9fa' },
-        water: { fillColor: '#e3f2fd' },
-        transportation: { strokeColor: '#e9ecef' },
-        point: { iconColor: '#212529' }
-      },
-      settings: {
-        landColor: '#f8f9fa',
-        shadedReliefVisible: false
-      }
-    }
-  });
-  
-  return map;
 }
