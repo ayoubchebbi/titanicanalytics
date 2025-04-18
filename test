@@ -1,21 +1,22 @@
-handleCheckboxChange(event) {
-    const value = this.item.value; // or whatever identifies the item
-    const checked = event.target.checked;
+var borderColor = colorMap[sa.status];
+var number = (i + 1);
 
-    const customEvent = new CustomEvent('changestatusvalue', {
-        detail: { value, checked }
-    });
+// SVG en tant que chaîne pour le champ `icon`
+var svgIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50">
+        <!-- Cercle avec contour dynamique -->
+        <circle cx="20" cy="20" r="10" fill="red" stroke="${borderColor}" stroke-width="3" />
+        <!-- Texte en dessous du cercle -->
+        <text x="20" y="40" font-size="14" text-anchor="middle" fill="black" font-family="Arial" font-weight="bold">${number}</text>
+    </svg>
+`;
 
-    this.dispatchEvent(customEvent);
-}
+var pushpinOptions = {
+    icon: svgIcon,
+    anchor: new Microsoft.Maps.Point(20, 25), // centrer le cercle
+    title: point.address,
+    subTitle: '',
+    visible: true
+};
 
-
-handleChangeStatusValue(event) {
-    const { value, checked } = event.detail;
-
-    if (checked) {
-        this.signatureQuestionnaireList.push(value);
-    } else {
-        this.signatureQuestionnaireList = this.signatureQuestionnaireList.filter(item => item !== value);
-    }
-}
+var pushpin = new Microsoft.Maps.Pushpin(point.location, pushpinOptions);
