@@ -1,25 +1,295 @@
-/**
- * Generate a pin SVG with modern styling
- * @param {string} strokeColor - Color for the pin stroke
- * @param {string} circleColor - Color for the pin fill
- * @returns {string} - Data URL of the SVG
- */
-function generatePinSvg(strokeColor, circleColor) {
-  // Create a more modern pin SVG with enhanced styling
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
-    <defs>
-      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="1" dy="1" stdDeviation="1" flood-opacity="0.3" />
-      </filter>
-    </defs>
-    <circle cx="15" cy="15" r="12" 
-      fill="${circleColor}" 
-      stroke="${strokeColor}" 
-      stroke-width="2"
-      filter="url(#shadow)"
-      opacity="0.9"
-    />
-  </svg>`;
-
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+import { LightningElement, api, wire, track } from 'lwc';
+import { gql, graphql } from 'lightning/uiGraphQLApi';
+export default class FsappDeliveryProductFromBox extends LightningElement {
+        @api recordId; // Service Appointment Id
+        @track boxId;
+        @track error;
+        @track productItems = [];
+        @track workOrderLineItems = [];
+        @track showError = false;
+        @track errorMessage = '';
+        @track loading = false;
+        
+        // Récupération du BoxId du Service Appointment
+        @wire(graphql, {
+            query: gql`
+                query getServiceAppointmentBoxId($recordId: ID!) {
+                    uiapi {
+                        query {
+                            ServiceAppointment(where: { Id: { eq: $recordId } }) {
+                                edges {
+                                    node {
+                                        Id
+                                        FSIT_BoxId__c {
+                                            value
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: '$getGraphQLVariables'
+        })
+        wiredServiceAppointment({ data, errors }) {
+            if (data) {
+                const saData = data.uiapi.query.ServiceAppointment.edges[0]?.node;
+                if (saData) {
+                    this.boxId = saData.FSIT_BoxId__c?.value;
+                    console.log('BoxId récupéré:', this.boxId);
+                }
+            } else if (errors) {
+                console.error('Erreur lors de la récupération du Service Appointment:', errors);
+                this.error = errors;
+            }
+        }
+    
+        get getGraphQLVariables() {
+            return {
+                recordId: this.recordId
+            };
+        }
+    
+        // Méthode appelée lors du scan d'un code
+        handleScan(e) {
+            const scannedCode = e.detail;
+            console.log('Code scanné:', scannedCode);
+            
+            if (!this.boxId) {
+                this.showErrorMessage('Impossible de vérifier le code: BoxId non disponible');
+                return;
+            }
+            
+            // Vérification si le code scanné correspond au BoxId
+            if (scannedCode !== this.boxId) {
+                this.showErrorMessage('Le code scanné ne correspond pas au BoxId du Service Appointment');
+                return;
+            }
+            
+            // Si le code correspond, récupérer les ProductItems et WorkOrderLineItems
+            this.fetchProductItemsAndWOLIs(scannedCode);
+        }
+        
+        // Afficher un message d'erreur
+        showErrorMessage(message) {
+            this.errorMessage = message;
+            this.showError = true;
+            // Cacher le message après 5 secondes
+            setTimeout(() => {
+                this.showError = false;
+            }, 5000);
+        }
+        
+        // Récupérer les ProductItems avec le même BoxId
+        async fetchProductItemsAndWOLIs(boxId) {
+            this.loading = true;
+            try {
+                const productItemsResult = await this.fetchProductItems(boxId);
+                if (productItemsResult && productItemsResult.length > 0) {
+                    this.productItems = productItemsResult;
+                    
+                    // Récupérer les WorkOrderLineItems associés aux ProductItems
+                    const productItemIds = this.productItems.map(item => item.Id);
+                    const wolisResult = await this.fetchWorkOrderLineItems(productItemIds);
+                    this.workOrderLineItems = wolisResult || [];
+                } else {
+                    this.showErrorMessage('Aucun ProductItem trouvé avec ce BoxId');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des données:', error);
+                this.showErrorMessage('Erreur lors de la récupération des données');
+            } finally {
+                this.loading = false;
+            }
+        }
+        
+        // GraphQL pour récupérer les ProductItems
+        async fetchProductItems(boxId) {
+            const result = await graphql({
+                query: gql`
+                    query getProductItems($boxId: String!) {
+                        uiapi {
+                            query {
+                                ProductItem(where: { FSIT_BoxId__c: { eq: $boxId } }) {
+                                    edges {
+                                        node {
+                                            Id
+                                            Name {
+                                                value
+                                            }
+                                            Product2Id {
+                                                value
+                                            }
+                                            QuantityOnHand {
+                                                value
+                                            }
+                                            SerialNumber {
+                                                value
+                                            }
+                                            FSIT_BoxId__c {
+                                                value
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    boxId: boxId
+                }
+            });
+            
+            if (result.data && result.data.uiapi.query.ProductItem.edges) {
+                return result.data.uiapi.query.ProductItem.edges.map(edge => {
+                    const node = edge.node;
+                    return {
+                        Id: node.Id,
+                        Name: node.Name.value,
+                        Product2Id: node.Product2Id.value,
+                        QuantityOnHand: node.QuantityOnHand?.value,
+                        SerialNumber: node.SerialNumber?.value,
+                        BoxId: node.FSIT_BoxId__c?.value
+                    };
+                });
+            }
+            return [];
+        }
+        
+        // GraphQL pour récupérer les WorkOrderLineItems associés aux ProductItems
+        async fetchWorkOrderLineItems(productItemIds) {
+            if (!productItemIds || productItemIds.length === 0) {
+                return [];
+            }
+            
+            const idList = productItemIds.map(id => `"${id}"`).join(',');
+            
+            const result = await graphql({
+                query: gql`
+                    query getWorkOrderLineItems {
+                        uiapi {
+                            query {
+                                WorkOrderLineItem(where: { ProductItemId: { in: [${idList}] } }) {
+                                    edges {
+                                        node {
+                                            Id
+                                            LineItemNumber {
+                                                value
+                                            }
+                                            WorkOrderId {
+                                                value
+                                            }
+                                            ProductItemId {
+                                                value
+                                            }
+                                            Quantity {
+                                                value
+                                            }
+                                            Status {
+                                                value
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `
+            });
+            
+            if (result.data && result.data.uiapi.query.WorkOrderLineItem.edges) {
+                return result.data.uiapi.query.WorkOrderLineItem.edges.map(edge => {
+                    const node = edge.node;
+                    return {
+                        Id: node.Id,
+                        LineItemNumber: node.LineItemNumber.value,
+                        WorkOrderId: node.WorkOrderId.value,
+                        ProductItemId: node.ProductItemId.value,
+                        Quantity: node.Quantity?.value,
+                        Status: node.Status?.value
+                    };
+                });
+            }
+            return [];
+        }
 }
+
+<!-- fsappDeliveryProductFromBox.html -->
+<template>
+    <div class="container">
+        <!-- Section de scan -->
+        <lightning-card title="Scan Box ID">
+            <div class="slds-p-around_medium">
+                <!-- Intégration avec un composant de scan (à adapter selon votre implémentation) -->
+                <c-barcode-scanner oncodescan={handleScan}></c-barcode-scanner>
+                
+                <!-- Affichage des erreurs -->
+                <template if:true={showError}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                        <span class="slds-assistive-text">Erreur</span>
+                        <h2>{errorMessage}</h2>
+                    </div>
+                </template>
+                
+                <!-- Indicateur de chargement -->
+                <template if:true={loading}>
+                    <lightning-spinner alternative-text="Chargement" size="small"></lightning-spinner>
+                </template>
+            </div>
+        </lightning-card>
+        
+        <!-- Section d'affichage des ProductItems -->
+        <template if:true={productItems.length}>
+            <lightning-card title="Produits dans la Box">
+                <div class="slds-p-around_medium">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">Nom</th>
+                                <th class="slds-text-title_caps" scope="col">Numéro de série</th>
+                                <th class="slds-text-title_caps" scope="col">Quantité</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={productItems} for:item="product">
+                                <tr key={product.Id}>
+                                    <td>{product.Name}</td>
+                                    <td>{product.SerialNumber}</td>
+                                    <td>{product.QuantityOnHand}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </lightning-card>
+        </template>
+        
+        <!-- Section d'affichage des WorkOrderLineItems -->
+        <template if:true={workOrderLineItems.length}>
+            <lightning-card title="Lignes de Bon de Travail associées">
+                <div class="slds-p-around_medium">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">Numéro</th>
+                                <th class="slds-text-title_caps" scope="col">Statut</th>
+                                <th class="slds-text-title_caps" scope="col">Quantité</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={workOrderLineItems} for:item="woli">
+                                <tr key={woli.Id}>
+                                    <td>{woli.LineItemNumber}</td>
+                                    <td>{woli.Status}</td>
+                                    <td>{woli.Quantity}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </lightning-card>
+        </template>
+    </div>
+</template>
