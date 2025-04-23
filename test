@@ -1,43 +1,172 @@
-Here’s a clearer and more professional version of your Jira comment:
+/**
+ * Crée un tableau de correspondances entre les WorkOrderLineItems et les ProductItems
+ * @param {Array} workOrderLineItems - Liste des WOLI
+ * @param {Array} productItems - Liste des ProductItems
+ * @return {Array} - Tableau des correspondances avec valeurs d'affichage
+ */
+createMatchedData(workOrderLineItems, productItems) {
+    // Tableau qui contiendra toutes les correspondances
+    const matchedData = [];
+    
+    // Map pour accéder rapidement aux productItems par Product2Id
+    const productItemMap = new Map();
+    productItems.forEach(item => {
+        productItemMap.set(item.Product2Id, item);
+    });
+    
+    // 1. Ajouter les correspondances WOLI -> ProductItem
+    workOrderLineItems.forEach(woli => {
+        const matchingProductItem = productItemMap.get(woli.PASCO_Product__c);
+        
+        matchedData.push({
+            woliId: woli.Id,
+            // Valeurs d'affichage pour WOLI
+            woliDisplay: {
+                id: woli.Id,
+                name: woli.WorkOrderLineItemNumber || 'N/A',
+                productId: woli.PASCO_Product__c || 'N/A',
+                description: woli.Description || 'Pas de description'
+            },
+            productItemId: matchingProductItem ? matchingProductItem.Id : 'EMPTY',
+            // Valeurs d'affichage pour ProductItem
+            productItemDisplay: matchingProductItem ? {
+                id: matchingProductItem.Id,
+                name: matchingProductItem.Name || 'N/A',
+                productId: matchingProductItem.Product2Id || 'N/A',
+                productName: matchingProductItem.Product2Name || 'N/A'
+            } : 'EMPTY',
+            // Indique s'il y a une correspondance
+            hasMatch: matchingProductItem ? true : false
+        });
+    });
+    
+    // 2. Ajouter les ProductItems qui n'ont pas de WOLI correspondant
+    productItems.forEach(productItem => {
+        // Vérifier si ce productItem est déjà associé à un WOLI
+        let hasMatch = false;
+        for (const woli of workOrderLineItems) {
+            if (woli.PASCO_Product__c === productItem.Product2Id) {
+                hasMatch = true;
+                break;
+            }
+        }
+        
+        // Si pas de correspondance, ajouter une ligne avec EMPTY pour le WOLI
+        if (!hasMatch) {
+            matchedData.push({
+                woliId: 'EMPTY',
+                woliDisplay: 'EMPTY',
+                productItemId: productItem.Id,
+                productItemDisplay: {
+                    id: productItem.Id,
+                    name: productItem.Name || 'N/A',
+                    productId: productItem.Product2Id || 'N/A',
+                    productName: productItem.Product2Name || 'N/A'
+                },
+                hasMatch: false
+            });
+        }
+    });
+    
+    return matchedData;
+}
 
 
----
 
-QA Testing Completed
-
-Test Date: 11 March 2025
-
-Tested Screen:
-
-Selected all Service Territories and Service Resources.
-
-Opened the map interface in a separate page (previous bug: small display). The settings selected in the small interface were successfully retained in the larger view.
-
-
-Observed Behavior:
-
-After clicking, the Service Appointments appeared with:
-
-Inner circle color representing the Service Resource.
-
-Outline color representing the Status of the appointment.
-
-
-On the left side, two legends are displayed:
-
-One for Route Color of the Service Resource.
-
-One for Status Color.
-
-
-
-All tested Service Appointments are of type Home.
-
-
-Screenshots attached for reference.
-
-
----
-
-Would you like me to add any translation (e.g., in French) or reword anything?
-
+<template>
+    <div class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center">
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        Correspondances WOLI - ProductItems
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body">
+            <div class="slds-table_header-fixed_container">
+                <div class="slds-scrollable_y" style="height: 400px;">
+                    <table class="slds-table slds-table_bordered slds-table_header-fixed">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="WorkOrderLineItem">WorkOrderLineItem</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="ProductItem">ProductItem</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template if:true={matchedData}>
+                                <template for:each={matchedData} for:item="match">
+                                    <tr key={match.uniqueKey} class={match.rowClass}>
+                                        <td>
+                                            <template if:equal={match.woliId} value="EMPTY">
+                                                <div class="slds-text-color_weak">EMPTY</div>
+                                            </template>
+                                            <template if:not-equal={match.woliId} value="EMPTY">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__body">
+                                                        <div class="slds-truncate" title={match.woliDisplay.name}>
+                                                            <strong>{match.woliDisplay.name}</strong>
+                                                        </div>
+                                                        <div class="slds-truncate slds-text-body_small" title={match.woliDisplay.id}>
+                                                            ID: {match.woliDisplay.id}
+                                                        </div>
+                                                        <div class="slds-truncate slds-text-body_small" title={match.woliDisplay.productId}>
+                                                            Product ID: {match.woliDisplay.productId}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template if:equal={match.productItemId} value="EMPTY">
+                                                <div class="slds-text-color_weak">EMPTY</div>
+                                            </template>
+                                            <template if:not-equal={match.productItemId} value="EMPTY">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__body">
+                                                        <div class="slds-truncate" title={match.productItemDisplay.name}>
+                                                            <strong>{match.productItemDisplay.name}</strong>
+                                                        </div>
+                                                        <div class="slds-truncate slds-text-body_small" title={match.productItemDisplay.id}>
+                                                            ID: {match.productItemDisplay.id}
+                                                        </div>
+                                                        <div class="slds-truncate slds-text-body_small" title={match.productItemDisplay.productName}>
+                                                            Product: {match.productItemDisplay.productName}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template if:true={match.hasMatch}>
+                                                <span class="slds-badge slds-badge_success">Match</span>
+                                            </template>
+                                            <template if:false={match.hasMatch}>
+                                                <span class="slds-badge slds-badge_warning">No Match</span>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </template>
+                            <template if:false={matchedData}>
+                                <tr>
+                                    <td colspan="3" class="slds-text-align_center">
+                                        Aucune donnée disponible
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
