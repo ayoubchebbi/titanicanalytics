@@ -1,52 +1,41 @@
-Voici une version améliorée de la fonction `getProductItemMap()` qui peut gérer des éléments avec des identifiants de produit identiques :
-
-```javascript
-function getProductItemMap() {
-  const map = new Map();
-  
-  this.productItems.forEach(item => {
-    // Si l'ID existe déjà, on peut stocker les éléments en tableau
-    if (map.has(item.productId)) {
-      const existingItems = map.get(item.productId);
-      // Si c'est déjà un tableau, on ajoute l'élément
-      if (Array.isArray(existingItems)) {
-        existingItems.push(item);
-      } else {
-        // Sinon, on convertit en tableau avec les deux éléments
-        map.set(item.productId, [existingItems, item]);
-      }
-    } else {
-      // Premier élément avec cet ID
-      map.set(item.productId, item);
+/**
+ * @description This method retrieves Work Orders linked to a list of Service Appointments
+ * and updates specific fields (TEKCO_Brand__c and TEKCO_Country__c) on the Work Orders
+ * with values from the corresponding Service Appointments
+ * @param serviceAppointments List of Service Appointment records
+ * @return List<WorkOrder> List of updated Work Orders
+ */
+public static List<WorkOrder> updateWorkOrdersFromServiceAppointments(List<ServiceAppointment> serviceAppointments) {
+    // Exit if empty list is provided
+    if (serviceAppointments == null || serviceAppointments.isEmpty()) {
+        return new List<WorkOrder>();
     }
-  });
-  
-  return map;
+    
+    // Get all Service Appointment Ids for querying
+    Set<Id> serviceAppointmentIds = new Set<Id>();
+    for (ServiceAppointment sa : serviceAppointments) {
+        serviceAppointmentIds.add(sa.Id);
+    }
+    
+    // Query Work Orders linked to the Service Appointments
+    List<WorkOrder> workOrders = [
+        SELECT Id, TEKCO_Brand__c, TEKCO_Country__c, TEKCO_ServiceAppointment__c 
+        FROM WorkOrder 
+        WHERE TEKCO_ServiceAppointment__c IN :serviceAppointmentIds
+    ];
+    
+    // Create a map of Service Appointments for easy access
+    Map<Id, ServiceAppointment> saMap = new Map<Id, ServiceAppointment>(serviceAppointments);
+    
+    // Update the Work Orders with Brand and Country values from their related Service Appointments
+    for (WorkOrder wo : workOrders) {
+        ServiceAppointment relatedSA = saMap.get(wo.TEKCO_ServiceAppointment__c);
+        if (relatedSA != null) {
+            wo.TEKCO_Brand__c = relatedSA.TEKCO_Brand__c;
+            wo.TEKCO_Country__c = relatedSA.TEKCO_Country__c;
+        }
+    }
+    
+    // Return the list of updated Work Orders (not yet committed to database)
+    return workOrders;
 }
-```
-
-Cette fonction crée une carte qui :
-- Stocke un seul élément s'il n'y a qu'un produit avec cet ID
-- Stocke un tableau d'éléments s'il y a plusieurs produits avec le même ID
-
-Vous pouvez ensuite l'utiliser comme ceci :
-
-```javascript
-const productMap = getProductItemMap();
-
-// Pour accéder à un élément
-const product = productMap.get(someId);
-if (product) {
-  if (Array.isArray(product)) {
-    // Plusieurs produits avec le même ID
-    product.forEach(p => {
-      // Traiter chaque produit
-    });
-  } else {
-    // Un seul produit avec cet ID
-    // Traiter le produit directement
-  }
-}
-```
-
-Est-ce que cette fonction correspond à ce que vous cherchiez ?
