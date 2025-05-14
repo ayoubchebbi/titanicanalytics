@@ -1,62 +1,25 @@
-/**
- * @description This method adjusts the Duration field of Service Appointment members (children)
- * based on the number of children in each bundle:
- * - 2 children: duration * 0.9
- * - 3 children: duration * 0.8
- * - More than 3 children: duration * 0.7
- * - Otherwise: no change
- * @param bundleServiceAppointments List of parent/bundle Service Appointment records
- * @return List<ServiceAppointment> List of child Service Appointments with adjusted durations
- */
-public static List<ServiceAppointment> adjustServiceAppointmentMemberDurations(List<ServiceAppointment> bundleServiceAppointments) {
-    // Exit if empty list is provided
-    if (bundleServiceAppointments == null || bundleServiceAppointments.isEmpty()) {
-        return new List<ServiceAppointment>();
+<!-- searchField.html -->
+<template>
+    <lightning-input label="Recherche" onchange={handleChange} onblur={handleSearch}></lightning-input>
+</template>
+
+
+// searchField.js
+import { LightningElement } from 'lwc';
+
+export default class SearchField extends LightningElement {
+    timeout;
+
+    handleInput(event) {
+        const value = event.target.value;
+
+        // Effacer le précédent timeout si l'utilisateur continue à écrire
+        clearTimeout(this.timeout);
+
+        // Lancer la fonction après 500ms sans saisie
+        this.timeout = setTimeout(() => {
+            console.log('Recherche après saisie terminée : ', value);
+            // Appeler ici ton traitement ou un event
+        }, 500);
     }
-    
-    // Get all bundle SA Ids for querying
-    Set<Id> bundleIds = new Set<Id>();
-    for (ServiceAppointment sa : bundleServiceAppointments) {
-        bundleIds.add(sa.Id);
-    }
-    
-    // Query all child Service Appointments linked to the bundle parents
-    List<ServiceAppointment> childServiceAppointments = [
-        SELECT Id, Duration, ParentRecordId 
-        FROM ServiceAppointment 
-        WHERE ParentRecordId IN :bundleIds
-    ];
-    
-    // Count children per parent bundle
-    Map<Id, Integer> childCountByParentId = new Map<Id, Integer>();
-    for (ServiceAppointment childSA : childServiceAppointments) {
-        Id parentId = childSA.ParentRecordId;
-        if (childCountByParentId.containsKey(parentId)) {
-            childCountByParentId.put(parentId, childCountByParentId.get(parentId) + 1);
-        } else {
-            childCountByParentId.put(parentId, 1);
-        }
-    }
-    
-    // Adjust durations based on number of children in the bundle
-    List<ServiceAppointment> updatedChildServiceAppointments = new List<ServiceAppointment>();
-    for (ServiceAppointment childSA : childServiceAppointments) {
-        Id parentId = childSA.ParentRecordId;
-        Integer childCount = childCountByParentId.get(parentId);
-        
-        // Apply duration adjustment based on number of children
-        if (childCount == 2) {
-            childSA.Duration = childSA.Duration * 0.9;
-        } else if (childCount == 3) {
-            childSA.Duration = childSA.Duration * 0.8;
-        } else if (childCount > 3) {
-            childSA.Duration = childSA.Duration * 0.7;
-        }
-        // No change if childCount is 1 or any other value
-        
-        updatedChildServiceAppointments.add(childSA);
-    }
-    
-    // Return the list of updated child Service Appointments (not yet committed to database)
-    return updatedChildServiceAppointments;
 }
