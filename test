@@ -1,25 +1,31 @@
-<!-- searchField.html -->
-<template>
-    <lightning-input label="Recherche" onchange={handleChange} onblur={handleSearch}></lightning-input>
-</template>
+Voici une reformulation plus claire et professionnelle des questions présentes dans l’image :
 
 
-// searchField.js
-import { LightningElement } from 'lwc';
+---
 
-export default class SearchField extends LightningElement {
-    timeout;
+1. Service Territory : Le territoire de service doit-il être sélectionné par l’utilisateur ?
 
-    handleInput(event) {
-        const value = event.target.value;
 
-        // Effacer le précédent timeout si l'utilisateur continue à écrire
-        clearTimeout(this.timeout);
+2. Pour l’affichage des Service Appointments (S.A), doit-on prendre en compte :
 
-        // Lancer la fonction après 500ms sans saisie
-        this.timeout = setTimeout(() => {
-            console.log('Recherche après saisie terminée : ', value);
-            // Appeler ici ton traitement ou un event
-        }, 500);
-    }
-}
+la date d’aujourd’hui comme point de départ pour les 4 prochaines semaines ?
+
+ou les 4 semaines complètes à partir de la semaine prochaine ?
+
+
+
+3. Exemple : Si aujourd’hui nous sommes jeudi, faut-il afficher jusqu’au jeudi dans 4 semaines ou bien commencer à partir de la semaine prochaine complète ?
+
+
+4. Service Territory : Le champ OperatingHoursId peut-il être nul ou doit-il obligatoirement contenir une valeur ?
+
+
+5. Concernant le Delivery Plan, où exactement doit apparaître le tableau d’affichage ?
+
+
+
+
+---
+
+Souhaitez-vous que je les reformule sous forme de tickets Jira ou de spécifications fonctionnelles ?
+
