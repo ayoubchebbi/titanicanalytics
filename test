@@ -1,8 +1,107 @@
-<targets>
-    <target>lightning__RecordPage</target>
-</targets>
-<targetConfigs>
-    <targetConfig targets="lightning__RecordPage">
-        <property name="addressId" type="String" label="Address ID" description="Pass addressId from record"/>
-    </targetConfig>
-</targetConfigs>
+// deliveryPlanAppointments.js
+import { LightningElement, api, wire } from 'lwc';
+import { gql, graphql } from 'lightning/uiGraphQLApi';
+
+export default class DeliveryPlanAppointments extends LightningElement {
+    @api recordId; // ID du DeliveryPlan__c
+    
+    serviceAppointments = [];
+    error;
+    loading = true;
+
+    @wire(graphql, {
+        query: gql`
+            query GetServiceAppointments($recordId: ID!) {
+                uiapi {
+                    query {
+                        DeliveryPlan__c(where: { Id: { eq: $recordId } }) {
+                            edges {
+                                node {
+                                    Id
+                                    Address__c {
+                                        value
+                                        ServiceTerritory__r {
+                                            ServiceAppointments {
+                                                edges {
+                                                    node {
+                                                        Id
+                                                        AppointmentNumber {
+                                                            value
+                                                        }
+                                                        Status {
+                                                            value
+                                                        }
+                                                        SchedStartTime {
+                                                            value
+                                                        }
+                                                        SchedEndTime {
+                                                            value
+                                                        }
+                                                        Subject {
+                                                            value
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+        variables: '$variables'
+    })
+    wireServiceAppointments({ data, errors }) {
+        this.loading = false;
+        
+        if (data) {
+            try {
+                const deliveryPlanEdges = data.uiapi.query.DeliveryPlan__c.edges;
+                
+                if (deliveryPlanEdges && deliveryPlanEdges.length > 0) {
+                    const deliveryPlan = deliveryPlanEdges[0].node;
+                    const serviceTerritory = deliveryPlan.Address__c.ServiceTerritory__r;
+                    
+                    if (serviceTerritory && serviceTerritory.ServiceAppointments) {
+                        this.serviceAppointments = serviceTerritory.ServiceAppointments.edges.map(edge => {
+                            const appointment = edge.node;
+                            return {
+                                id: appointment.Id,
+                                number: appointment.AppointmentNumber.value,
+                                status: appointment.Status.value,
+                                startTime: appointment.SchedStartTime.value,
+                                endTime: appointment.SchedEndTime.value,
+                                subject: appointment.Subject.value
+                            };
+                        });
+                    }
+                }
+            } catch (error) {
+                this.error = 'Erreur lors du traitement des données: ' + error.message;
+                console.error('Erreur lors du traitement des données:', error);
+            }
+        }
+        
+        if (errors) {
+            this.error = 'Erreur GraphQL: ' + errors.map(error => error.message).join(', ');
+            console.error('Erreurs GraphQL:', errors);
+        }
+    }
+
+    get variables() {
+        return {
+            recordId: this.recordId
+        };
+    }
+
+    get hasAppointments() {
+        return this.serviceAppointments.length > 0;
+    }
+
+    get hasError() {
+        return this.error != null;
+    }
+}
