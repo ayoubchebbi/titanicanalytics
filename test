@@ -1,1 +1,180 @@
+// addressServiceAppointments.js
+import { LightningElement, api, wire } from 'lwc';
+import { gql, graphql } from 'lightning/uiGraphQLApi';
 
+export default class AddressServiceAppointments extends LightningElement {
+    @api addressId;
+    address;
+    serviceTerritory;
+    serviceAppointments = [];
+    error;
+    loading = true;
+
+    @wire(graphql, {
+        query: gql`
+            query GetAddressWithServiceAppointments($addressId: ID!) {
+                uiapi {
+                    query {
+                        Address(where: { Id: { eq: $addressId } }) {
+                            edges {
+                                node {
+                                    Id
+                                    Name { value }
+                                    Street { value }
+                                    City { value }
+                                    State { value }
+                                    PostalCode { value }
+                                    Country { value }
+                                    Tekco_ServiceTerritory__c { value }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+        variables: '$graphqlVariables'
+    })
+    wiredAddressData({ data, error }) {
+        if (data) {
+            const addressEdges = data.uiapi.query.Address.edges;
+            if (addressEdges.length > 0) {
+                const addressNode = addressEdges[0].node;
+                this.address = {
+                    id: addressNode.Id,
+                    name: addressNode.Name.value,
+                    street: addressNode.Street.value,
+                    city: addressNode.City.value,
+                    state: addressNode.State.value,
+                    postalCode: addressNode.PostalCode.value,
+                    country: addressNode.Country.value
+                };
+
+                // Si un territoire de service est associé à l'adresse
+                if (addressNode.Tekco_ServiceTerritory__c && addressNode.Tekco_ServiceTerritory__c.value) {
+                    const serviceTerritoryId = addressNode.Tekco_ServiceTerritory__c.value;
+                    // Maintenant récupérer le territoire de service et ses rendez-vous associés
+                    this.fetchServiceTerritoryWithAppointments(serviceTerritoryId);
+                } else {
+                    this.error = "Aucun territoire de service n'est associé à cette adresse.";
+                    this.loading = false;
+                }
+            } else {
+                this.error = "Adresse non trouvée.";
+                this.loading = false;
+            }
+        } else if (error) {
+            this.error = "Erreur lors de la récupération de l'adresse: " + JSON.stringify(error);
+            this.loading = false;
+        }
+    }
+
+    get graphqlVariables() {
+        return {
+            addressId: this.addressId
+        };
+    }
+
+    async fetchServiceTerritoryWithAppointments(serviceTerritoryId) {
+        try {
+            const result = await graphql({
+                query: gql`
+                    query GetServiceTerritoryWithAppointments($serviceTerritoryId: ID!) {
+                        uiapi {
+                            query {
+                                ServiceTerritory(where: { Id: { eq: $serviceTerritoryId } }) {
+                                    edges {
+                                        node {
+                                            Id
+                                            Name { value }
+                                            OperatingHours { value }
+                                            IsActive { value }
+                                            ServiceAppointments: ServiceAppointment__r {
+                                                edges {
+                                                    node {
+                                                        Id
+                                                        AppointmentNumber { value }
+                                                        Status { value }
+                                                        SchedStartTime { value }
+                                                        SchedEndTime { value }
+                                                        Street { value }
+                                                        ServiceResource: ServiceResource__r {
+                                                            edges {
+                                                                node {
+                                                                    Id
+                                                                    Name { value }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    serviceTerritoryId: serviceTerritoryId
+                }
+            });
+
+            if (result.data) {
+                const territoryEdges = result.data.uiapi.query.ServiceTerritory.edges;
+                if (territoryEdges.length > 0) {
+                    const territoryNode = territoryEdges[0].node;
+                    this.serviceTerritory = {
+                        id: territoryNode.Id,
+                        name: territoryNode.Name.value,
+                        isActive: territoryNode.IsActive.value
+                    };
+
+                    // Récupérer les rendez-vous de service
+                    if (territoryNode.ServiceAppointments && territoryNode.ServiceAppointments.edges) {
+                        this.serviceAppointments = territoryNode.ServiceAppointments.edges.map(edge => {
+                            const appointmentNode = edge.node;
+                            let resourceName = "Non assigné";
+                            
+                            // Vérifier si une ressource est assignée
+                            if (appointmentNode.ServiceResource && 
+                                appointmentNode.ServiceResource.edges && 
+                                appointmentNode.ServiceResource.edges.length > 0) {
+                                resourceName = appointmentNode.ServiceResource.edges[0].node.Name.value;
+                            }
+                            
+                            return {
+                                id: appointmentNode.Id,
+                                number: appointmentNode.AppointmentNumber.value,
+                                status: appointmentNode.Status.value,
+                                startTime: this.formatDateTime(appointmentNode.SchedStartTime.value),
+                                endTime: this.formatDateTime(appointmentNode.SchedEndTime.value),
+                                street: appointmentNode.Street.value,
+                                resourceName: resourceName
+                            };
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            this.error = "Erreur lors de la récupération du territoire de service et des rendez-vous: " + JSON.stringify(error);
+        } finally {
+            this.loading = false;
+        }
+    }
+
+    formatDateTime(dateTimeString) {
+        if (!dateTimeString) return '';
+        const dateTime = new Date(dateTimeString);
+        return dateTime.toLocaleString();
+    }
+
+    get hasAppointments() {
+        return this.serviceAppointments && this.serviceAppointments.length > 0;
+    }
+
+    get hasError() {
+        return this.error !== undefined && this.error !== null;
+    }
+}
