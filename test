@@ -1,48 +1,23 @@
-// deliveryPlanAppointments.js
-import { LightningElement, api, wire } from 'lwc';
-import { gql, graphql } from 'lightning/uiGraphQLApi';
-
-export default class DeliveryPlanAppointments extends LightningElement {
-    @api recordId; // ID du DeliveryPlan__c
-    
+export default class FscoDeliveryPlanDaySuggester extends LightningElement {
     serviceAppointments = [];
     error;
     loading = true;
+    serviceTerritoryId;
 
+    // Première requête pour récupérer l'ID du ServiceTerritory
     @wire(graphql, {
         query: gql`
-            query GetServiceAppointments($recordId: ID!) {
+            query.GetServiceTerritory($recordId: ID) {
                 uiapi {
                     query {
-                        DeliveryPlan__c(where: { Id: { eq: $recordId } }) {
+                        OSMCO_DeliveryPlan__c(where: { Id: { eq: $recordId } }) {
                             edges {
                                 node {
                                     Id
-                                    Address__c {
-                                        value
-                                        ServiceTerritory__r {
-                                            ServiceAppointments {
-                                                edges {
-                                                    node {
-                                                        Id
-                                                        AppointmentNumber {
-                                                            value
-                                                        }
-                                                        Status {
-                                                            value
-                                                        }
-                                                        SchedStartTime {
-                                                            value
-                                                        }
-                                                        SchedEndTime {
-                                                            value
-                                                        }
-                                                        Subject {
-                                                            value
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                    FMCO_Address__r {
+                                        Id
+                                        TEKO_ServiceTerritory__r {
+                                            Id
                                         }
                                     }
                                 }
@@ -54,54 +29,104 @@ export default class DeliveryPlanAppointments extends LightningElement {
         `,
         variables: '$variables'
     })
-    wireServiceAppointments({ data, errors }) {
-        this.loading = false;
-        
+    wireServiceTerritory({ data, errors }) {
         if (data) {
-            try {
-                const deliveryPlanEdges = data.uiapi.query.DeliveryPlan__c.edges;
-                
-                if (deliveryPlanEdges && deliveryPlanEdges.length > 0) {
-                    const deliveryPlan = deliveryPlanEdges[0].node;
-                    const serviceTerritory = deliveryPlan.Address__c.ServiceTerritory__r;
-                    
-                    if (serviceTerritory && serviceTerritory.ServiceAppointments) {
-                        this.serviceAppointments = serviceTerritory.ServiceAppointments.edges.map(edge => {
-                            const appointment = edge.node;
-                            return {
-                                id: appointment.Id,
-                                number: appointment.AppointmentNumber.value,
-                                status: appointment.Status.value,
-                                startTime: appointment.SchedStartTime.value,
-                                endTime: appointment.SchedEndTime.value,
-                                subject: appointment.Subject.value
-                            };
-                        });
+            const plan = data.uiapi.query.OSMCO_DeliveryPlan__c.edges[0]?.node;
+            if (plan && plan.FMCO_Address__r && plan.FMCO_Address__r.TEKO_ServiceTerritory__r) {
+                this.serviceTerritoryId = plan.FMCO_Address__r.TEKO_ServiceTerritory__r.Id;
+                // Déclencher la seconde requête ici si nécessaire
+                this.getServiceAppointments();
+            }
+        } else if (errors) {
+            this.error = errors;
+        }
+    }
+
+    // Méthode pour récupérer les Service Appointments avec l'ID du ServiceTerritory
+    getServiceAppointments() {
+        if (this.serviceTerritoryId) {
+            const variables = {
+                serviceTerritoryId: this.serviceTerritoryId
+            };
+            
+            // Utilisez graphql.query ou une méthode imperative pour faire la seconde requête
+            graphql.query({
+                query: gql`
+                    query GetServiceAppointments($serviceTerritoryId: ID) {
+                        uiapi {
+                            query {
+                                ServiceAppointment(where: { ServiceTerritoryId: { eq: $serviceTerritoryId } }) {
+                                    edges {
+                                        node {
+                                            Id
+                                            // Autres champs des SA dont vous avez besoin
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: variables
+            })
+            .then(result => {
+                if (result.data) {
+                    this.serviceAppointments = result.data.uiapi.query.ServiceAppointment.edges.map(edge => edge.node);
+                    this.loading = false;
+                }
+            })
+            .catch(error => {
+                this.error = error;
+                this.loading = false;
+            });
+        }
+    }
+}
+
+
+@wire(graphql, {
+    query: gql`
+        query.GetServiceAppointments($recordId: ID) {
+            uiapi {
+                query {
+                    OSMCO_DeliveryPlan__c(where: { Id: { eq: $recordId } }) {
+                        edges {
+                            node {
+                                Id
+                                FMCO_Address__r {
+                                    Id
+                                    TEKO_ServiceTerritory__r {
+                                        Id
+                                        // Requête directe des SA liées au ServiceTerritory
+                                        ServiceAppointments {
+                                            edges {
+                                                node {
+                                                    Id
+                                                    // Autres champs des SA
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-            } catch (error) {
-                this.error = 'Erreur lors du traitement des données: ' + error.message;
-                console.error('Erreur lors du traitement des données:', error);
             }
         }
-        
-        if (errors) {
-            this.error = 'Erreur GraphQL: ' + errors.map(error => error.message).join(', ');
-            console.error('Erreurs GraphQL:', errors);
+    `,
+    variables: '$variables'
+})
+wireServiceAppointments({ data, errors }) {
+    this.loading = false;
+    if (data) {
+        const plan = data.uiapi.query.OSMCO_DeliveryPlan__c.edges[0]?.node;
+        if (plan && plan.FMCO_Address__r && plan.FMCO_Address__r.TEKO_ServiceTerritory__r) {
+            this.serviceTerritoryId = plan.FMCO_Address__r.TEKO_ServiceTerritory__r.Id;
+            // Récupérer les SA directement de la réponse
+            this.serviceAppointments = plan.FMCO_Address__r.TEKO_ServiceTerritory__r.ServiceAppointments.edges.map(edge => edge.node);
         }
-    }
-
-    get variables() {
-        return {
-            recordId: this.recordId
-        };
-    }
-
-    get hasAppointments() {
-        return this.serviceAppointments.length > 0;
-    }
-
-    get hasError() {
-        return this.error != null;
+    } else if (errors) {
+        this.error = errors;
     }
 }
