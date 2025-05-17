@@ -1,1 +1,45 @@
+/**
+ * Calculates the difference in weeks between a given date and today
+ * @param {Date|string} date - Date to compare with today (Date object or string in YYYY-MM-DD format)
+ * @returns {number} - Number of weeks difference (positive for future, negative for past)
+ */
+function calculateWeekDifference(date) {
+  // Convert date to Date object if provided as string
+  const dateToCompare = date instanceof Date ? date : new Date(date);
+  
+  // Get today's date (without hours, minutes, seconds)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Calculate difference in milliseconds
+  const differenceMs = dateToCompare.getTime() - today.getTime();
+  
+  // Convert to days then weeks (rounded to nearest integer)
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const differenceDays = differenceMs / millisecondsPerDay;
+  const differenceWeeks = Math.floor(differenceDays / 7);
+  
+  // If it's today, return 1
+  if (differenceMs === 0) return 1;
+  
+  // If it's in the past, subtract 1 from the negative result
+  if (differenceMs < 0) {
+    return differenceWeeks - 1;
+  }
+  
+  // If it's in the future, return the week number (starting with 1 for current week)
+  return differenceWeeks + 1;
+}
 
+// Usage examples
+console.log("Today's date:", calculateWeekDifference(new Date())); // 1
+const futureDate = new Date();
+futureDate.setDate(futureDate.getDate() + 15); // Date 15 days in future
+console.log("Date in 15 days:", calculateWeekDifference(futureDate)); // ~ 3
+
+const pastDate = new Date();
+pastDate.setDate(pastDate.getDate() - 10); // Date 10 days ago
+console.log("Date 10 days ago:", calculateWeekDifference(pastDate)); // ~ -2
+
+// Example with a date string
+console.log("Specific date:", calculateWeekDifference("2025-06-15")); // Result depends on current date
