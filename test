@@ -1,3 +1,16 @@
+<template if:true={hasError}>
+    <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+        <span class="slds-assistive-text">Error</span>
+        <span class="slds-icon_container slds-icon-utility-error slds-m-right_small" title="Error">
+            <lightning-icon icon-name="utility:error" alternative-text="Error" variant="error" size="small"></lightning-icon>
+        </span>
+        <h2>
+            <strong>Error</strong>: Merci de contacter l’administrateur pour traiter l’erreur.
+        </h2>
+    </div>
+</template>
+
+
 SELECT Id, Status, TEKCO_DeliveryPlanID__c, EarliestStartTime
 FROM ServiceAppointment
 WHERE ServiceTerritoryId = :stId
