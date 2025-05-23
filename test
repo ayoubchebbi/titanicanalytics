@@ -1,41 +1,42 @@
+export function buildProductTree(products) {
+  const productMap = new Map();
+  products.forEach(product => {
+    productMap.set(product.treeId, { ...product, children: [] });
+  });
 
+  const trees = [];
 
-**Solution tested and working.**
+  products.forEach(product => {
+    const currentProduct = productMap.get(product.treeId);
 
-To replicate the test on the same record:
-1. Change the status from "woli" to "new"
-2. Clear the actual quantity field that was previously filled
-3. Delete the asset that was created during the previous test
+    if (product.parentTreeId) {
+      const parent = productMap.get(product.parentTreeId);
+      if (parent) {
+        parent.children.push(currentProduct);
+      }
+    } else {
+      trees.push(currentProduct);
+    }
+  });
 
-**Test link provided below:**
+  function sortTree(node) {
+    if (node.children && node.children.length > 0) {
+      node.children.sort((a, b) => {
+        const levelOrder = { '1': 1, '2': 2, '3': 3, 'sku': 4 };
+        const levelA = levelOrder[a.exchangeableLevelValue] || 5;
+        const levelB = levelOrder[b.exchangeableLevelValue] || 5;
 
----
+        if (levelA !== levelB) {
+          return levelA - levelB;
+        }
+        return (a.name || '').localeCompare(b.name || '');
+      });
 
-This version is more structured and easier to follow, with numbered steps for the testing procedure.
+      node.children.forEach(child => sortTree(child));
+    }
+  }
 
-
-SELECT Id, ApexClass.Name, JobType, Status, CreatedDate, CompletedDate, NumberOfErrors 
-FROM AsyncApexJob 
-WHERE ApexClass.Name = 'FSCO_AutoBindingSchedule'
-AND DAY_ONLY(CreatedDate) = 2024-05-22
-ORDER BY CreatedDate DESC<template if:true={hasError}>
-    <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
-        <span class="slds-assistive-text">Error</span>
-        <span class="slds-icon_container slds-icon-utility-error slds-m-right_small" title="Error">
-            <lightning-icon icon-name="utility:error" alternative-text="Error" variant="error" size="small"></lightning-icon>
-        </span>
-        <h2>
-            <strong>Error</strong>: Merci de contacter l’administrateur pour traiter l’erreur.
-        </h2>
-    </div>
-</template>
-
-
-SELECT Id, Status, TEKCO_DeliveryPlanID__c, EarliestStartTime
-FROM ServiceAppointment
-WHERE ServiceTerritoryId = :stId
-  AND Status NOT IN ('005', '007')
-  AND TEKCO_DeliveryPlanID__c != null
-  AND EarliestStartTime <= :startDate
-  AND EarliestStartTime >= :endDate
-LIMIT 2000
+  trees.forEach(tree => sortTree(tree));
+  trees.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  return trees;
+}
