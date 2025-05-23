@@ -1,4 +1,8 @@
-<template if:true={hasError}>
+SELECT Id, ApexClass.Name, JobType, Status, CreatedDate, CompletedDate, NumberOfErrors 
+FROM AsyncApexJob 
+WHERE ApexClass.Name = 'FSCO_AutoBindingSchedule'
+AND DAY_ONLY(CreatedDate) = 2024-05-22
+ORDER BY CreatedDate DESC<template if:true={hasError}>
     <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
         <span class="slds-assistive-text">Error</span>
         <span class="slds-icon_container slds-icon-utility-error slds-m-right_small" title="Error">
