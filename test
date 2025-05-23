@@ -1,3 +1,19 @@
+
+
+**Solution tested and working.**
+
+To replicate the test on the same record:
+1. Change the status from "woli" to "new"
+2. Clear the actual quantity field that was previously filled
+3. Delete the asset that was created during the previous test
+
+**Test link provided below:**
+
+---
+
+This version is more structured and easier to follow, with numbered steps for the testing procedure.
+
+
 SELECT Id, ApexClass.Name, JobType, Status, CreatedDate, CompletedDate, NumberOfErrors 
 FROM AsyncApexJob 
 WHERE ApexClass.Name = 'FSCO_AutoBindingSchedule'
