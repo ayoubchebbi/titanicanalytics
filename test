@@ -1,42 +1,39 @@
-export function buildProductTree(products) {
-  const productMap = new Map();
-  products.forEach(product => {
-    productMap.set(product.treeId, { ...product, children: [] });
-  });
+Voici une reformulation de la description avec un petit exemple ajouté :
 
-  const trees = [];
 
-  products.forEach(product => {
-    const currentProduct = productMap.get(product.treeId);
+---
 
-    if (product.parentTreeId) {
-      const parent = productMap.get(product.parentTreeId);
-      if (parent) {
-        parent.children.push(currentProduct);
-      }
-    } else {
-      trees.push(currentProduct);
-    }
-  });
+Objectif : Calculer le champ WOMJP_DueDate__c à partir du champ WOMCO_PlannedStartDate__c (date de début prévue), en y ajoutant un décalage défini par les champs WOMCA_ChildWODueDateOffset__c (valeur numérique du décalage) et WOMCA_ChildWODueDateOffsetUnit__c (unité de temps : minute, heure ou jour) du Work Type.
 
-  function sortTree(node) {
-    if (node.children && node.children.length > 0) {
-      node.children.sort((a, b) => {
-        const levelOrder = { '1': 1, '2': 2, '3': 3, 'sku': 4 };
-        const levelA = levelOrder[a.exchangeableLevelValue] || 5;
-        const levelB = levelOrder[b.exchangeableLevelValue] || 5;
+Règles de calcul :
 
-        if (levelA !== levelB) {
-          return levelA - levelB;
-        }
-        return (a.name || '').localeCompare(b.name || '');
-      });
+1. Si l'unité (WOMCA_ChildWODueDateOffsetUnit__c) = minute (001) :
+On ajoute WOMCA_ChildWODueDateOffset__c minutes à WOMCO_PlannedStartDate__c et le résultat est stocké dans WOMJP_DueDate__c.
 
-      node.children.forEach(child => sortTree(child));
-    }
-  }
 
-  trees.forEach(tree => sortTree(tree));
-  trees.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-  return trees;
-}
+2. Si l'unité = heure (002) :
+On ajoute WOMCA_ChildWODueDateOffset__c heures à WOMCO_PlannedStartDate__c et le résultat est stocké dans WOMJP_DueDate__c.
+
+
+3. Si l'unité = jour (003) :
+On ajoute WOMCA_ChildWODueDateOffset__c jours à WOMCO_PlannedStartDate__c et le résultat est stocké dans WOMJP_DueDate__c.
+
+
+
+Exemple :
+
+WOMCO_PlannedStartDate__c = 26/05/2025 08:00
+
+WOMCA_ChildWODueDateOffset__c = 2
+
+WOMCA_ChildWODueDateOffsetUnit__c = "hour (002)"
+
+
+Résultat attendu :
+WOMJP_DueDate__c = 26/05/2025 10:00
+
+
+---
+
+Souhaites-tu que je transforme ça en pseudocode ou en formule Salesforce (formula field ou flow) ?
+
