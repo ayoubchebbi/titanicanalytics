@@ -1,1 +1,1 @@
-
+The issue is related to the technical user that triggers the batch process. While the batch itself is working as expected, there is a problem in the API engine when it is executed by this technical user. The responsible team is currently working on fixing the issue. I will provide an update as soon as there is any progress or resolution.
