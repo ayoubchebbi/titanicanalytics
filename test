@@ -1,1 +1,10 @@
+Le champ WOMCO_DueDate__c est calculé à partir de la date de début planifiée WOMCO_PlannedStartDate__c et d’un offset.
 
+L’offset est récupéré depuis WorkType.WOMCA_ChildWODueDateOffset__c.
+Si ce champ est null, on utilise alors WorkType.WOMCO_DueDateOffset__c.
+
+L’unité associée à cet offset est déterminée de la manière suivante :
+Si WorkType.WOMCA_ChildWODueDateOffset__c n’est pas null, on utilise WorkType.WOMCA_ChildWODueDateOffsetUnit__c.
+Sinon, on utilise WorkType.WOMCO_DueDateOffsetUnit__c.
+
+⚠️ Si l’offset et l’unité sont tous les deux null, alors un décalage par défaut de 7 jours est appliqué à WOMCO_PlannedStartDate__c pour calculer WOMCO_DueDate__c.
