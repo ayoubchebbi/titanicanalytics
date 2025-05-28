@@ -1,1 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Timesheet with or without Timesheet Entries</label>
+    <description>Report type for Timesheets with or without related Timesheet Entries</description>
+    <category>Administrative Reports</category>
+    <baseObject>Timesheet</baseObject>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sections>
+        <masterLabel>Timesheet Fields</masterLabel>
+        <columns>All</columns>
+    </sections>
+    <sections>
+        <masterLabel>Timesheet Entry Fields</masterLabel>
+        <columns>All</columns>
+    </sections>
+    <relationships>
+        <join>TimesheetEntries</join> <!-- Nom du child relationship name -->
+        <label>Timesheet Entries</label>
+        <outerJoin>true</outerJoin>
+    </relationships>
+</CustomReportType>
 
