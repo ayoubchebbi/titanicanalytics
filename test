@@ -1,1 +1,159 @@
-
+/**
+ * Method: buildActionPlanTemplates
+ * Description : Creates an Action-Plan Template (if missing) plus all related
+ *               Action Templates and Template Items for the supplied
+ *               Delivery Plans and their eligible Assets.
+ * Inputs : List<OSMCO_DeliveryPlan__c> newDeliveryPlans
+ * Returns : void
+ */
+private static void buildActionPlanTemplates(List<OSMCO_DeliveryPlan__c> newDeliveryPlans) {
+    
+    Set<Id> workTypeIds = new Set<Id>();
+    Set<Id> accountIds = new Set<Id>();
+    List<OSMCO_DeliveryPlan__c> validDeliveryPlans = new List<OSMCO_DeliveryPlan__c>();
+    
+    for (OSMCO_DeliveryPlan__c dp : newDeliveryPlans) {
+        if (dp.OSMCO_WorkType__c != null) {
+            workTypeIds.add(dp.OSMCO_WorkType__c);
+        }
+        if (dp.OSMCO_Account__c != null) {
+            accountIds.add(dp.OSMCO_Account__c);
+        }
+    }
+    
+    Map<Id, OSMCO_WorkType__c> workTypeMap = new Map<Id, OSMCO_WorkType__c>([
+        SELECT Id, ACCCO_VisitType__c 
+        FROM OSMCO_WorkType__c 
+        WHERE Id IN :workTypeIds
+    ]);
+    
+    for (OSMCO_DeliveryPlan__c dp : newDeliveryPlans) {
+        OSMCO_WorkType__c workType = workTypeMap.get(dp.OSMCO_WorkType__c);
+        if (workType == null || workType.ACCCO_VisitType__c != 'LOX Refill') {
+            validDeliveryPlans.add(dp);
+        }
+    }
+    
+    if (validDeliveryPlans.isEmpty()) {
+        return;
+    }
+    
+    List<Asset> eligibleAssets = [
+        SELECT Id, ProductFamily, AccountId, Product2Id
+        FROM Asset
+        WHERE Status = 'Installed'
+        AND ProductFamily = 'LBU'
+        AND AccountId IN :accountIds
+    ];
+    
+    Map<Id, List<Asset>> assetsByAccount = new Map<Id, List<Asset>>();
+    for (Asset a : eligibleAssets) {
+        if (!assetsByAccount.containsKey(a.AccountId)) {
+            assetsByAccount.put(a.AccountId, new List<Asset>());
+        }
+        assetsByAccount.get(a.AccountId).add(a);
+    }
+    
+    User currentUser = UserHelper.currentUser;
+    
+    List<WOMCO_ActionPlanTemplate__c> templatesForInsert = new List<WOMCO_ActionPlanTemplate__c>();
+    List<OSMCO_DeliveryPlan__c> deliveryPlansForUpdate = new List<OSMCO_DeliveryPlan__c>();
+    
+    String deliveryPlanLabel = Schema.SObjectType.OSMCO_DeliveryPlan__c.getLabel();
+    String actionPlanTemplateLabel = Schema.SObjectType.WOMCO_ActionPlanTemplate__c.getLabel();
+    
+    for (OSMCO_DeliveryPlan__c dp : validDeliveryPlans) {
+        if (String.isBlank(dp.OSMCO_ActionPlanTemplate__c)) {
+            String templateName = deliveryPlanLabel + ' ' + dp.Name + ' ' + actionPlanTemplateLabel;
+            
+            WOMCO_ActionPlanTemplate__c newTemplate = new WOMCO_ActionPlanTemplate__c(
+                Name = templateName,
+                WOMCO_RelativeOrderOfExecution__c = 999,
+                TEKCO_Country__c = currentUser.TEKCO_Country__c,
+                TEKCO_Brand__c = currentUser.TEKCO_Brand__c
+            );
+            
+            templatesForInsert.add(newTemplate);
+        }
+    }
+    
+    if (!templatesForInsert.isEmpty()) {
+        insert templatesForInsert;
+        
+        Integer templateIndex = 0;
+        for (OSMCO_DeliveryPlan__c dp : validDeliveryPlans) {
+            if (String.isBlank(dp.OSMCO_ActionPlanTemplate__c)) {
+                dp.OSMCO_ActionPlanTemplate__c = templatesForInsert[templateIndex].Id;
+                deliveryPlansForUpdate.add(dp);
+                templateIndex++;
+            }
+        }
+        
+        if (!deliveryPlansForUpdate.isEmpty()) {
+            update deliveryPlansForUpdate;
+        }
+    }
+    
+    List<WOMCO_ActionTemplate__c> actionTemplatesForInsert = new List<WOMCO_ActionTemplate__c>();
+    
+    for (OSMCO_DeliveryPlan__c dp : validDeliveryPlans) {
+        List<Asset> accountAssets = assetsByAccount.get(dp.OSMCO_Account__c);
+        if (accountAssets != null) {
+            for (Asset asset : accountAssets) {
+                WOMCO_ActionTemplate__c deliverTemplate = new WOMCO_ActionTemplate__c(
+                    WOMCO_ActionType__c = 'Deliver',
+                    WOMCO_IsActive__c = true,
+                    TEKCO_Country__c = currentUser.TEKCO_Country__c,
+                    TEKCO_Brand__c = currentUser.TEKCO_Brand__c,
+                    WOMCO_Product__c = asset.Product2Id
+                );
+                actionTemplatesForInsert.add(deliverTemplate);
+                
+                WOMCO_ActionTemplate__c withdrawTemplate = new WOMCO_ActionTemplate__c(
+                    WOMCO_ActionType__c = 'Withdraw',
+                    WOMCO_IsActive__c = true,
+                    TEKCO_Country__c = currentUser.TEKCO_Country__c,
+                    TEKCO_Brand__c = currentUser.TEKCO_Brand__c,
+                    WOMCO_Product__c = asset.Product2Id
+                );
+                actionTemplatesForInsert.add(withdrawTemplate);
+            }
+        }
+    }
+    
+    if (!actionTemplatesForInsert.isEmpty()) {
+        insert actionTemplatesForInsert;
+    }
+    
+    List<WOMCO_ActionPlanTemplateItem__c> templateItemsForInsert = new List<WOMCO_ActionPlanTemplateItem__c>();
+    
+    Integer actionTemplateIndex = 0;
+    for (OSMCO_DeliveryPlan__c dp : validDeliveryPlans) {
+        List<Asset> accountAssets = assetsByAccount.get(dp.OSMCO_Account__c);
+        if (accountAssets != null) {
+            for (Asset asset : accountAssets) {
+                WOMCO_ActionPlanTemplateItem__c deliverItem = new WOMCO_ActionPlanTemplateItem__c(
+                    WOMCO_ActionPlanTemplate__c = dp.OSMCO_ActionPlanTemplate__c,
+                    WOMCO_ActionTemplate__c = actionTemplatesForInsert[actionTemplateIndex].Id,
+                    PASCO_Quantity__c = 1,
+                    WOMCO_IsMandatory__c = true
+                );
+                templateItemsForInsert.add(deliverItem);
+                actionTemplateIndex++;
+                
+                WOMCO_ActionPlanTemplateItem__c withdrawItem = new WOMCO_ActionPlanTemplateItem__c(
+                    WOMCO_ActionPlanTemplate__c = dp.OSMCO_ActionPlanTemplate__c,
+                    WOMCO_ActionTemplate__c = actionTemplatesForInsert[actionTemplateIndex].Id,
+                    PASCO_Quantity__c = 1,
+                    WOMCO_IsMandatory__c = true
+                );
+                templateItemsForInsert.add(withdrawItem);
+                actionTemplateIndex++;
+            }
+        }
+    }
+    
+    if (!templateItemsForInsert.isEmpty()) {
+        insert templateItemsForInsert;
+    }
+}
