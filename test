@@ -1,1 +1,38 @@
-
+    @IsTest
+    static void testBuildActionPlanTemplateItemsWithNoAssets() {
+        User testUser = [SELECT Id FROM User WHERE Email = 'test@example.com' LIMIT 1];
+        
+        System.runAs(testUser) {
+            // Récupération des données de test
+            WorkType validWorkType = [SELECT Id FROM WorkType WHERE ACCCO_VisitType__c != 'LOX_REFILL' LIMIT 1];
+            Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account 2' LIMIT 1]; // Compte sans assets installés
+            
+            // Création d'un DeliveryPlan
+            OSMCO_DeliveryPlan__c dp = new OSMCO_DeliveryPlan__c(
+                Name = 'No Assets Delivery Plan',
+                OSMCO_WorkType__c = validWorkType.Id,
+                OSMCO_Account__c = testAccount.Id
+            );
+            
+            insert dp;
+            
+            Test.startTest();
+            
+            // Appel de la méthode à tester
+            DeliveryPlanHelper.buildActionPlanTemplateItems(new List<OSMCO_DeliveryPlan__c>{ dp });
+            
+            Test.stopTest();
+            
+            // Vérifications
+            // ActionPlanTemplate devrait être créé
+            List<WOMCO_ActionPlanTemplate__c> templates = [SELECT Id FROM WOMCO_ActionPlanTemplate__c];
+            System.assertEquals(1, templates.size(), 'Un ActionPlanTemplate devrait être créé');
+            
+            // Mais pas d'ActionTemplates ni d'ActionPlanTemplateItems
+            List<WOMCO_ActionTemplate__c> actionTemplates = [SELECT Id FROM WOMCO_ActionTemplate__c];
+            List<WOMCO_ActionPlanTemplateItem__c> templateItems = [SELECT Id FROM WOMCO_ActionPlanTemplateItem__c];
+            
+            System.assertEquals(0, actionTemplates.size(), 'Aucun ActionTemplate ne devrait être créé');
+            System.assertEquals(0, templateItems.size(), 'Aucun ActionPlanTemplateItem ne devrait être créé');
+        }
+    }
