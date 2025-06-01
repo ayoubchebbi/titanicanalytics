@@ -1,1 +1,40 @@
+get nameQuery() {
+    if (!this.recordId || this._objectApiName !== CONSTANTS.OBJECTS.ACCOUNT) {
+        return null;
+    }
+    
+    return gql`
+        query getAccountName($recordId: ID) {
+            uiapi {
+                query {
+                    Account(where: { Id: { eq: $recordId } }) {
+                        edges {
+                            node {
+                                Id
+                                Name { value }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    `;
+}
 
+get nameVariables() {
+    return { recordId: this.recordId };
+}
+
+@wire(graphql, {
+    query: '$nameQuery',
+    variables: '$nameVariables'
+})
+wireGetAccountName({ data, errors }) {
+    if (data?.uiapi?.query?.Account?.edges?.length > 0) {
+        const accountName = data.uiapi.query.Account.edges[0].node.Name?.value;
+        this.accountInit.title = accountName;
+    }
+    if (errors) {
+        console.error('Error loading account name:', errors);
+    }
+}
