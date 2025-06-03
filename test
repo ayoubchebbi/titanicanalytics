@@ -1,200 +1,72 @@
-/**
- * @author ayoub.chebbi-sc@airliquide.com | 28-05-2025
- * @description Create new Action Plan Template Items for new Delivery Plan
- * @param deliveryPlans List of new Delivery Plans
- */
-public static void handleCreateActionPlanTemplateItems(List<OSMCO_DeliveryPlan__c> newDeliveryPlans, Map<Id, OSMCO_DeliveryPlan__c> oldObjectsMap) {
-    Set<Id> workTypeIds = new Set<Id>();
-    Set<Id> accountIds = new Set<Id>();
-    List<OSMCO_DeliveryPlan__c> validDeliveryPlans = new List<OSMCO_DeliveryPlan__c>();
+// 1. Modification dans fscoCreateDeliveryPlanHelper.js
+// Ajouter cette nouvelle fonction de filtrage pour les thérapies
 
-    String deliveryPlanLabel = Schema.SObjectType.OSMCO_DeliveryPlan__c.getLabel();
-    String actionPlanTemplateLabel = Schema.SObjectType.WOMCO_ActionPlanTemplate__c.getLabel();
-    
-    for (OSMCO_DeliveryPlan__c dp : newDeliveryPlans) {
-        if (dp.OSMCO_WorkType__c != null) {
-            workTypeIds.add(dp.OSMCO_WorkType__c);
-        }
-        if (dp.OSMCO_Account__c != null) {
-            accountIds.add(dp.OSMCO_Account__c);
-        }
+const createTherapyFilter = (accountId) => {
+    if (!accountId) {
+        // Si pas de compte sélectionné, retourner un filtre qui ne retourne aucun résultat
+        return {
+            criteria: [{
+                fieldPath: 'Id',
+                operator: 'eq',
+                value: 'impossible_value_to_disable_field'
+            }]
+        };
     }
-    
-    Map<Id, WorkType> workTypeMap = new Map<Id, WorkType>([
-        SELECT Id, ACCCO_VisitType__c 
-        FROM WorkType 
-        WHERE Id IN :workTypeIds
-        AND ACCCO_VisitType__c != :LOX_REFILL
-    ]);
-    
-    for (OSMCO_DeliveryPlan__c dp : newDeliveryPlans) {
-        WorkType workType = workTypeMap?.get(dp.OSMCO_WorkType__c);
-        OSMCO_DeliveryPlan__c oldDp = oldObjectsMap?.get(dp.Id);
-        if (workType != null && oldDp?.OSMCO_ActionPlanTemplate__c != dp.OSMCO_ActionPlanTemplate__c) {
-            validDeliveryPlans.add(dp);
-        }
-    }
-    
-    if (validDeliveryPlans.isEmpty()) {
-        return;
-    }
-    processActionTemplateWithAsset(validDeliveryPlans, accountIds);
+
+    return {
+        criteria: [{
+            fieldPath: 'PASSCO_Patient__c',
+            operator: 'eq',
+            value: accountId
+        }]
+    };
 }
 
-private static void processActionTemplateWithAsset(List<OSMCO_DeliveryPlan__c> validDeliveryPlans, Set<Id> accountIds) {
-    
-    Set<Id> productIds = new Set<Id>();
-    User currentUser = UserHelper.currentUser;
-    Map<String, WOMCO_ActionTemplate__c> actionTemplateMap = new Map<String, WOMCO_ActionTemplate__c>();
-    List<WOMCO_ActionTemplate__c> actionTemplatesToInsert = new List<WOMCO_ActionTemplate__c>();
-
-    // Utiliser Map pour optimiser l'accès aux assets
-    Map<Id, Asset> eligibleAssetsMap = new Map<Id, Asset>([
-        SELECT Id, ProductFamily, AccountId, Product2Id
-        FROM Asset
-        WHERE Status = :INSTALLED
-        AND ProductFamily = :LBU
-        AND AccountId IN :accountIds
-    ]);
-    
-    if (eligibleAssetsMap.isEmpty()) {
-        return;
-    }
-    
-    List<Asset> eligibleAssets = eligibleAssetsMap.values();
-    
-    for (Asset asset : eligibleAssets) {
-        productIds.add(asset.Product2Id);
-    }
-
-    List<WOMCO_ActionTemplate__c> existingTemplates = [
-        SELECT Id, WOMCO_ActionType__c, WOMCO_Product__c, TEKCO_Country__c, TEKCO_Brand__c
-        FROM WOMCO_ActionTemplate__c
-        WHERE WOMCO_Product__c IN :productIds
-        AND WOMCO_ActionType__c IN (:ActionTemplateHelper.ACTION_TYPE_DELIVERY, :ActionTemplateHelper.ACTION_TYPE_WITHDRAW)
-        AND TEKCO_Country__c = :currentUser.TEKCO_Country__c
-        AND TEKCO_Brand__c = :currentUser.TEKCO_Brand__c
-        AND WOMCO_IsActive__c = true
-    ];
-
-    for (WOMCO_ActionTemplate__c template : existingTemplates) {
-        String key = template.WOMCO_Product__c + '_' + template.WOMCO_ActionType__c;
-        actionTemplateMap.put(key, template);
-    }
-    
-    Map<Id, List<Asset>> assetsByAccount = new Map<Id, List<Asset>>();
-    for (Asset asset : eligibleAssets) {
-        if (!assetsByAccount.containsKey(asset.AccountId)) {
-            assetsByAccount.put(asset.AccountId, new List<Asset>());
-        }
-        assetsByAccount.get(asset.AccountId).add(asset);
-    }
-
-    // Optimisation: éviter les doublons avec un Set
-    Set<String> processedProductKeys = new Set<String>();
-    
-    for (Asset asset : eligibleAssets) {
-        String deliverKey = asset.Product2Id + '_' + ActionTemplateHelper.ACTION_TYPE_DELIVERY;
-        String withdrawKey = asset.Product2Id + '_' + ActionTemplateHelper.ACTION_TYPE_WITHDRAW;
-        
-        // Éviter de créer des templates en double pour le même produit
-        if (!processedProductKeys.contains(asset.Product2Id)) {
-            processedProductKeys.add(asset.Product2Id);
-            
-            if (!actionTemplateMap.containsKey(deliverKey)) {
-                actionTemplatesToInsert.add(createActionTemplate(
-                    ActionTemplateHelper.ACTION_TYPE_DELIVERY,
-                    asset.Product2Id,
-                    currentUser
-                ));
-            }
-            
-            if (!actionTemplateMap.containsKey(withdrawKey)) {
-                actionTemplatesToInsert.add(createActionTemplate(
-                    ActionTemplateHelper.ACTION_TYPE_WITHDRAW,
-                    asset.Product2Id,
-                    currentUser
-                ));
-            }
-        }
-    }
-    
-    if (!actionTemplatesToInsert.isEmpty()) {
-        WithoutSharingDmlHandler.instance.insertObjects(actionTemplatesToInsert);
-
-        for(WOMCO_ActionTemplate__c actionTemplate : actionTemplatesToInsert) {
-            actionTemplateMap.put(actionTemplate.WOMCO_Product__c + '_' + actionTemplate.WOMCO_ActionType__c, actionTemplate);
-        }
-    }
-    
-    buildActionPlanTemplateItems(validDeliveryPlans, assetsByAccount, actionTemplateMap);
+// N'oubliez pas d'exporter cette fonction
+export {
+    prepareAddress,
+    picklistValues,
+    navigateToRecord,
+    extractErrors,
+    createAddressFilter,
+    createWorkTypeFilter,
+    createAccountLookupFilters,
+    serviceResourceFilter,
+    createTherapyFilter  // <-- Ajouter cette ligne
 }
 
-/**
- * @description Create a single action template
- */
-private static WOMCO_ActionTemplate__c createActionTemplate(String actionType, Id productId, User currentUser) {
-    return new WOMCO_ActionTemplate__c(
-        WOMCO_ActionType__c = actionType,
-        WOMCO_IsActive__c = true,
-        TEKCO_Country__c = currentUser.TEKCO_Country__c,
-        TEKCO_Brand__c = currentUser.TEKCO_Brand__c,
-        WOMCO_Product__c = productId
-    );
+// 2. Modifications dans fscoCreateDeliveryPlan.js
+// Ajouter cet import dans la section des imports depuis le helper
+import { prepareAddress, 
+        picklistValues, 
+        navigateToRecord, 
+        extractErrors,
+        createAddressFilter,
+        createWorkTypeFilter,
+        createAccountLookupFilters,
+        serviceResourceFilter,
+        createTherapyFilter  // <-- Ajouter cette ligne
+        } from './fscoCreateDeliveryPlanHelper';
+
+// 3. Ajouter ce getter dans la classe FscoCreateDeliveryPlan
+get therapyFilter() {
+    return createTherapyFilter(this.formData.OSMCO_Account__c);
 }
 
-private static void buildActionPlanTemplateItems(List<OSMCO_DeliveryPlan__c> validDeliveryPlans, Map<Id, List<Asset>> assetsByAccount, Map<String, WOMCO_ActionTemplate__c> actionTemplateMap) {
-    // Initialiser avec une capacité estimée pour éviter les redimensionnements
-    List<WOMCO_ActionPlanTemplateItem__c> allTemplateItemsForInsert = new List<WOMCO_ActionPlanTemplateItem__c>();
+// 4. Modifier la méthode handleLookupAccountChange pour réinitialiser le champ thérapie
+handleLookupAccountChange(event) {
+    // Réinitialiser le champ thérapie quand le compte change
+    if (this.formData.OSMCO_Therapy__c) {
+        this.formData.OSMCO_Therapy__c = null;
+    }
     
-    for (OSMCO_DeliveryPlan__c dp : validDeliveryPlans) {
-        Integer executionOrder = 1;
-        List<Asset> accountAssets = assetsByAccount.get(dp.OSMCO_Account__c);
-        
-        if (dp.OSMCO_ActionPlanTemplate__c != null && accountAssets != null) {
-            for (Asset asset : accountAssets) {
-                String deliverKey = asset.Product2Id + '_' + ActionTemplateHelper.ACTION_TYPE_DELIVERY;
-                String withdrawKey = asset.Product2Id + '_' + ActionTemplateHelper.ACTION_TYPE_WITHDRAW;
-                
-                WOMCO_ActionTemplate__c deliverTemplate = actionTemplateMap.get(deliverKey);
-                WOMCO_ActionTemplate__c withdrawTemplate = actionTemplateMap.get(withdrawKey);
-                
-                if (deliverTemplate != null && withdrawTemplate != null) {
-                    allTemplateItemsForInsert.add(createActionPlanTemplateItem(
-                        dp.OSMCO_ActionPlanTemplate__c,
-                        deliverTemplate.Id,
-                        1,
-                        executionOrder++,
-                        true
-                    ));
-
-                    allTemplateItemsForInsert.add(createActionPlanTemplateItem(
-                        dp.OSMCO_ActionPlanTemplate__c,
-                        withdrawTemplate.Id,
-                        1,
-                        executionOrder++,
-                        true
-                    ));
-                }
-            }
-        }
-    }
-
-    // DML unique en dehors de toutes les boucles
-    if (!allTemplateItemsForInsert.isEmpty()) {
-        WithoutSharingDmlHandler.instance.insertObjects(allTemplateItemsForInsert);
-    }
+    this.formData.OSMCO_Account__c = event.detail.selectedIds[0];
+    this.accountInit.id = this.formData.OSMCO_Account__c;
+    this.accountInit.title = event.detail.selectedTitles[0] || undefined;
 }
 
-/**
- * @description Create a single action plan template item
- */
-private static WOMCO_ActionPlanTemplateItem__c createActionPlanTemplateItem(Id actionPlanTemplateId, Id actionTemplateId, Integer quantity, Integer executionOrder, Boolean isMandatory) {
-    return new WOMCO_ActionPlanTemplateItem__c(
-        WOMCO_ActionPlanTemplate__c = actionPlanTemplateId,
-        WOMCO_ActionTemplate__c = actionTemplateId,
-        PASCO_Quantity__c = quantity,
-        WOMCO_ExecutionOrder__c = executionOrder,
-        WOMCO_IsMandatory__c = isMandatory
-    );
+// 5. Alternative: Si vous voulez désactiver complètement le champ quand aucun compte n'est sélectionné
+// Ajouter ce getter pour contrôler l'état disabled du champ thérapie
+get isTherapyDisabled() {
+    return !this.formData.OSMCO_Account__c;
 }
