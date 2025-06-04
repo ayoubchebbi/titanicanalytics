@@ -1,72 +1,180 @@
-// 1. Modification dans fscoCreateDeliveryPlanHelper.js
-// Ajouter cette nouvelle fonction de filtrage pour les thérapies
+Voici comment gérer les `@wire` avec des **Promises** pour un contrôle plus fin :
 
-const createTherapyFilter = (accountId) => {
-    if (!accountId) {
-        // Si pas de compte sélectionné, retourner un filtre qui ne retourne aucun résultat
-        return {
-            criteria: [{
-                fieldPath: 'Id',
-                operator: 'eq',
-                value: 'impossible_value_to_disable_field'
-            }]
-        };
+## Solution 1 : Conversion @wire en Promise
+
+```javascript
+export default class ProductWorkOrderMatcher extends LightningElement {
+    matchedData = [];
+    isLoading = true;
+    error = null;
+
+    @wire(graphql, { query: productQuery })
+    productItemsResult;
+
+    @wire(graphql, { query: workOrderQuery })
+    workOrderLineItemsResult;
+
+    async connectedCallback() {
+        try {
+            await this.waitForWiredData();
+            this.matchedData = this.performMatching();
+        } catch (error) {
+            this.error = error;
+        } finally {
+            this.isLoading = false;
+        }
     }
 
-    return {
-        criteria: [{
-            fieldPath: 'PASSCO_Patient__c',
-            operator: 'eq',
-            value: accountId
-        }]
+    // Convertir @wire en Promise
+    waitForWiredData() {
+        return new Promise((resolve, reject) => {
+            const checkData = () => {
+                // Vérifier les erreurs
+                if (this.productItemsResult?.error || this.workOrderLineItemsResult?.error) {
+                    reject(this.productItemsResult?.error || this.workOrderLineItemsResult?.error);
+                    return;
+                }
+
+                // Vérifier si les données sont prêtes
+                if (this.productItemsResult?.data && this.workOrderLineItemsResult?.data) {
+                    resolve({
+                        products: this.productItemsResult.data,
+                        workOrders: this.workOrderLineItemsResult.data
+                    });
+                    return;
+                }
+
+                // Réessayer après un délai
+                setTimeout(checkData, 50);
+            };
+
+            checkData();
+        });
+    }
+}
+```
+
+## Solution 2 : Promise.all avec gestion d'état
+
+```javascript
+export default class ProductWorkOrderMatcher extends LightningElement {
+    matchedData = [];
+    loadingState = {
+        products: false,
+        workOrders: false,
+        matching: false
     };
-}
 
-// N'oubliez pas d'exporter cette fonction
-export {
-    prepareAddress,
-    picklistValues,
-    navigateToRecord,
-    extractErrors,
-    createAddressFilter,
-    createWorkTypeFilter,
-    createAccountLookupFilters,
-    serviceResourceFilter,
-    createTherapyFilter  // <-- Ajouter cette ligne
-}
+    @wire(graphql, { query: productQuery })
+    productItemsResult;
 
-// 2. Modifications dans fscoCreateDeliveryPlan.js
-// Ajouter cet import dans la section des imports depuis le helper
-import { prepareAddress, 
-        picklistValues, 
-        navigateToRecord, 
-        extractErrors,
-        createAddressFilter,
-        createWorkTypeFilter,
-        createAccountLookupFilters,
-        serviceResourceFilter,
-        createTherapyFilter  // <-- Ajouter cette ligne
-        } from './fscoCreateDeliveryPlanHelper';
+    @wire(graphql, { query: workOrderQuery })
+    workOrderLineItemsResult;
 
-// 3. Ajouter ce getter dans la classe FscoCreateDeliveryPlan
-get therapyFilter() {
-    return createTherapyFilter(this.formData.OSMCO_Account__c);
-}
+    async connectedCallback() {
+        try {
+            // Attendre que toutes les données soient chargées
+            const [productData, workOrderData] = await Promise.all([
+                this.waitForProductData(),
+                this.waitForWorkOrderData()
+            ]);
 
-// 4. Modifier la méthode handleLookupAccountChange pour réinitialiser le champ thérapie
-handleLookupAccountChange(event) {
-    // Réinitialiser le champ thérapie quand le compte change
-    if (this.formData.OSMCO_Therapy__c) {
-        this.formData.OSMCO_Therapy__c = null;
+            this.loadingState.matching = true;
+            this.matchedData = await this.performMatchingAsync(productData, workOrderData);
+            
+        } catch (error) {
+            this.handleError(error);
+        } finally {
+            this.resetLoadingState();
+        }
     }
-    
-    this.formData.OSMCO_Account__c = event.detail.selectedIds[0];
-    this.accountInit.id = this.formData.OSMCO_Account__c;
-    this.accountInit.title = event.detail.selectedTitles[0] || undefined;
-}
 
-// 5. Alternative: Si vous voulez désactiver complètement le champ quand aucun compte n'est sélectionné
-// Ajouter ce getter pour contrôler l'état disabled du champ thérapie
-get isTherapyDisabled() {
-    return !this.formData.OSMCO_Account__c;
+    waitForProductData() {
+        return new Promise((resolve, reject) => {
+            this.loadingState.products = true;
+            
+            const checkProductData = () => {
+                if (this.productItemsResult?.error) {
+                    reject(this.productItemsResult.error);
+                    return;
+                }
+                
+                if (this.productItemsResult?.data) {
+                    this.loadingState.products = false;
+                    resolve(this.extractNodes(this.productItemsResult.data.uiapi.query.ProductItem));
+                    return;
+                }
+                
+                setTimeout(checkProductData, 100);
+            };
+            
+            checkProductData();
+        });
+    }
+
+    waitForWorkOrderData() {
+        return new Promise((resolve, reject) => {
+            this.loadingState.workOrders = true;
+            
+            const checkWorkOrderData = () => {
+                if (this.workOrderLineItemsResult?.error) {
+                    reject(this.workOrderLineItemsResult.error);
+                    return;
+                }
+                
+                if (this.workOrderLineItemsResult?.data) {
+                    this.loadingState.workOrders = false;
+                    resolve(this.extractNodes(this.workOrderLineItemsResult.data.uiapi.query.WorkOrderLineItem));
+                    return;
+                }
+                
+                setTimeout(checkWorkOrderData, 100);
+            };
+            
+            checkWorkOrderData();
+        });
+    }
+
+    // Version asynchrone du matching pour gros volumes
+    async performMatchingAsync(productItems, workOrderItems) {
+        return new Promise((resolve) => {
+            // Utiliser requestIdleCallback pour éviter de bloquer l'UI
+            const performWork = (deadline) => {
+                const result = this.optimizedMatcher(productItems, workOrderItems);
+                resolve(result);
+            };
+
+            if (window.requestIdleCallback) {
+                window.requestIdleCallback(performWork);
+            } else {
+                setTimeout(() => performWork(), 0);
+            }
+        });
+    }
 }
+```
+
+## Solution 3 : Approche avec async/await et timeout
+
+```javascript
+export default class ProductWorkOrderMatcher extends LightningElement {
+    static TIMEOUT_DURATION = 10000; // 10 secondes
+    
+    async connectedCallback() {
+        try {
+            const data = await this.loadDataWithTimeout();
+            this.processMatchedData(data);
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async loadDataWithTimeout() {
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout: Les données n\'ont pas été chargées')), 
+                      ProductWorkOrderMatcher.TIMEOUT_DURATION);
+        });
+
+        const dataPromise = this.waitForAllData();
+
+        // Race
