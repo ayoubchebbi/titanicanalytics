@@ -1,82 +1,30 @@
-String encodedText = "It&#39;s working";
-String decodedText = encodedText.unescapeHtml4();
-System.debug(decodedText); // Output: It's working
-
-String htmlEncoded = "User&#39;s name is &#39;John&#39;";
-String result = htmlEncoded.replace('&#39;', '\'');
-System.debug(result); // Output: User's name is 'John'
-Voici comment remplacer le `.filter()` par `.forEach()` :
-
-## Version avec forEach
-
-```javascript
-const _productItems = [];
-
-this.productItems.forEach(item => {
-    if (exchangeableProductIds.includes(item.productParent)) {
-        _productItems.push(item);
-    }
-});
-
-console.log(_productItems);
-return _productItems;
-```
-
-## Version avec forEach et débogage
-
-```javascript
-const _productItems = [];
-
-console.log('exchangeableProductIds:', exchangeableProductIds);
-console.log('this.productItems avant filtre:', this.productItems);
-
-this.productItems.forEach(item => {
-    console.log('Vérification item:', item.productParent);
+getExchangeableLevel({ errors, data }) {
+    if (errors || !data) return;
     
-    if (exchangeableProductIds.includes(item.productParent)) {
-        console.log('✓ Ajouté:', item);
-        _productItems.push(item);
-    } else {
-        console.log('✗ Rejeté:', item.productParent);
+    this.toggleLoading(true);
+    
+    if (!this.shouldProcessExchangeableLevel(data) || this._match?.productItemId !== undefined) {
+        this.toggleLoading(false);
+        return;
     }
-});
-
-console.log('Résultat final:', _productItems);
-return _productItems;
-```
-
-## Version avec forEach et vérifications supplémentaires
-
-```javascript
-const _productItems = [];
-
-this.productItems.forEach(item => {
-    // Vérifier si productParent existe
-    if (item.productParent && exchangeableProductIds.includes(item.productParent)) {
-        _productItems.push(item);
+    
+    const edges = data.uiapi.query.PRDCO_ProductToProductPackVariance_c.edges;
+    
+    for (const edge of edges) {
+        const matchingProduct = this.productItems.find(pi => 
+            pi.productParent === edge.node.PRDCO_Product_c.Id
+        );
+        
+        if (matchingProduct) {
+            this._match = {
+                productItemId: matchingProduct.id,
+                productItem: matchingProduct,
+                matchType: CONSTANTS.MATCH_TYPES.EXCHANGEABLE.TYPE
+            };
+            this.exchangeableProductItem();
+            break;
+        }
     }
-});
-
-console.log(_productItems);
-return _productItems;
-```
-
-## Version avec forEach et conversion de types
-
-```javascript
-const _productItems = [];
-
-this.productItems.forEach(item => {
-    // Essayer différents types de comparaison
-    if (exchangeableProductIds.includes(item.productParent) ||
-        exchangeableProductIds.includes(String(item.productParent)) ||
-        exchangeableProductIds.includes(Number(item.productParent))) {
-        _productItems.push(item);
-    }
-});
-
-console.log(_productItems);
-return _productItems;
-```
-
-La version avec débogage vous aidera à identifier pourquoi le filtre ne fonctionne pas. Une fois le problème identifié, vous pourrez utiliser la version appropriée.
+    
+    this.toggleLoading(false);
+}
