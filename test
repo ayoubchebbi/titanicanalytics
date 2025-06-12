@@ -1,30 +1,41 @@
-getExchangeableLevel({ errors, data }) {
-    if (errors || !data) return;
-    
-    this.toggleLoading(true);
-    
-    if (!this.shouldProcessExchangeableLevel(data) || this._match?.productItemId !== undefined) {
-        this.toggleLoading(false);
-        return;
-    }
-    
-    const edges = data.uiapi.query.PRDCO_ProductToProductPackVariance_c.edges;
-    
-    for (const edge of edges) {
-        const matchingProduct = this.productItems.find(pi => 
-            pi.productParent === edge.node.PRDCO_Product_c.Id
-        );
-        
-        if (matchingProduct) {
-            this._match = {
-                productItemId: matchingProduct.id,
-                productItem: matchingProduct,
-                matchType: CONSTANTS.MATCH_TYPES.EXCHANGEABLE.TYPE
-            };
-            this.exchangeableProductItem();
-            break;
-        }
-    }
-    
-    this.toggleLoading(false);
-}
+Sure! Here's a single English block with clear UI steps that you can copy-paste and follow directly in Salesforce:
+
+
+---
+
+🔧 Post-Deployment Step: Set Named Credential Identity Type to "Anonymous" in Salesforce UI
+
+1. Go to Setup (click the gear icon ⚙️ at the top right, then click Setup).
+
+
+2. In the Quick Find box, search for Named Credentials.
+
+
+3. Click on Named Credentials.
+
+
+4. Find and click on the Named Credential named Custom_Bundling_API.
+
+
+5. Click Edit.
+
+
+6. In the Authentication section, find the field Identity Type.
+
+
+7. Set Identity Type to Anonymous from the dropdown.
+
+
+8. Click Save.
+
+
+
+> 🔒 If the Identity Type field is not editable (grayed out), it means the Named Credential was deployed via metadata. In that case, update the .namedCredential-meta.xml file and redeploy it via SFDX or your CI/CD tool.
+
+
+
+
+---
+
+Let me know if you want the metadata file template too.
+
