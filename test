@@ -1,24 +1,43 @@
-Voici une reformulation plus claire et professionnelle du message affiché dans la capture d’écran :
+Log in to Salesforce
+Go to https://login.salesforce.com (or your sandbox URL).
 
+Log in with credentials that have the right permissions.
 
----
+2. Go to Setup
+Click on the gear icon (⚙️) in the top-right corner.
 
-Bonjour,
-Je travaille sur le processus Unload Process et j’ai quelques questions :
+Select Setup.
 
-Concernant le nouveau champ Withdrawn, à quel moment doit-on cocher sa valeur ?
+3. Navigate to Permission Set Groups
+In the Quick Find box, type Permission Set Groups.
 
-Qu’en est-il de la création d’un P.I ?
+Click on Permission Set Groups.
 
-Sur l’interface mobile, on affiche les P.I de deux types : withdrawn et non-withdrawn.
-Après modification de la quantité sur un non-withdrawn, faut-il mettre à jour les P.I et les enregistrer dans les warehouses ?
-Si oui, doit-on appliquer la même logique que pour le S.R côté entrepôt ?
+Locate and click on My_PSG_Name.
 
+4. Add Permission Sets to the Group
+Scroll down to the Permission Sets section.
 
-Merci d’avance pour tes retours.
+Click Permission Sets in Group.
 
+Click the Add Permission Sets button.
 
----
+5. Select Permission Sets
+In the list, search and select the following Permission Sets:
 
-Souhaitez-vous que je le reformule pour un e-mail officiel ou une documentation technique ?
+test001
 
+test002
+
+test003
+
+test004
+
+test005
+
+Click Add.
+
+6. Save and Recalculate
+After adding, click Done.
+
+Back in the Permission Set Group detail page, click Recalculate to apply the updated permissions.
