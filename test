@@ -1,41 +1,24 @@
-Sure! Here's a single English block with clear UI steps that you can copy-paste and follow directly in Salesforce:
+Voici une reformulation plus claire et professionnelle du message affiché dans la capture d’écran :
 
 
 ---
 
-🔧 Post-Deployment Step: Set Named Credential Identity Type to "Anonymous" in Salesforce UI
+Bonjour,
+Je travaille sur le processus Unload Process et j’ai quelques questions :
 
-1. Go to Setup (click the gear icon ⚙️ at the top right, then click Setup).
+Concernant le nouveau champ Withdrawn, à quel moment doit-on cocher sa valeur ?
 
+Qu’en est-il de la création d’un P.I ?
 
-2. In the Quick Find box, search for Named Credentials.
-
-
-3. Click on Named Credentials.
-
-
-4. Find and click on the Named Credential named Custom_Bundling_API.
+Sur l’interface mobile, on affiche les P.I de deux types : withdrawn et non-withdrawn.
+Après modification de la quantité sur un non-withdrawn, faut-il mettre à jour les P.I et les enregistrer dans les warehouses ?
+Si oui, doit-on appliquer la même logique que pour le S.R côté entrepôt ?
 
 
-5. Click Edit.
-
-
-6. In the Authentication section, find the field Identity Type.
-
-
-7. Set Identity Type to Anonymous from the dropdown.
-
-
-8. Click Save.
-
-
-
-> 🔒 If the Identity Type field is not editable (grayed out), it means the Named Credential was deployed via metadata. In that case, update the .namedCredential-meta.xml file and redeploy it via SFDX or your CI/CD tool.
-
-
+Merci d’avance pour tes retours.
 
 
 ---
 
-Let me know if you want the metadata file template too.
+Souhaitez-vous que je le reformule pour un e-mail officiel ou une documentation technique ?
 
