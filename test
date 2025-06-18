@@ -1,43 +1,32 @@
-Log in to Salesforce
-Go to https://login.salesforce.com (or your sandbox URL).
-
-Log in with credentials that have the right permissions.
-
-2. Go to Setup
-Click on the gear icon (⚙️) in the top-right corner.
-
-Select Setup.
-
-3. Navigate to Permission Set Groups
-In the Quick Find box, type Permission Set Groups.
-
-Click on Permission Set Groups.
-
-Locate and click on My_PSG_Name.
-
-4. Add Permission Sets to the Group
-Scroll down to the Permission Sets section.
-
-Click Permission Sets in Group.
-
-Click the Add Permission Sets button.
-
-5. Select Permission Sets
-In the list, search and select the following Permission Sets:
-
-test001
-
-test002
-
-test003
-
-test004
-
-test005
-
-Click Add.
-
-6. Save and Recalculate
-After adding, click Done.
-
-Back in the Permission Set Group detail page, click Recalculate to apply the updated permissions.
+<template>
+    <div class="slds-box slds-m-around_medium">
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+            <!-- Section gauche avec icon et textes -->
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <!-- Icône chevron up -->
+                <div class="slds-m-right_small">
+                    <lightning-icon 
+                        icon-name="utility:chevronup" 
+                        size="small" 
+                        variant="bare">
+                    </lightning-icon>
+                </div>
+                
+                <!-- Textes -->
+                <div>
+                    <div class="slds-text-heading_small slds-text-color_default">
+                        Product Name
+                    </div>
+                    <div class="slds-text-body_small slds-text-color_weak">
+                        Product Code
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chiffre à droite -->
+            <div class="slds-text-heading_medium slds-text-color_default">
+                10
+            </div>
+        </div>
+    </div>
+</template>
