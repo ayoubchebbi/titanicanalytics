@@ -1,1 +1,5 @@
+SELECT PermissionSetId
+FROM SetupEntityAccess
+WHERE SetupEntityId IN (SELECT Id FROM CustomPermission WHERE DeveloperName = 'BYPASS_TRIGGERS')
+AND AssigneeId = :UserInfo.getUserId();
 
