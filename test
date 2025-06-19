@@ -1,32 +1,25 @@
-<template>
-    <div class="slds-box slds-m-around_medium">
-        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-            <!-- Section gauche avec icon et textes -->
-            <div class="slds-grid slds-grid_vertical-align-center">
-                <!-- Icône chevron up -->
-                <div class="slds-m-right_small">
-                    <lightning-icon 
-                        icon-name="utility:chevronup" 
-                        size="small" 
-                        variant="bare">
-                    </lightning-icon>
-                </div>
-                
-                <!-- Textes -->
-                <div>
-                    <div class="slds-text-heading_small slds-text-color_default">
-                        Product Name
-                    </div>
-                    <div class="slds-text-body_small slds-text-color_weak">
-                        Product Code
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Chiffre à droite -->
-            <div class="slds-text-heading_medium slds-text-color_default">
-                10
-            </div>
-        </div>
-    </div>
-</template>
+Login to Salesforce with an authorized user who has permission to schedule Apex classes.
+
+Go to Setup > Apex Classes.
+
+Click on the "Schedule Apex" button.
+
+Fill in the following details:
+
+Job Name: NightlyBatchJob (or appropriate name)
+
+Apex Class: YourBatchClassName (replace with your batch class)
+
+Frequency: Weekly
+
+Select all days if it should run daily.
+
+Preferred Start Time: 10:00 PM
+
+Click Save.
+
+Verify the job has been scheduled:
+
+Go to Setup > Scheduled Jobs
+
+Confirm that the batch job appears with the correct start time and frequency.
