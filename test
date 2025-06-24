@@ -1,12 +1,1 @@
 
-Nous rencontrons un problème dans le traitement du ticket CXHHC-43974 au niveau du trigger.
-Le déclencheur récupère une liste de Patients, et pour chacun d’eux, il est nécessaire d’identifier le POS (point of service) le plus proche.
-Cependant, il ne faut pas utiliser la fonction DISTANCE à l’intérieur d’une boucle, car cela entraînerait de mauvaises performances.
-Bien que l’on puisse récupérer la liste des POS et calculer manuellement les distances, cette approche n’est ni optimale ni scalable, d’autant plus que nous ne connaissons pas le nombre total de POS à l’avance.
-
-
----
-
-Souhaites-tu que je propose une solution alternative ou une optimisation pour ce cas ?
-
-
