@@ -1,5 +1,42 @@
-SELECT PermissionSetId
-FROM SetupEntityAccess
-WHERE SetupEntityId IN (SELECT Id FROM CustomPermission WHERE DeveloperName = 'BYPASS_TRIGGERS')
-AND AssigneeId = :UserInfo.getUserId();
+
+Voici les étapes à suivre pour écrire des post-deployment steps afin de changer le label d’une List View sur l’objet Service Appointment (Salesforce), spécifiquement une vue contenant un bundle SA. Les instructions sont en anglais, avec les traductions françaises des boutons ou actions entre parenthèses.
+
+
+---
+
+Post-Deployment Steps to Update List View Label on Service Appointment
+
+1. Go to the "Service Appointments" tab
+(Accédez à l’onglet "Service Appointments")
+
+
+2. Click the "List View Controls" gear icon next to the list view name
+(Cliquez sur l’icône d’engrenage "List View Controls" à côté du nom de la liste)
+
+
+3. Select "Rename" from the dropdown menu
+(Sélectionnez "Rename" dans le menu déroulant)
+
+
+4. Update the "List Name" field with the new label you want
+(Modifiez le champ "List Name" avec le nouveau libellé souhaité)
+
+
+5. Click "Save"
+(Cliquez sur "Save" [Enregistrer])
+
+
+6. Make sure the list view still has correct filters for the bundle SA
+(Vérifiez que la liste a toujours les bons filtres pour le bundle SA)
+
+
+7. Optionally, adjust the visibility or sharing settings if needed
+(Optionnel : ajustez la visibilité ou les paramètres de partage si nécessaire)
+
+
+
+
+---
+
+Souhaitez-vous que je vous prépare aussi un script en Apex ou Metadata API si ce changement devait être automatisé lors du déploiement ?
 
