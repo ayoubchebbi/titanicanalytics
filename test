@@ -1,1 +1,37 @@
-
+   @IsTest
+    static void testAssignClosestPOSToTherapies() {
+        // Récupérer les données de test
+        List<PASCO_Therapy__c> therapies = [SELECT Id, Name, PASCO_POSAccount__c 
+                                           FROM PASCO_Therapy__c 
+                                           LIMIT 5];
+        
+        // Vérifier que les thérapies n'ont pas de POS assigné initialement
+        for(PASCO_Therapy__c therapy : therapies) {
+            System.assertEquals(null, therapy.PASCO_POSAccount__c, 
+                              'La thérapie ne devrait pas avoir de POS assigné initialement');
+        }
+        
+        Test.startTest();
+        
+        // Exécuter la classe Queueable
+        FSCO_AssignClosestPOSToTherapies_QBL queueableJob = 
+            new FSCO_AssignClosestPOSToTherapies_QBL(therapies);
+        
+        System.enqueueJob(queueableJob);
+        
+        Test.stopTest();
+        
+        // Vérifier les résultats après l'exécution
+        List<PASCO_Therapy__c> updatedTherapies = [SELECT Id, Name, PASCO_POSAccount__c 
+                                                  FROM PASCO_Therapy__c 
+                                                  WHERE Id IN :therapies];
+        
+        // Vérifier que le champ PASCO_POSAccount__c est maintenant rempli
+        for(PASCO_Therapy__c therapy : updatedTherapies) {
+            System.assertNotEquals(null, therapy.PASCO_POSAccount__c, 
+                                 'Le champ PASCO_POSAccount__c devrait être rempli après traitement');
+        }
+        
+        System.assertEquals(therapies.size(), updatedTherapies.size(), 
+                          'Toutes les thérapies devraient être traitées');
+    }
