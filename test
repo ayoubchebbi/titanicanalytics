@@ -1,37 +1,31 @@
-   @IsTest
-    static void testAssignClosestPOSToTherapies() {
-        // Récupérer les données de test
-        List<PASCO_Therapy__c> therapies = [SELECT Id, Name, PASCO_POSAccount__c 
-                                           FROM PASCO_Therapy__c 
-                                           LIMIT 5];
-        
-        // Vérifier que les thérapies n'ont pas de POS assigné initialement
-        for(PASCO_Therapy__c therapy : therapies) {
-            System.assertEquals(null, therapy.PASCO_POSAccount__c, 
-                              'La thérapie ne devrait pas avoir de POS assigné initialement');
-        }
-        
-        Test.startTest();
-        
-        // Exécuter la classe Queueable
-        FSCO_AssignClosestPOSToTherapies_QBL queueableJob = 
-            new FSCO_AssignClosestPOSToTherapies_QBL(therapies);
-        
-        System.enqueueJob(queueableJob);
-        
-        Test.stopTest();
-        
-        // Vérifier les résultats après l'exécution
-        List<PASCO_Therapy__c> updatedTherapies = [SELECT Id, Name, PASCO_POSAccount__c 
-                                                  FROM PASCO_Therapy__c 
-                                                  WHERE Id IN :therapies];
-        
-        // Vérifier que le champ PASCO_POSAccount__c est maintenant rempli
-        for(PASCO_Therapy__c therapy : updatedTherapies) {
-            System.assertNotEquals(null, therapy.PASCO_POSAccount__c, 
-                                 'Le champ PASCO_POSAccount__c devrait être rempli après traitement');
-        }
-        
-        System.assertEquals(therapies.size(), updatedTherapies.size(), 
-                          'Toutes les thérapies devraient être traitées');
+public static void addDefaultSchedulingBookAppointment(List<ServiceAppointment> newServiceAppointments) {
+    if (newServiceAppointments.isEmpty()) return;
+    
+    Set<String> lookupKeys = new Set<String>();
+    Map<ServiceAppointment, String> appointmentToKey = new Map<ServiceAppointment, String>();
+    
+    // Single pass to build keys and relationships
+    for (ServiceAppointment sa : newServiceAppointments) {
+        String key = sa.TEKCO_Country__c + ':' + sa.TEKCO_Brand__c + ':true';
+        lookupKeys.add(key);
+        appointmentToKey.put(sa, key);
     }
+    
+    // Build policy lookup map
+    Map<String, Id> policyMap = new Map<String, Id>();
+    for (FSL_Scheduling_Policy__c sp : [
+        SELECT Id, TEKCO_BookAppointmentCheck__c 
+        FROM FSL_Scheduling_Policy__c 
+        WHERE TEKCO_BookAppointmentCheck__c IN :lookupKeys
+    ]) {
+        policyMap.put(sp.TEKCO_BookAppointmentCheck__c, sp.Id);
+    }
+    
+    // Apply mappings
+    for (ServiceAppointment sa : appointmentToKey.keySet()) {
+        Id policyId = policyMap.get(appointmentToKey.get(sa));
+        if (policyId != null) {
+            sa.TEKCO_defaultSchedulingBookAppointment__c = policyId;
+        }
+    }
+}
