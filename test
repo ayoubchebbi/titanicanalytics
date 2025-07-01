@@ -1,1 +1,28 @@
-
+ @isTest
+    static void testPopulateBookAppointmentCheck_WhenBookAppointmentIsFalse() {
+        // Arrange
+        List<SchedulingPolicy> testPolicies = new List<SchedulingPolicy>();
+        
+        SchedulingPolicy policy1 = new SchedulingPolicy();
+        policy1.TEKCO_Country__c = 'Spain';
+        policy1.TEKCO_Brand__c = 'BrandC';
+        policy1.FSCO_BookAppointment__c = false;
+        testPolicies.add(policy1);
+        
+        SchedulingPolicy policy2 = new SchedulingPolicy();
+        policy2.TEKCO_Country__c = 'Italy';
+        policy2.TEKCO_Brand__c = 'BrandD';
+        policy2.FSCO_BookAppointment__c = null;
+        testPolicies.add(policy2);
+        
+        // Act
+        Test.startTest();
+        CORE_SM_SchedulingPolicy.populateBookAppointmentCheck(testPolicies);
+        Test.stopTest();
+        
+        // Assert
+        System.assertEquals(null, testPolicies[0].TEKCO_BookAppointmentCheck__c, 
+                           'TEKCO_BookAppointmentCheck__c should be null when FSCO_BookAppointment__c is false');
+        System.assertEquals(null, testPolicies[1].TEKCO_BookAppointmentCheck__c, 
+                           'TEKCO_BookAppointmentCheck__c should be null when FSCO_BookAppointment__c is null');
+    }
