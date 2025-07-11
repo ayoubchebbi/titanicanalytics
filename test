@@ -1,28 +1,6 @@
- @isTest
-    static void testPopulateBookAppointmentCheck_WhenBookAppointmentIsFalse() {
-        // Arrange
-        List<SchedulingPolicy> testPolicies = new List<SchedulingPolicy>();
-        
-        SchedulingPolicy policy1 = new SchedulingPolicy();
-        policy1.TEKCO_Country__c = 'Spain';
-        policy1.TEKCO_Brand__c = 'BrandC';
-        policy1.FSCO_BookAppointment__c = false;
-        testPolicies.add(policy1);
-        
-        SchedulingPolicy policy2 = new SchedulingPolicy();
-        policy2.TEKCO_Country__c = 'Italy';
-        policy2.TEKCO_Brand__c = 'BrandD';
-        policy2.FSCO_BookAppointment__c = null;
-        testPolicies.add(policy2);
-        
-        // Act
-        Test.startTest();
-        CORE_SM_SchedulingPolicy.populateBookAppointmentCheck(testPolicies);
-        Test.stopTest();
-        
-        // Assert
-        System.assertEquals(null, testPolicies[0].TEKCO_BookAppointmentCheck__c, 
-                           'TEKCO_BookAppointmentCheck__c should be null when FSCO_BookAppointment__c is false');
-        System.assertEquals(null, testPolicies[1].TEKCO_BookAppointmentCheck__c, 
-                           'TEKCO_BookAppointmentCheck__c should be null when FSCO_BookAppointment__c is null');
-    }
+I've identified an issue where two Queueable jobs are being triggered at the same time, which is causing unexpected behavior. In this specific part of the Case process, I can confirm that one of the Queueables is present and being executed.
+
+To address this, I'm required to refactor my code to avoid conflicts and ensure only one Queueable is triggered as expected.
+
+Note: I also noticed other potential bugs in this area of the process.
+It would be helpful if you could re-run the automated tests related to this flow to confirm that everything works properly.
