@@ -1,1 +1,39 @@
+Voici une reformulation professionnelle et claire du paragraphe que tu veux envoyer, accompagnée d'une réponse constructive à son commentaire :
+
+
+---
+
+Réponse reformulée :
+
+Hello GARG-SC, Shivam,
+
+I tested in UAT with PoS Agent NL and I can see all service contracts.
+Here are two examples.
+
+Regarding the Therapy, we just need to add an action to change the status or allow using another object, so that you can test with an active therapy.
+I believe it's not blocked for testing purposes.
+
+
+---
+
+Proposition de réponse au commentaire de Shivam :
+
+Hello GARG-SC, Shivam,
+
+Thanks for your detailed feedback.
+
+I understand the issue comes from the default "Draft" status of the Therapy object, which limits the actions PoS agents can perform (e.g., apply care plans, create cases, prescriptions, etc.).
+
+As a temporary solution, we suggest implementing an action or automation to allow the status to be updated from "Draft" to "Active" in UAT. This would unblock testing for all the use cases you mentioned (SC, prescriptions, care plans, WO, etc.).
+
+Let us know if you would like us to implement this change or if you prefer to handle it on your side.
+
+Best regards,
+[Your Name]
+
+
+---
+
+Souhaites-tu que je traduise cela en français ou que je prépare une version directement dans Jira ?
+
 
