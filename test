@@ -1,1 +1,9 @@
+Regarding the Therapy, I understand that the limitation is due to the default "Draft" status of the Therapy object, which prevents PoS agents from performing certain actions (e.g., applying care plans, creating cases, prescriptions, etc.).
+However, you should be able to proceed with testing by selecting a Therapy record that is already in "Active" status. From what I can see, the environment is not blocked for testing purposes.
+
+
+---
+
+Souhaites-tu aussi une version en français pour ton suivi interne ?
+
 
