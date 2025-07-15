@@ -1,9 +1,4 @@
-Regarding the Therapy, I understand that the limitation is due to the default "Draft" status of the Therapy object, which prevents PoS agents from performing certain actions (e.g., applying care plans, creating cases, prescriptions, etc.).
-However, you should be able to proceed with testing by selecting a Therapy record that is already in "Active" status. From what I can see, the environment is not blocked for testing purposes.
-
-
----
-
-Souhaites-tu aussi une version en français pour ton suivi interne ?
-
-
+/ Modified to set specific times:
+Date startDate = sa.EarliestStartTime.date();
+sa.EarliestStartTime = DateTime.newInstanceGmt(startDate, Time.newInstance(0, 1, 0, 0)); // 00:01:00
+sa.DueDate = DateTime.newInstanceGmt(startDate, Time.newInstance(23, 59, 0, 0)); // 23:59:00
