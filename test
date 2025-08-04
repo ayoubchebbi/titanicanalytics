@@ -1,62 +1,12 @@
-Steps:
-
-1. Navigate to Object Manager
-Go to Setup > Object Manager in Salesforce.
-
-
-2. Locate the Target Object
-
-For the first field: Search and open the Work Order object.
-
-For the second field: Search and open the Delivery Plan object.
-
-
-
-3. Open Fields & Relationships
-
-In the object, go to Fields & Relationships.
-
-
-
-4. Select the Field
-
-For Work Order, locate and click on the Service Appointment field.
-
-For Delivery Plan, locate and click on the Address field.
-
-
-
-5. Click on 'Set Field-Level Labels' for Translations
-
-Scroll down and click on the "Set Field-Level Labels" or use Translation Workbench.
-
-
-
-6. Use Translation Workbench
-
-Go to Setup > Translation Workbench > Translate.
-
-Select:
-
-Language: French
-
-Setup Component: Field Label
-
-Object: Work Order or Delivery Plan (as appropriate)
-
-
-
-
-7. Translate the Label
-
-Enter the French translation for each field:
-
-Service Appointment → Rendez-vous de service (example)
-
-Address → Adresse
-
-
-
-
-8. Save the Translations
-
+ <div class="slds-align_absolute-center" style="height: 100%;">
+                                            <div class="slds-text-align_center">
+                                                <lightning-icon 
+                                                    icon-name="utility:event" 
+                                                    size="small" 
+                                                    variant="disabled">
+                                                </lightning-icon>
+                                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                                    Aucun rendez-vous
+                                                </p>
+                                            </div>
+                                        </div>
