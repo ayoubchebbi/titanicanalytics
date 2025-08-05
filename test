@@ -1,12 +1,8 @@
- <div class="slds-align_absolute-center" style="height: 100%;">
-                                            <div class="slds-text-align_center">
-                                                <lightning-icon 
-                                                    icon-name="utility:event" 
-                                                    size="small" 
-                                                    variant="disabled">
-                                                </lightning-icon>
-                                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                                                    Aucun rendez-vous
-                                                </p>
-                                            </div>
-                                        </div>
+resetLookupComponent() {
+    // Forcer la réinitialisation du composant lookup
+    const lookupComponent = this.template.querySelector('c-fsapp-lookup-filter');
+    if (lookupComponent) {
+        // Déclencher la réinitialisation du lookup
+        lookupComponent.handleCommit();
+    }
+}
