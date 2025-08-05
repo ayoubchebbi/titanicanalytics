@@ -1,8 +1,12 @@
-resetLookupComponent() {
-    // Forcer la réinitialisation du composant lookup
-    const lookupComponent = this.template.querySelector('c-fsapp-lookup-filter');
-    if (lookupComponent) {
-        // Déclencher la réinitialisation du lookup
-        lookupComponent.handleCommit();
+// Ajoutez cette méthode dans connectedCallback() comme fallback
+connectedCallback() {
+    // Si CurrentPageReference ne fonctionne pas, utilisez window.location
+    if (!this.saId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.saId = urlParams.get('saId');
+        
+        if (this.saId) {
+            this.handleSaIdFromUrl();
+        }
     }
 }
