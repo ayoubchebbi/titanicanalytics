@@ -1,13 +1,25 @@
-public static String crypter(String plainText) {
-    Blob keyBlob = Blob.valueOf('MySecretKey12345');
-    Blob plainTextBlob = Blob.valueOf(plainText);
-    Blob encryptedBlob = Crypto.encrypt('AES128', keyBlob, plainTextBlob);
-    return EncodingUtil.base64Encode(encryptedBlob);
-}
+// Texte à chiffrer
+String plainText = 'Hello World!';
 
-public static String decrypter(String encryptedText) {
-    Blob keyBlob = Blob.valueOf('MySecretKey12345');
-    Blob encryptedBlob = EncodingUtil.base64Decode(encryptedText);
-    Blob decryptedBlob = Crypto.decrypt('AES128', keyBlob, encryptedBlob);
-    return decryptedBlob.toString();
-}
+// Clé secrète (32 octets pour AES-256)
+Blob key = Crypto.generateAesKey(256);
+
+// Initialisation du vecteur (IV)
+Blob iv = Crypto.generateRandomBytes(16);
+
+// Conversion du texte en blob
+Blob input = Blob.valueOf(plainText);
+
+// Chiffrement avec IV géré manuellement
+Blob encrypted = Crypto.encrypt('AES256', key, iv, input);
+
+// Déchiffrement
+Blob decrypted = Crypto.decrypt('AES256', key, iv, encrypted);
+
+// Résultat en texte
+String decryptedText = decrypted.toString();
+
+// Logs
+System.debug('Original Text: ' + plainText);
+System.debug('Encrypted (Base64): ' + EncodingUtil.base64Encode(encrypted));
+System.debug('Decrypted Text: ' + decryptedText);
