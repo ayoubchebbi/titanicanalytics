@@ -1,12 +1,13 @@
-// Ajoutez cette méthode dans connectedCallback() comme fallback
-connectedCallback() {
-    // Si CurrentPageReference ne fonctionne pas, utilisez window.location
-    if (!this.saId) {
-        const urlParams = new URLSearchParams(window.location.search);
-        this.saId = urlParams.get('saId');
-        
-        if (this.saId) {
-            this.handleSaIdFromUrl();
-        }
-    }
+public static String crypter(String plainText) {
+    Blob keyBlob = Blob.valueOf('MySecretKey12345');
+    Blob plainTextBlob = Blob.valueOf(plainText);
+    Blob encryptedBlob = Crypto.encrypt('AES128', keyBlob, plainTextBlob);
+    return EncodingUtil.base64Encode(encryptedBlob);
+}
+
+public static String decrypter(String encryptedText) {
+    Blob keyBlob = Blob.valueOf('MySecretKey12345');
+    Blob encryptedBlob = EncodingUtil.base64Decode(encryptedText);
+    Blob decryptedBlob = Crypto.decrypt('AES128', keyBlob, encryptedBlob);
+    return decryptedBlob.toString();
 }
