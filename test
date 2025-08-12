@@ -1,25 +1,41 @@
-// Texte à chiffrer
-String plainText = 'Hello World!';
+ist<ServiceAppointment> serviceAppointments = [
+    SELECT Id, AppointmentNumber, Status, SchedStartTime
+    FROM ServiceAppointment 
+    WHERE Status != 'Completed'
+    LIMIT 200
+];
 
-// Clé secrète (32 octets pour AES-256)
-Blob key = Crypto.generateAesKey(256);
+Integer totalCount = 0;
+Integer successCount = 0;
+Integer errorCount = 0;
 
-// Initialisation du vecteur (IV)
-Blob iv = Crypto.generateRandomBytes(16);
+// Boucle sur chaque ServiceAppointment
+for(ServiceAppointment sa : serviceAppointments) {
+    try {
+        totalCount++;
+        
+        // Appel de votre fonction getSlots (exemple)
+        Object result = FSCO_ScheduledCalendarController.getSlots(sa.Id);
+        
+        // Vérifier si le résultat est supérieur à 0
+        if(result != null) {
+            String resultStr = String.valueOf(result);
+            if(resultStr.isNumeric() && Integer.valueOf(resultStr) > 0) {
+                System.debug('ID avec résultat > 0: ' + sa.Id + ' - Résultat: ' + result);
+                successCount++;
+            }
+        }
+        
+    } catch(Exception e) {
+        errorCount++;
+        System.debug('Erreur pour ID ' + sa.Id + ': ' + e.getMessage());
+        // Continue vers l'ID suivant
+        continue;
+    }
+}
 
-// Conversion du texte en blob
-Blob input = Blob.valueOf(plainText);
-
-// Chiffrement avec IV géré manuellement
-Blob encrypted = Crypto.encrypt('AES256', key, iv, input);
-
-// Déchiffrement
-Blob decrypted = Crypto.decrypt('AES256', key, iv, encrypted);
-
-// Résultat en texte
-String decryptedText = decrypted.toString();
-
-// Logs
-System.debug('Original Text: ' + plainText);
-System.debug('Encrypted (Base64): ' + EncodingUtil.base64Encode(encrypted));
-System.debug('Decrypted Text: ' + decryptedText);
+// Affichage du résumé final
+System.debug('=== RÉSUMÉ FINAL ===');
+System.debug('Total traité: ' + totalCount);
+System.debug('Succès: ' + successCount);
+System.debug('Erreurs: ' + errorCount);
