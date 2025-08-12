@@ -1,41 +1,78 @@
-ist<ServiceAppointment> serviceAppointments = [
-    SELECT Id, AppointmentNumber, Status, SchedStartTime
-    FROM ServiceAppointment 
-    WHERE Status != 'Completed'
-    LIMIT 200
-];
-
-Integer totalCount = 0;
-Integer successCount = 0;
-Integer errorCount = 0;
-
-// Boucle sur chaque ServiceAppointment
-for(ServiceAppointment sa : serviceAppointments) {
-    try {
-        totalCount++;
-        
-        // Appel de votre fonction getSlots (exemple)
-        Object result = FSCO_ScheduledCalendarController.getSlots(sa.Id);
-        
-        // Vérifier si le résultat est supérieur à 0
-        if(result != null) {
-            String resultStr = String.valueOf(result);
-            if(resultStr.isNumeric() && Integer.valueOf(resultStr) > 0) {
-                System.debug('ID avec résultat > 0: ' + sa.Id + ' - Résultat: ' + result);
-                successCount++;
+try {
+    List<ServiceAppointment> serviceAppointments = [
+        SELECT Id, EarliestStartTime, DueDate, ServiceTerritoryId, 
+               FSL__Scheduling_Policy_Used__c, Status
+        FROM ServiceAppointment 
+        WHERE Status IN ('002', '003')
+        AND EarliestStartTime != null 
+        AND ServiceTerritoryId != null
+        LIMIT 200
+    ];
+    
+    System.debug('Nombre de Service Appointments trouvés: ' + serviceAppointments.size());
+    
+    for (ServiceAppointment sa : serviceAppointments) {
+        try {
+            System.debug('Traitement SA ID: ' + sa.Id + ' - Status: ' + sa.Status);
+            
+            Id operatingHoursId;
+            try {
+                List<ServiceTerritory> territories = [
+                    SELECT Id, OperatingHoursId 
+                    FROM ServiceTerritory 
+                    WHERE Id = :sa.ServiceTerritoryId 
+                    LIMIT 1
+                ];
+                
+                if (!territories.isEmpty()) {
+                    operatingHoursId = territories[0].OperatingHoursId;
+                }
+            } catch (Exception territoryEx) {
+                System.debug('Erreur récupération territoire pour SA ' + sa.Id + ': ' + territoryEx.getMessage());
+                continue;
             }
+            
+            Timezone tz = UserInfo.getTimeZone();
+            
+            List<FSL.AppointmentBookingSlot> slots = new List<FSL.AppointmentBookingSlot>();
+            
+            try {
+                slots = FSL.AppointmentBookingService.GetSlots(
+                    sa.Id, 
+                    sa.FSL__Scheduling_Policy_Used__c, 
+                    operatingHoursId, 
+                    tz, 
+                    false
+                );
+                
+                if (slots != null && slots.size() > 0) {
+                    System.debug('✓ SA ID avec slots disponibles: ' + sa.Id + ' (' + slots.size() + ' slots)');
+                    
+                    System.debug('Détails - Status: ' + sa.Status + 
+                               ', EarliestStart: ' + sa.EarliestStartTime + 
+                               ', DueDate: ' + sa.DueDate);
+                } else {
+                    System.debug('○ SA ID sans slots: ' + sa.Id + ' (0 slots disponibles)');
+                }
+                
+            } catch (FSL.AppointmentBookingException fslEx) {
+                System.debug('Erreur FSL pour SA ' + sa.Id + ': ' + fslEx.getMessage());
+                continue;
+            } catch (Exception apiEx) {
+                System.debug('Erreur API générique pour SA ' + sa.Id + ': ' + apiEx.getMessage());
+                continue;
+            }
+            
+        } catch (Exception saEx) {
+            System.debug('Erreur traitement SA ' + sa.Id + ': ' + saEx.getMessage());
+            continue;
         }
-        
-    } catch(Exception e) {
-        errorCount++;
-        System.debug('Erreur pour ID ' + sa.Id + ': ' + e.getMessage());
-        // Continue vers l'ID suivant
-        continue;
     }
+    
+    System.debug('=== Traitement terminé ===');
+    
+} catch (Exception globalEx) {
+    System.debug('Erreur globale: ' + globalEx.getMessage());
+    System.debug('Stack trace: ' + globalEx.getStackTraceString());
 }
-
-// Affichage du résumé final
-System.debug('=== RÉSUMÉ FINAL ===');
-System.debug('Total traité: ' + totalCount);
-System.debug('Succès: ' + successCount);
-System.debug('Erreurs: ' + errorCount);
+*/
