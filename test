@@ -1,1 +1,4 @@
-
+The two service appointments do not have the same address.
+In the bundle configuration, the criteria are based on both patient and address.
+Therefore, the bundling works correctly, and it is normal that the two appointments are not in the same bundle.
+Sorry for not including screenshots, as I do not yet have access to the UAT environment.
