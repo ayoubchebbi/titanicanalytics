@@ -1,13 +1,16 @@
-function formatTimeRange(schedStartTime, schedEndTime) {
-    const startTime = new Date(schedStartTime).toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    
-    const endTime = new Date(schedEndTime).toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    
-    return `${startTime} - ${endTime}`;
-}
+    get timeRange() {
+        if (!this.schedStartTime || !this.schedEndTime) {
+            return '';
+        }
+        
+        const start = new Date(this.schedStartTime);
+        const end = new Date(this.schedEndTime);
+        
+        const startHour = start.getHours().toString().padStart(2, '0');
+        const startMin = start.getMinutes().toString().padStart(2, '0');
+        
+        const endHour = end.getHours().toString().padStart(2, '0');
+        const endMin = end.getMinutes().toString().padStart(2, '0');
+        
+        return `${startHour}:${startMin} - ${endHour}:${endMin}`;
+    }
