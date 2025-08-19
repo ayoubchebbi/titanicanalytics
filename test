@@ -1,1 +1,30 @@
-
+  if (this.isCommunity) {
+    // Obtenir les dimensions de la fenêtre
+    const windowWidth = window.innerWidth;
+    const buttonWidth = 40; // ou la largeur réelle de votre bouton
+    
+    // Estimer une largeur de popup (vous pouvez l'ajuster)
+    const estimatedPopupWidth = 200; // ou mesurer dynamiquement
+    
+    // Vérifier s'il y a assez d'espace à gauche
+    const spaceOnLeft = x;
+    const spaceOnRight = windowWidth - (x + buttonWidth);
+    
+    let leftPosition;
+    if (spaceOnLeft >= estimatedPopupWidth) {
+      // Afficher à gauche du bouton
+      leftPosition = x - estimatedPopupWidth;
+    } else {
+      // Afficher à droite du bouton
+      leftPosition = x + buttonWidth;
+    }
+    
+    return `
+      position: fixed;
+      top: ${y}px;
+      left: ${leftPosition}px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+  }
