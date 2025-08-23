@@ -7,33 +7,32 @@ get popupStyle() {
     const spaceOnLeft = x;
     const spaceOnRight = window.innerWidth - x - buttonWidth;
     
+    // Seuil minimum d'espace requis à gauche
+    const minLeftSpace = 50; // ou la valeur que vous préférez
+    
     let leftPosition;
     
     // Si pas assez d'espace à gauche, afficher à droite
-    if (spaceOnLeft < estimatedPopupWidth) {
-      leftPosition = x + buttonWidth + 10; // 10px de marge
+    if (spaceOnLeft < minLeftSpace && spaceOnRight >= estimatedPopupWidth) {
+      leftPosition = x + buttonWidth; // Positionner à droite du bouton
     } else {
-      leftPosition = x - estimatedPopupWidth;
+      // Logique originale - afficher à gauche
+      leftPosition = (spaceOnLeft >= estimatedPopupWidth) ? x - estimatedPopupWidth : x;
     }
     
-    // Vérifier que le popup ne dépasse pas à droite
-    if (leftPosition + estimatedPopupWidth > window.innerWidth) {
-      leftPosition = window.innerWidth - estimatedPopupWidth - 10;
-    }
-    
-    return {
-      position: 'fixed',
-      left: `${leftPosition}px`,
-      top: `${y}px`,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    };
+    return `
+      position: fixed;
+      left: ${leftPosition}px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
   }
   
-  return {
-    position: 'fixed',
-    top: `${y}px`,
-    left: `${x}px`,
-    transform: 'none'
-  };
+  return `
+    position: fixed;
+    top: ${y}px;
+    left: ${x}px;
+    transform: none;
+  `;
+}
