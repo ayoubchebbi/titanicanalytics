@@ -1,16 +1,39 @@
-    get timeRange() {
-        if (!this.schedStartTime || !this.schedEndTime) {
-            return '';
-        }
-        
-        const start = new Date(this.schedStartTime);
-        const end = new Date(this.schedEndTime);
-        
-        const startHour = start.getHours().toString().padStart(2, '0');
-        const startMin = start.getMinutes().toString().padStart(2, '0');
-        
-        const endHour = end.getHours().toString().padStart(2, '0');
-        const endMin = end.getMinutes().toString().padStart(2, '0');
-        
-        return `${startHour}:${startMin} - ${endHour}:${endMin}`;
+get popupStyle() {
+  const { x, y } = this.popupPosition;
+  
+  if (this.isCommunity) {
+    const buttonWidth = 40;
+    const estimatedPopupWidth = 200;
+    const spaceOnLeft = x;
+    const spaceOnRight = window.innerWidth - x - buttonWidth;
+    
+    let leftPosition;
+    
+    // Si pas assez d'espace à gauche, afficher à droite
+    if (spaceOnLeft < estimatedPopupWidth) {
+      leftPosition = x + buttonWidth + 10; // 10px de marge
+    } else {
+      leftPosition = x - estimatedPopupWidth;
     }
+    
+    // Vérifier que le popup ne dépasse pas à droite
+    if (leftPosition + estimatedPopupWidth > window.innerWidth) {
+      leftPosition = window.innerWidth - estimatedPopupWidth - 10;
+    }
+    
+    return {
+      position: 'fixed',
+      left: `${leftPosition}px`,
+      top: `${y}px`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    };
+  }
+  
+  return {
+    position: 'fixed',
+    top: `${y}px`,
+    left: `${x}px`,
+    transform: 'none'
+  };
