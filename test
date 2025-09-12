@@ -1,1 +1,74 @@
-
+/**
+ * This method is used to update the TEKCO_IncludedInTheOptimization__c field on parent ServiceAppointments
+ * when bundle members have changes in their FSIT_BoxStatus__c field.
+ * Logic: If any child has FSIT_BoxStatus__c = NOT_READY_IN_PROGRESS_BOX_STATUS, then parent TEKCO_IncludedInTheOptimization__c = false,
+ * otherwise it is set to true.
+ * @param newServiceAppointments A List<ServiceAppointment> representing the new ServiceAppointment records.
+ * @param oldServiceAppointment A Map<Id, ServiceAppointment> representing the old ServiceAppointment records by Id.
+ */
+public static void updateBundleParent(List<ServiceAppointment> newServiceAppointments, Map<Id, ServiceAppointment> oldServiceAppointment) {
+    
+    // Collect parent IDs that need to be checked
+    Set<Id> parentIdsToCheck = new Set<Id>();
+    
+    for (ServiceAppointment newSa : newServiceAppointments) {
+        ServiceAppointment oldSa = oldServiceAppointment.get(newSa.Id);
+        
+        if(newSa.IsBundleMember && 
+           newSa.RelatedBundleId != null && 
+           newSa.FSIT_BoxStatus__c != oldSa.FSIT_BoxStatus__c) {
+            
+            parentIdsToCheck.add(newSa.RelatedBundleId);
+        }
+    }
+    
+    if(parentIdsToCheck.isEmpty()) {
+        return;
+    }
+    
+    // Retrieve all children of the identified parents
+    Map<Id, List<ServiceAppointment>> parentToChildrenMap = new Map<Id, List<ServiceAppointment>>();
+    
+    List<ServiceAppointment> allChildren = [
+        SELECT Id, RelatedBundleId, FSIT_BoxStatus__c 
+        FROM ServiceAppointment 
+        WHERE RelatedBundleId IN :parentIdsToCheck 
+        AND IsBundleMember = true
+    ];
+    
+    for(ServiceAppointment child : allChildren) {
+        if(!parentToChildrenMap.containsKey(child.RelatedBundleId)) {
+            parentToChildrenMap.put(child.RelatedBundleId, new List<ServiceAppointment>());
+        }
+        parentToChildrenMap.get(child.RelatedBundleId).add(child);
+    }
+    
+    // Determine TEKCO_IncludedInTheOptimization__c value for each parent
+    Map<Id, ServiceAppointment> saToUpdateMap = new Map<Id, ServiceAppointment>();
+    
+    for(Id parentId : parentIdsToCheck) {
+        List<ServiceAppointment> children = parentToChildrenMap.get(parentId);
+        
+        boolean hasNotReadyInProgressChild = false;
+        
+        if(children != null) {
+            for(ServiceAppointment child : children) {
+                if(child.FSIT_BoxStatus__c == ServiceAppointmentHelper.NOT_READY_IN_PROGRESS_BOX_STATUS) {
+                    hasNotReadyInProgressChild = true;
+                    break;
+                }
+            }
+        }
+        
+        saToUpdateMap.put(parentId,
+            new ServiceAppointment(
+                Id = parentId,
+                TEKCO_IncludedInTheOptimization__c = !hasNotReadyInProgressChild
+            )
+        );
+    }
+    
+    if(!saToUpdateMap.isEmpty()) {
+        new WithoutSharingDmlHandler().updateObjects(saToUpdateMap.values());
+    }
+}
