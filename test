@@ -1,22 +1,9 @@
-public class AccountPatientPortalURLBatch implements Database.Batchable<SObject> {
-    
-    private static final String URL_PREFIX = '/sacalendars/s/';
-    
-    public Database.QueryLocator start(Database.BatchableContext bc) {
-        return Database.getQueryLocator([
-            SELECT Id, Patient_Services_Portal_URL__c 
-            FROM Account 
-            WHERE Patient_Services_Portal_URL__c = null
-        ]);
+public static String getCommunityDomain() {
+    String baseUrl = Site.getBaseUrl();
+    if (baseUrl != null) {
+        // Extraire juste le domaine
+        URL url = new URL(baseUrl);
+        return url.getProtocol() + '://' + url.getHost();
     }
-    
-    public void execute(Database.BatchableContext bc, List<Account> accounts) {
-        String baseUrl = URL.getOrgDomainUrl().toExternalForm();
-        
-        for (Account acc : accounts) {
-            acc.Patient_Services_Portal_URL__c = baseUrl + URL_PREFIX + '?pid=' + acc.Id;
-        }
-        
-        update accounts;
-    }
+    return null;
 }
