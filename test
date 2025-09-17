@@ -1,9 +1,1 @@
-public static String getCommunityDomain() {
-    String baseUrl = Site.getBaseUrl();
-    if (baseUrl != null) {
-        // Extraire juste le domaine
-        URL url = new URL(baseUrl);
-        return url.getProtocol() + '://' + url.getHost();
-    }
-    return null;
-}
+https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_give_guest_users_access_to_update_records.htm
