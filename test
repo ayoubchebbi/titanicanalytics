@@ -1,1 +1,1 @@
-
+I think we have an issue with the field Therapy group. This field is of type Text, while in the Therapy object the field is of type Picklist. The values are not consistent, and some API values are also missing in Therapy.
