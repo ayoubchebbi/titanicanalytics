@@ -1,1 +1,43 @@
-I think we have an issue with the field Therapy group. This field is of type Text, while in the Therapy object the field is of type Picklist. The values are not consistent, and some API values are also missing in Therapy.
+1. Create a Community Site
+
+Navigate to Setup → Digital Experiences → All Sites.
+
+Click New and choose a Community (Aura type) template.
+
+Give your site a name and URL.
+
+Save and publish the site.
+
+
+
+2. Enable Community (if not already enabled)
+
+From Setup, search for Digital Experiences Settings.
+
+Enable Digital Experiences and set a domain if required.
+
+
+
+3. Create the Aura Component testApp
+
+In Developer Console or your IDE (e.g., VS Code with Salesforce Extensions), create a new Aura component named testApp.
+
+Add your component logic (markup, controller, helper, style as needed).
+
+
+
+4. Deploy the Component
+
+Deploy your Aura component to the org (using VS Code, SFDX, or Change Set depending on your deployment strategy).
+
+
+
+5. Add the Component to the Community Interface
+
+Go to Experience Builder for your site.
+
+Open the page where you want to place the component.
+
+Drag and drop the testApp component from the Custom Components section onto the page.
+
+Publish the site.I think we have an issue with the field Therapy group. This field is of type Text, while in the Therapy object the field is of type Picklist. The values are not consistent, and some API values are also missing in Therapy.
