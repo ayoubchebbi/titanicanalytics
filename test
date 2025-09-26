@@ -1,43 +1,559 @@
-1. Create a Community Site
+/**
+ * @description Helper class for Scheduled Appointments Calendar operations
+ * Provides reusable methods for ServiceAppointment and scheduling operations
+ * @author Ayoub CHEBBI
+ * @date 05/08/2025
+ */
+public without sharing class FSCO_ScheduledCalendarHelper {
+    
+    // Constants for error handling and default values
+    private static final String ERROR_INVALID_PATIENT_ID = 'Invalid or blank patient ID provided';
+    private static final String ERROR_SERVICE_APPOINTMENT_NOT_FOUND = 'Service Appointment not found';
+    private static final Integer DEFAULT_QUERY_LIMIT = 1000;
+    
+    /**
+     * @description Retrieves ServiceAppointment records for a specific patient
+     * @param patientId The encrypted patient ID
+     * @return List<ServiceAppointment> List of scheduled service appointments
+     * @throws IllegalArgumentException when patientId is blank or invalid
+     */
+    public static List<ServiceAppointment> getPatientAppointments(String patientId) {
+        if (String.isBlank(patientId)) {
+            throw new IllegalArgumentException(ERROR_INVALID_PATIENT_ID);
+        }
+        
+        try {
+            String decryptedPatientId = decryptId(patientId);
+            
+            return [
+                SELECT Id, 
+                       AppointmentNumber, 
+                       Status, 
+                       SchedStartTime, 
+                       SchedEndTime,
+                       Duration,
+                       FSCFR_ExecutionChannel__c,
+                       FSCO_VideoCallLink__c,
+                       APMCA_Therapy__r.PASCO_POSAccount__r.Name,
+                       TEKCO_IncludedInTheOptimization__c
+                FROM ServiceAppointment 
+                WHERE (Status = :ServiceAppointmentHelper.STATUS_SCHEDULED 
+                  OR Status = :ServiceAppointmentHelper.STATUS_SENT_TO_FSA)
+                  AND AccountId = :decryptedPatientId
+                ORDER BY SchedStartTime ASC
+                LIMIT :DEFAULT_QUERY_LIMIT
+            ];
+            
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error retrieving patient appointments: ' + e.getMessage());
+            return new List<ServiceAppointment>();
+        }
+    }
+    
+    /**
+     * @description Retrieves ServiceAppointment records within a specific date range
+     * @param patientId The encrypted patient ID
+     * @param startDate The start date for filtering appointments
+     * @param endDate The end date for filtering appointments
+     * @return List<ServiceAppointment> List of appointments within the date range
+     */
+    public static List<ServiceAppointment> getAppointmentsByDateRange(String patientId, DateTime startDate, DateTime endDate) {
+        if (String.isBlank(patientId) || startDate == null || endDate == null) {
+            return new List<ServiceAppointment>();
+        }
+        
+        try {
+            String decryptedPatientId = decryptId(patientId);
+            
+            return [
+                SELECT Id, 
+                       AppointmentNumber, 
+                       Status, 
+                       SchedStartTime, 
+                       SchedEndTime,
+                       Duration,
+                       FSCFR_ExecutionChannel__c,
+                       FSCO_VideoCallLink__c,
+                       APMCA_Therapy__r.PASCO_POSAccount__r.Name,
+                       TEKCO_IncludedInTheOptimization__c
+                FROM ServiceAppointment 
+                WHERE (Status = :ServiceAppointmentHelper.STATUS_SCHEDULED 
+                  OR Status = :ServiceAppointmentHelper.STATUS_SENT_TO_FSA)
+                  AND AccountId = :decryptedPatientId
+                  AND SchedStartTime >= :startDate
+                  AND SchedStartTime <= :endDate
+                ORDER BY SchedStartTime ASC
+                LIMIT :DEFAULT_QUERY_LIMIT
+            ];
+            
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error retrieving appointments by date range: ' + e.getMessage());
+            return new List<ServiceAppointment>();
+        }
+    }
+    
+    /**
+     * @description Retrieves available time slots for rescheduling a service appointment
+     * @param serviceAppointmentId The ID of the service appointment to reschedule
+     * @return List<TimeSlot> List of available time slots
+     */
+    public static List<TimeSlot> getAvailableTimeSlots(Id serviceAppointmentId) {
+        List<TimeSlot> timeSlotWrappers = new List<TimeSlot>();
+        
+        if (serviceAppointmentId == null) {
+            return timeSlotWrappers;
+        }
+        
+        try {
+            List<FSL.AppointmentBookingSlot> slots = getBookingSlots(serviceAppointmentId);
+            
+            for (FSL.AppointmentBookingSlot slot : slots) {
+                timeSlotWrappers.add(new TimeSlot(slot));
+            }
+            
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error retrieving available time slots: ' + e.getMessage());
+        }
+        
+        return timeSlotWrappers;
+    }
+    
+    /**
+     * @description Retrieves FSL booking slots for a service appointment
+     * @param serviceAppointmentId The ID of the service appointment
+     * @return List<FSL.AppointmentBookingSlot> List of FSL booking slots
+     */
+    public static List<FSL.AppointmentBookingSlot> getBookingSlots(Id serviceAppointmentId) {
+        if (serviceAppointmentId == null) {
+            return new List<FSL.AppointmentBookingSlot>();
+        }
+        
+        try {
+            ServiceAppointment appointment = getServiceAppointmentForSlots(serviceAppointmentId);
+            
+            if (appointment == null) {
+                return new List<FSL.AppointmentBookingSlot>();
+            }
+            
+            Timezone timeZone = getAppointmentTimeZone(appointment);
+            Id schedulingPolicyId = getSchedulingPolicyId(appointment);
+            
+            return FSL.AppointmentBookingService.getSlots(
+                appointment.Id, 
+                schedulingPolicyId, 
+                appointment.ServiceTerritory.OperatingHoursId, 
+                timeZone, 
+                false
+            );
+            
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error retrieving booking slots: ' + e.getMessage());
+            return new List<FSL.AppointmentBookingSlot>();
+        }
+    }
+    
+    /**
+     * @description Retrieves detailed information about a specific service appointment
+     * @param serviceAppointmentId The ID of the service appointment
+     * @return ServiceAppointment The service appointment record with detailed fields
+     */
+    public static ServiceAppointment getAppointmentDetails(Id serviceAppointmentId) {
+        if (serviceAppointmentId == null) {
+            return null;
+        }
+        
+        try {
+            return [
+                SELECT Id, 
+                       Duration, 
+                       DurationType, 
+                       SchedStartTime, 
+                       SchedEndTime,
+                       TEKCO_WorkOrder__c,
+                       WorkTypeId,
+                       TEKCO_IncludedInTheOptimization__c
+                FROM ServiceAppointment 
+                WHERE Id = :serviceAppointmentId 
+                LIMIT 1
+            ];
+            
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error retrieving appointment details: ' + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * @description Determines the appropriate scheduling policy for an appointment
+     * @param appointment The service appointment record
+     * @return Id The scheduling policy ID or null if not found
+     */
+    public static Id getSchedulingPolicyId(ServiceAppointment appointment) {
+        if (appointment == null) {
+            return null;
+        }
+        
+        List<FSL__Scheduling_Policy__c> policies = new List<FSL__Scheduling_Policy__c>();
+        
+        try {
+            String executionChannel = appointment.TEKCO_WorkOrder__r?.FSCFR_ExecutionChannel__c;
+            
+            if (isRemoteOrPointOfServiceChannel(executionChannel)) {
+                policies = querySchedulingPolicyForAppointmentBooking(appointment);
+            } else if (isHomeHospitalChannel(executionChannel)) {
+                policies = querySchedulingPolicyForBookAppointment(appointment);
+            }
+            
+            return policies.isEmpty() ? null : policies[0].Id;
+            
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error retrieving scheduling policy: ' + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * @description Encrypts an account ID using Base64 encoding
+     * @param accountId The account ID to encrypt
+     * @return String The encrypted account ID
+     */
+    public static String encryptId(String accountId) {
+        if (String.isBlank(accountId)) {
+            return '';
+        }
+        
+        try {
+            Blob accountIdBlob = Blob.valueOf(accountId);
+            return EncodingUtil.base64Encode(accountIdBlob);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error encrypting ID: ' + e.getMessage());
+            return '';
+        }
+    }
+    
+    /**
+     * @description Decrypts an encrypted account ID using Base64 decoding
+     * @param encryptedId The encrypted account ID
+     * @return String The decrypted account ID
+     */
+    public static String decryptId(String encryptedId) {
+        if (String.isBlank(encryptedId)) {
+            return '';
+        }
+        
+        try {
+            Blob decryptedBlob = EncodingUtil.base64Decode(encryptedId);
+            return decryptedBlob.toString();
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error decrypting ID: ' + e.getMessage());
+            return '';
+        }
+    }
+    
+    // Private helper methods
+    
+    /**
+     * @description Retrieves service appointment data needed for slot generation
+     * @param serviceAppointmentId The service appointment ID
+     * @return ServiceAppointment The service appointment with territory and work order data
+     */
+    private static ServiceAppointment getServiceAppointmentForSlots(Id serviceAppointmentId) {
+        try {
+            return [
+                SELECT Id, 
+                       EarliestStartTime, 
+                       DueDate, 
+                       ServiceTerritory.OperatingHoursId,
+                       ServiceTerritory.OperatingHours.TimeZone,
+                       TEKCO_WorkOrder__r.FSCFR_ExecutionChannel__c,
+                       TEKCO_Country__c,
+                       TEKCO_Brand__c
+                FROM ServiceAppointment 
+                WHERE Id = :serviceAppointmentId
+                LIMIT 1
+            ];
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error querying service appointment for slots: ' + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * @description Gets the appropriate timezone for an appointment
+     * @param appointment The service appointment record
+     * @return Timezone The timezone to use for slot generation
+     */
+    private static Timezone getAppointmentTimeZone(ServiceAppointment appointment) {
+        String timezoneId = appointment?.ServiceTerritory?.OperatingHours?.TimeZone;
+        return String.isNotBlank(timezoneId) ? 
+               Timezone.getTimeZone(timezoneId) : 
+               UserInfo.getTimeZone();
+    }
+    
+    /**
+     * @description Checks if the execution channel is remote or point of service
+     * @param executionChannel The execution channel value
+     * @return Boolean True if the channel is remote or point of service
+     */
+    private static Boolean isRemoteOrPointOfServiceChannel(String executionChannel) {
+        return ChannelHelper.REMOTE_CHANNELS.contains(executionChannel) ||
+               executionChannel == ChannelHelper.CHANNEL_TYPE_POINT_OF_SERVICE;
+    }
+    
+    /**
+     * @description Checks if the execution channel is home hospital
+     * @param executionChannel The execution channel value
+     * @return Boolean True if the channel is home hospital
+     */
+    private static Boolean isHomeHospitalChannel(String executionChannel) {
+        return executionChannel == ChannelHelper.CHANNEL_TYPE_HOME_HOSPITAL;
+    }
+    
+    /**
+     * @description Queries scheduling policy for appointment booking
+     * @param appointment The service appointment record
+     * @return List<FSL__Scheduling_Policy__c> List of matching scheduling policies
+     */
+    private static List<FSL__Scheduling_Policy__c> querySchedulingPolicyForAppointmentBooking(ServiceAppointment appointment) {
+        return [
+            SELECT Id
+            FROM FSL__Scheduling_Policy__c
+            WHERE TEKCO_Country__c = :appointment.TEKCO_Country__c
+            AND TEKCO_Brand__c = :appointment.TEKCO_Brand__c
+            AND FSCO_AppointmentBooking__c = true
+            LIMIT 1
+        ];
+    }
+    
+    /**
+     * @description Queries scheduling policy for book appointment
+     * @param appointment The service appointment record
+     * @return List<FSL__Scheduling_Policy__c> List of matching scheduling policies
+     */
+    private static List<FSL__Scheduling_Policy__c> querySchedulingPolicyForBookAppointment(ServiceAppointment appointment) {
+        return [
+            SELECT Id
+            FROM FSL__Scheduling_Policy__c
+            WHERE TEKCO_Country__c = :appointment.TEKCO_Country__c
+            AND TEKCO_Brand__c = :appointment.TEKCO_Brand__c
+            AND FSCO_BookAppointment__c = true
+            LIMIT 1
+        ];
+    }
+    
+    /**
+     * @description Wrapper class for time slot information
+     * Used to provide a simplified interface for time slot data
+     */
+    public class TimeSlot {
+        @AuraEnabled public DateTime startDate { get; set; }
+        @AuraEnabled public DateTime endDate { get; set; }
+        
+        /**
+         * @description Constructor for TimeSlot wrapper
+         * @param slot The FSL appointment booking slot to wrap
+         */
+        public TimeSlot(FSL.AppointmentBookingSlot slot) {
+            if (slot?.Interval != null) {
+                this.startDate = slot.Interval.Start;
+                this.endDate = slot.Interval.Finish;
+            }
+        }
+        
+        /**
+         * @description Constructor for TimeSlot with explicit dates
+         * @param startDate The start date and time
+         * @param endDate The end date and time
+         */
+        public TimeSlot(DateTime startDate, DateTime endDate) {
+            this.startDate = startDate;
+            this.endDate = endDate;
+        }
+    }
+}
 
-Navigate to Setup → Digital Experiences → All Sites.
 
-Click New and choose a Community (Aura type) template.
+/**
+ * @description Controller class for the Scheduled Appointments Calendar component
+ * Provides methods to retrieve ServiceAppointment records for weekly calendar display
+ * This refactored version uses the FSCO_ScheduledCalendarHelper for better code organization
+ * @author Ayoub CHEBBI
+ * @date 05/08/2025
+ */
+public without sharing class FSCO_ScheduledCalendarController {
+    
+    private static final String URL_PREFIX = '/sacalendars/s/';
+    
+    /**
+     * @description Retrieves ServiceAppointment records for a specific patient
+     * @param patientId The encrypted patient ID
+     * @return List<ServiceAppointment> List of scheduled service appointments
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<ServiceAppointment> getServiceAppointments(String patientId) {
+        try {
+            return FSCO_ScheduledCalendarHelper.getPatientAppointments(patientId);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in getServiceAppointments: ' + e.getMessage());
+            return new List<ServiceAppointment>();
+        }
+    }
+    
+    /**
+     * @description Retrieves ServiceAppointment records within a specified date range
+     * @param patientId The encrypted patient ID
+     * @param startDate The start date for the query range (ISO format string)
+     * @param endDate The end date for the query range (ISO format string)
+     * @return List<ServiceAppointment> List of appointments within the date range
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<ServiceAppointment> getServiceAppointmentsByDateRange(String patientId, String startDate, String endDate) {
+        try {
+            DateTime startDateTime = DateTime.valueOf(startDate.replace('T', ' ').replace('Z', ''));
+            DateTime endDateTime = DateTime.valueOf(endDate.replace('T', ' ').replace('Z', ''));
+            
+            return FSCO_ScheduledCalendarHelper.getAppointmentsByDateRange(patientId, startDateTime, endDateTime);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in getServiceAppointmentsByDateRange: ' + e.getMessage());
+            return new List<ServiceAppointment>();
+        }
+    }
+    
+    /**
+     * @description Retrieve the list of free slots to modify the date of a service appointment
+     * @param serviceAppointmentId Service Appointment Id
+     * @return List<FSCO_ScheduledCalendarHelper.TimeSlot> List of time slots
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<FSCO_ScheduledCalendarHelper.TimeSlot> getFreeSlots(Id serviceAppointmentId) {
+        try {
+            return FSCO_ScheduledCalendarHelper.getAvailableTimeSlots(serviceAppointmentId);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in getFreeSlots: ' + e.getMessage());
+            return new List<FSCO_ScheduledCalendarHelper.TimeSlot>();
+        }
+    }
+    
+    /**
+     * @description Retrieve FSL booking slots for advanced scheduling operations
+     * @param serviceAppointmentId Service Appointment Id
+     * @return List<FSL.AppointmentBookingSlot> List of FSL booking slots
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<FSL.AppointmentBookingSlot> getFSLBookingSlots(Id serviceAppointmentId) {
+        try {
+            return FSCO_ScheduledCalendarHelper.getBookingSlots(serviceAppointmentId);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in getFSLBookingSlots: ' + e.getMessage());
+            return new List<FSL.AppointmentBookingSlot>();
+        }
+    }
+    
+    /**
+     * @description Get details of Service Appointment
+     * @param serviceAppointmentId Service Appointment Id
+     * @return ServiceAppointment Service Appointment Record with detailed information
+     */
+    @AuraEnabled(cacheable=true)
+    public static ServiceAppointment getServiceAppointmentDetails(Id serviceAppointmentId) {
+        try {
+            return FSCO_ScheduledCalendarHelper.getAppointmentDetails(serviceAppointmentId);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in getServiceAppointmentDetails: ' + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * @description Encrypts an account ID for secure transmission
+     * @param accountId The account ID to encrypt
+     * @return String The encrypted account ID
+     */
+    @AuraEnabled(cacheable=true)
+    public static String encryptAccountId(String accountId) {
+        try {
+            return FSCO_ScheduledCalendarHelper.encryptId(accountId);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in encryptAccountId: ' + e.getMessage());
+            return '';
+        }
+    }
+    
+    /**
+     * @description Decrypts an encrypted account ID
+     * @param encryptedId The encrypted account ID
+     * @return String The decrypted account ID
+     */
+    @AuraEnabled(cacheable=true)
+    public static String decryptAccountId(String encryptedId) {
+        try {
+            return FSCO_ScheduledCalendarHelper.decryptId(encryptedId);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in decryptAccountId: ' + e.getMessage());
+            return '';
+        }
+    }
+    
+    /**
+     * @description Gets the appropriate scheduling policy for an appointment
+     * @param serviceAppointmentId The service appointment ID
+     * @return Id The scheduling policy ID
+     */
+    @AuraEnabled(cacheable=true)
+    public static Id getSchedulingPolicy(Id serviceAppointmentId) {
+        try {
+            ServiceAppointment appointment = FSCO_ScheduledCalendarHelper.getAppointmentDetails(serviceAppointmentId);
+            return FSCO_ScheduledCalendarHelper.getSchedulingPolicyId(appointment);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in getSchedulingPolicy: ' + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * @description Validates if a patient ID is properly encrypted and accessible
+     * @param patientId The encrypted patient ID to validate
+     * @return Boolean True if the patient ID is valid and accessible
+     */
+    @AuraEnabled(cacheable=true)
+    public static Boolean validatePatientAccess(String patientId) {
+        try {
+            if (String.isBlank(patientId)) {
+                return false;
+            }
+            
+            String decryptedId = FSCO_ScheduledCalendarHelper.decryptId(patientId);
+            return String.isNotBlank(decryptedId) && decryptedId.length() == 18; // Salesforce ID length
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Controller error in validatePatientAccess: ' + e.getMessage());
+            return false;
+        }
+    }
+    
+    // Legacy method support for backward compatibility
+    
+    /**
+     * @description Legacy method - use getFreeSlots instead
+     * @deprecated This method is deprecated, use getFreeSlots instead
+     */
+    public static List<FSL.AppointmentBookingSlot> getFreeSlotste(Id serviceAppointmentId) {
+        return FSCO_ScheduledCalendarHelper.getBookingSlots(serviceAppointmentId);
+    }
+    
+    /**
+     * @description Legacy method - use FSCO_ScheduledCalendarHelper.decryptId instead
+     * @deprecated This method is deprecated, use decryptAccountId or helper method instead
+     */
+    public static String decryptId(String encryptedId) {
+        return FSCO_ScheduledCalendarHelper.decryptId(encryptedId);
+    }
+    
+    /**
+     * @description Legacy method - use FSCO_ScheduledCalendarHelper.encryptId instead
+     * @deprecated This method is deprecated, use encryptAccountId or helper method instead
+     */
+    public static String encryptId(String accountId) {
+        return FSCO_ScheduledCalendarHelper.encryptId(accountId);
+    }
+}
 
-Give your site a name and URL.
-
-Save and publish the site.
-
-
-
-2. Enable Community (if not already enabled)
-
-From Setup, search for Digital Experiences Settings.
-
-Enable Digital Experiences and set a domain if required.
-
-
-
-3. Create the Aura Component testApp
-
-In Developer Console or your IDE (e.g., VS Code with Salesforce Extensions), create a new Aura component named testApp.
-
-Add your component logic (markup, controller, helper, style as needed).
-
-
-
-4. Deploy the Component
-
-Deploy your Aura component to the org (using VS Code, SFDX, or Change Set depending on your deployment strategy).
-
-
-
-5. Add the Component to the Community Interface
-
-Go to Experience Builder for your site.
-
-Open the page where you want to place the component.
-
-Drag and drop the testApp component from the Custom Components section onto the page.
-
-Publish the site.I think we have an issue with the field Therapy group. This field is of type Text, while in the Therapy object the field is of type Picklist. The values are not consistent, and some API values are also missing in Therapy.
