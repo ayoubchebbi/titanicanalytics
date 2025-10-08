@@ -1,1 +1,3 @@
+The two Service Appointments are not within the batch detection interval for bundle creation. The batch only considers appointments scheduled within a 60-day window.
+Please wait until the appointments fall within this interval for the bundles to be created automatically.
 
