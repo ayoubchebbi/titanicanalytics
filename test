@@ -1,3 +1,8 @@
 The two Service Appointments are not within the batch detection interval for bundle creation. The batch only considers appointments scheduled within a 60-day window.
 Please wait until the appointments fall within this interval for the bundles to be created automatically.
 
+
+
+
+Le Service Appointment est actuellement dans le statut "Sent to FSA", ce qui empêche d’investiguer le problème. En effet, la fonction "Change Channel" ne fonctionne pas lorsque le rendez-vous est dans ce statut.
+Peux-tu me dire s’il existe un autre exemple sur lequel je pourrais vérifier le comportement ?
