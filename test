@@ -1,3 +1,11 @@
-For SA-1037150, the Earliest Start Permitted is 16/12/2025 00:01, so it’s not within the next 60 days if the batch were triggered today.
+SELECT Id, Name, JobType, JobItemsProcessed, TotalJobItems, Status, 
+       CreatedBy.Name, CreatedDate, LastProcessed, NextFireTime, 
+       CronTrigger.Name, CronTrigger.CronExpression, ApexClass.Name 
+FROM AsyncApexJob 
+WHERE JobType = 'ScheduledApex'
 
-For SA-269692, it’s within the range but cannot be bundled since no other service appointment is available to include.
+
+
+SELECT Id, CronExpression, NextFireTime, State, CronJobDetail.ApexClass.Name 
+FROM CronTrigger
+WHERE CronJobDetail.ApexClass.Name = 'MyScheduledJobClass'
