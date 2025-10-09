@@ -1,8 +1,3 @@
-The two Service Appointments are not within the batch detection interval for bundle creation. The batch only considers appointments scheduled within a 60-day window.
-Please wait until the appointments fall within this interval for the bundles to be created automatically.
+For SA-1037150, the Earliest Start Permitted is 16/12/2025 00:01, so it’s not within the next 60 days if the batch were triggered today.
 
-
-
-
-Le Service Appointment est actuellement dans le statut "Sent to FSA", ce qui empêche d’investiguer le problème. En effet, la fonction "Change Channel" ne fonctionne pas lorsque le rendez-vous est dans ce statut.
-Peux-tu me dire s’il existe un autre exemple sur lequel je pourrais vérifier le comportement ?
+For SA-269692, it’s within the range but cannot be bundled since no other service appointment is available to include.
