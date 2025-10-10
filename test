@@ -1,11 +1,2 @@
-SELECT Id, Name, JobType, JobItemsProcessed, TotalJobItems, Status, 
-       CreatedBy.Name, CreatedDate, LastProcessed, NextFireTime, 
-       CronTrigger.Name, CronTrigger.CronExpression, ApexClass.Name 
-FROM AsyncApexJob 
-WHERE JobType = 'ScheduledApex'
-
-
-
-SELECT Id, CronExpression, NextFireTime, State, CronJobDetail.ApexClass.Name 
-FROM CronTrigger
-WHERE CronJobDetail.ApexClass.Name = 'MyScheduledJobClass'
+If we launch the batch manually, it remains an automatic bundle. The manual bundle is a separate process from our batch, which is triggered for a specific work order.
+Regarding the field, as I mentioned, I’m currently investigating this issue. You can create a bug ticket to track this matter.
