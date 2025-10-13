@@ -1,2 +1,19 @@
-If we launch the batch manually, it remains an automatic bundle. The manual bundle is a separate process from our batch, which is triggered for a specific work order.
-Regarding the field, as I mentioned, I’m currently investigating this issue. You can create a bug ticket to track this matter.
+insert new MaintenancePlan(
+    RecordTypeId = '0123V000000qBOsCQAM',
+    AccountId = '001bd000009PGvmAAG',
+    WorkTypeId = '08qbd000000BbAZAA0',
+    StartDate = Date.newInstance(2025, 10, 14),
+    EndDate = Date.newInstance(2025, 10, 31),
+    GenerationTimeframe = 1,
+    GenerationTimeframeType = 'Days',
+    GenerationHorizon = 1,
+    OSMCO_ActionPlanTemplate__c = 'a3Nbd000000FhnpEAC',
+    OSMCO_VisitFrequency__c = '005',
+    FSCIT_VisitFrequencyDays__c = 1,
+    OSMCO_VisitDays__c = 1,
+    OSMCO_FullDaySchedule__c = true,
+    NextSuggestedMaintenanceDate = DateTime.newInstance(2025, 10, 14, 0, 0, 0),
+    ContactId = null,
+    OSMCO_WorkOrderGenerationStatus__c = 'Complete',
+    FSFR_Address__c = '130bd000002EuaIAAS'
+);
