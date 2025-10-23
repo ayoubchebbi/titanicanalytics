@@ -1,6 +1,1 @@
-Could you please help me understand how to find the detailed logs to check the process status and review any error details?
-In our case, we received a status "error" (as shown in the screenshot already attached to the case), and I couldn’t find any Time Sheet record created.
 
-If the process completed successfully, why wasn’t a Time Sheet created? Also, if everything was fine on the server side, why do we still see an error status in the logs?
-
-Thank you for your support.
