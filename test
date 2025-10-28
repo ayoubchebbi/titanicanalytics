@@ -1,4 +1,8 @@
-o,
-Thank you very much for your thorough analysis of this issue. I can see how you identified this error. For future reference, could you please provide guidance on debugging procedures we should follow when we encounter similar problems?
-Additionally, we may need to review the storage configuration in the organization.
-Best regards,
+CASE(Time_Unit__c,
+  "Minutes", Date_Start__c + (Value__c / 1440),
+  "Hours", Date_Start__c + (Value__c / 24),
+  "Days", Date_Start__c + Value__c,
+  "Weeks", Date_Start__c + (Value__c * 7),
+  "Months", ADDMONTHS(Date_Start__c, Value__c),
+  Date_Start__c
+)
