@@ -1,73 +1,55 @@
-public static Map<String, String> getFrequencyFromApiName(String apiName) {
+ // Constantes pour les clés API (codes Salesforce)
+    private static final String EVERY_WEEK = "002";
+    private static final String EVERY_2_WEEKS = "003";
+    private static final String EVERY_3_WEEKS = "004";
+    private static final String EVERY_4_WEEKS = "005";
+    private static final String EVERY_5_WEEKS = "013";
+    private static final String EVERY_6_WEEKS = "014";
+    private static final String TIMES_2_A_WEEK = "001";
+    private static final String TIMES_3_A_WEEK = "006";
+    private static final String TIMES_4_A_WEEK = "007";
+    private static final String TIMES_5_A_WEEK = "008";
+    private static final String TIMES_6_A_WEEK = "009";
+    private static final String EVERYDAY = "010";
+    private static final String EVERY_2_MONTH = "011";
+    private static final String EVERY_3_MONTH = "012";
+    
+    // Map de correspondance API Name -> "number;unit"
+    public static final Map<String, String> apiNameToFrequencyMap = new Map<String, String>{
+        EVERY_WEEK => '1;' + GlobalConstants.WEEKS,
+        EVERY_2_WEEKS => '2;' + GlobalConstants.WEEKS,
+        EVERY_3_WEEKS => '3;' + GlobalConstants.WEEKS,
+        EVERY_4_WEEKS => '4;' + GlobalConstants.WEEKS,
+        EVERY_5_WEEKS => '5;' + GlobalConstants.WEEKS,
+        EVERY_6_WEEKS => '6;' + GlobalConstants.WEEKS,
+        TIMES_2_A_WEEK => '2;' + GlobalConstants.DAYS,
+        TIMES_3_A_WEEK => '3;' + GlobalConstants.DAYS,
+        TIMES_4_A_WEEK => '4;' + GlobalConstants.DAYS,
+        TIMES_5_A_WEEK => '5;' + GlobalConstants.DAYS,
+        TIMES_6_A_WEEK => '6;' + GlobalConstants.DAYS,
+        EVERYDAY => '1;' + GlobalConstants.DAYS,
+        EVERY_2_MONTH => '2;' + GlobalConstants.MONTHS,
+        EVERY_3_MONTH => '3;' + GlobalConstants.MONTHS
+    };
+    
+    public static Map<String, String> getFrequencyFromApiName(String apiName) {
         Map<String, String> result = new Map<String, String>();
         
         if (String.isBlank(apiName)) {
             return result;
         }
         
-        switch on apiName {
-            when '001' {  // 2 times a week
-                result.put('number', '2');
-                result.put('unit', 'Week');
-            }
-            when '002' {  // Every Week
-                result.put('number', '1');
-                result.put('unit', 'Week');
-            }
-            when '003' {  // Every 2 Weeks
-                result.put('number', '2');
-                result.put('unit', 'Week');
-            }
-            when '004' {  // Every 3 Weeks
-                result.put('number', '3');
-                result.put('unit', 'Week');
-            }
-            when '005' {  // Every 4 Weeks
-                result.put('number', '4');
-                result.put('unit', 'Week');
-            }
-            when '006' {  // 3 times a week
-                result.put('number', '3');
-                result.put('unit', 'Week');
-            }
-            when '007' {  // 4 times a week
-                result.put('number', '4');
-                result.put('unit', 'Week');
-            }
-            when '008' {  // 5 times a week
-                result.put('number', '5');
-                result.put('unit', 'Week');
-            }
-            when '009' {  // 6 times a week
-                result.put('number', '6');
-                result.put('unit', 'Week');
-            }
-            when '010' {  // Everyday
-                result.put('number', '1');
-                result.put('unit', 'Day');
-            }
-            when '011' {  // Every 2 Month
-                result.put('number', '2');
-                result.put('unit', 'Month');
-            }
-            when '012' {  // Every 3 Month
-                result.put('number', '3');
-                result.put('unit', 'Month');
-            }
-            when '013' {  // Every 5 Weeks
-                result.put('number', '5');
-                result.put('unit', 'Week');
-            }
-            when '014' {  // Every 6 Weeks
-                result.put('number', '6');
-                result.put('unit', 'Week');
-            }
-            when else {
-                result.put('number', '');
-                result.put('unit', '');
-            }
+        String frequencyValue = apiNameToFrequencyMap.get(apiName);
+        
+        if (frequencyValue != null) {
+            List<String> parts = frequencyValue.split(';');
+            result.put('number', parts[0]);
+            result.put('unit', parts[1]);
+        } else {
+            // Valeur par défaut
+            result.put('number', '1');
+            result.put('unit', GlobalConstants.WEEKS);
         }
         
         return result;
     }
-}
