@@ -1,41 +1,27 @@
-
-public static void generateRecurrencePattern(List<MaintenancePlan> maintenancePlans) {
-    for (MaintenancePlan maintenancePlan : maintenancePlans) {
+Id serviceAppointmentId = '08pXXXXXXXXXXXXXXX'; // Votre Service Appointment ID
+        Id serviceResourceId = '0HnXXXXXXXXXXXXXXX';   // Votre Service Resource ID
         
-        Map<String, String> frequencyMap = MaintenancePlanHelper.apiNameToFrequencyMap
-            .get(maintenancePlan.OSMCO_VisitFrequency__c);
-        
-        String FREQ = 'WEEKLY';
-        String INTERVAL = '1';
-        String UNTIL = null;
-        
-        // Si frequencyMap existe, récupérer les valeurs
-        if (frequencyMap != null) {
-            if (frequencyMap.containsKey('FREQ')) {
-                FREQ = frequencyMap.get('FREQ');
-            }
-            if (frequencyMap.containsKey('INTERVAL')) {
-                INTERVAL = frequencyMap.get('INTERVAL');
-            }
-        }
-        
-        // Formater UNTIL depuis endDate si présent
-        if (maintenancePlan.EndDate != null) {
-            DateTime endDateTime = DateTime.newInstance(
-                maintenancePlan.EndDate.year(),
-                maintenancePlan.EndDate.month(),
-                maintenancePlan.EndDate.day(),
-                0, 0, 0
+        try {
+            // 1. Mettre à jour le Service Appointment avec les dates
+            ServiceAppointment sa = new ServiceAppointment(
+                Id = serviceAppointmentId,
+                SchedStartTime = DateTime.now().addDays(1),
+                SchedEndTime = DateTime.now().addDays(1).addHours(2),
+                Status = 'Scheduled'
             );
-            UNTIL = endDateTime.formatGMT('yyyyMMdd\'T\'HHmmss\'Z\'');
+            update sa;
+            
+            // 2. Créer l'Assigned Resource pour lier la ressource
+            AssignedResource ar = new AssignedResource(
+                ServiceAppointmentId = serviceAppointmentId,
+                ServiceResourceId = serviceResourceId,
+                EstimatedTravelTime = 0,
+                ActualTravelTime = 0
+            );
+            insert ar;
+            
+            System.debug('Service Appointment planifié et ressource assignée avec succès!');
+            
+        } catch (Exception e) {
+            System.debug('Erreur: ' + e.getMessage());
         }
-        
-        // Construire la chaîne RRULE
-        String recurrencePattern = 'FREQ=' + FREQ + ';INTERVAL=' + INTERVAL;
-        if (UNTIL != null) {
-            recurrencePattern += ';UNTIL=' + UNTIL;
-        }
-        
-        maintenancePlan.TEKCO_RecurrencePattern__c = recurrencePattern;
-    }
-}
