@@ -1,37 +1,32 @@
+Map<Id, Map<String, List<TimeSlot>>> timeSlotsByResourceAndDay = FSCO_ReturnToBranchExecutionSelector.getTimeSlots(allResourcesIds);
 
-Êtes-vous d'accord pour annuler ce plan "return to branch" ?
-
-Merci de confirmer.
-
-Cordialement,
-
----
-
-**English:**
-Hello,
-
-Do you agree to cancel this "return to branch" plan?
-
-Please confirm.
-
-Best regards,
-
----
-
-**Italiano:**
-Buongiorno,
-
-Siete d'accordo per annullare questo piano "return to branch"?
-
-Si prega di confermare.
-
-Cordiali saluti,
-
----
-
-**Deutsch:**
-Guten Tag,
-
-Sind Sie damit einverstanden, diesen "Return to Branch"-Plan zu stornieren?
-
-Bitte bestätigen Sie.
+for(ResourcePlan resourcePlan : resourcePlanList) {
+    if(timeSlotsByResourceAndDay.containsKey(resourcePlan.territoryId)) {
+        
+        Map<String, List<TimeSlot>> slotsByDay = timeSlotsByResourceAndDay.get(resourcePlan.territoryId);
+        
+        System.debug('=== RESOURCE: ' + resourcePlan.resourceId + ' | TERRITORY: ' + resourcePlan.territoryId + ' ===');
+        
+        for(String dayName : slotsByDay.keySet()) {
+            List<TimeSlot> slotsForDay = slotsByDay.get(dayName);
+            
+            // Debug des slots bruts pour ce jour
+            System.debug('--- Jour: ' + dayName + ' ---');
+            System.debug('Nombre de slots: ' + slotsForDay.size());
+            for(TimeSlot slot : slotsForDay) {
+                System.debug('  Slot: ' + slot.StartTime + ' → ' + slot.EndTime);
+            }
+            
+            // Créer la ResourceAvailability
+            ResourceAvailability availability = new ResourceAvailability(slotsForDay);
+            resourcePlan.availabilityByDay.put(dayName, availability);
+            
+            // Debug des heures calculées
+            System.debug('  ✓ Matin commence à: ' + availability.morningStartTime);
+            System.debug('  ✓ Après-midi commence à: ' + availability.afternoonStartTime);
+            System.debug('');
+        }
+        
+        System.debug('========================================\n');
+    }
+}
