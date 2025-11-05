@@ -1,159 +1,55 @@
-Je vais créer une solution complète pour gérer les shifts avec les fonctionnalités demandées :
-/**
- * @description Retrieves time slots by territory and day for service resources
- * @author ayoub.chebbi-sc@airliquide.com| 11-02-2025
- * @param serviceResourceIds
- * @return Map<Id, Map<String, ShiftTimeSlot>>
- **/
-public static Map<Id, Map<String, ShiftTimeSlot>> getShiftsByResourceAndDate(Set<Id> resourceIds) {
+Je vais vous aider à créer des shifts/horaires de travail pour 10 jours, de 8h à 18h, avec Apex Salesforce.
+Voici un exemple de code Apex pour créer des shifts programmatiquement :
+public class ShiftCreator {
     
-    List<Shift> shifts = [SELECT Id, ServiceResourceId, StartTime, EndTime
-                          FROM Shift
-                          WHERE ServiceResourceId IN :resourceIds];
-    
-    Map<Id, Map<String, ShiftTimeSlot>> shiftsByResourceAndDate = new Map<Id, Map<String, ShiftTimeSlot>>();
-    
-    for(Shift shift : shifts) {
-        String dateKey = shift.StartTime.format('yyyy-MM-dd');
+    public static void createTenDayShifts() {
+        List<ServiceResource> resources = [SELECT Id FROM ServiceResource LIMIT 1];
         
-        // Initialize resource map if not exists
-        if(!shiftsByResourceAndDate.containsKey(shift.ServiceResourceId)) {
-            shiftsByResourceAndDate.put(shift.ServiceResourceId, new Map<String, ShiftTimeSlot>());
+        if(resources.isEmpty()) {
+            System.debug('Aucune ressource de service trouvée');
+            return;
         }
         
-        // Initialize ShiftTimeSlot for this date if not exists
-        if(!shiftsByResourceAndDate.get(shift.ServiceResourceId).containsKey(dateKey)) {
-            shiftsByResourceAndDate.get(shift.ServiceResourceId).put(dateKey, new ShiftTimeSlot(dateKey));
-        }
+        ServiceResource resource = resources[0];
+        List<Shift> shiftsToInsert = new List<Shift>();
         
-        ShiftTimeSlot timeSlot = shiftsByResourceAndDate.get(shift.ServiceResourceId).get(dateKey);
-        timeSlot.addShift(shift);
-    }
-    
-    return shiftsByResourceAndDate;
-}
-
-/**
- * @description Wrapper class to store morning and afternoon shift times for a specific date
- */
-public class ShiftTimeSlot {
-    public String dateKey;
-    public Time morningStart;      // Première heure avant midi
-    public Time afternoonStart;    // Première heure après midi
-    private List<Shift> allShifts; // Pour vérifier si la personne travaille
-    
-    public ShiftTimeSlot(String dateKey) {
-        this.dateKey = dateKey;
-        this.allShifts = new List<Shift>();
-    }
-    
-    /**
-     * @description Add shift and update morning/afternoon start times
-     */
-    public void addShift(Shift shift) {
-        this.allShifts.add(shift);
+        // Date de début (aujourd'hui)
+        Date startDate = Date.today();
         
-        Time shiftStartTime = Time.newInstance(
-            shift.StartTime.hour(),
-            shift.StartTime.minute(),
-            shift.StartTime.second(),
-            shift.StartTime.millisecond()
-        );
-        
-        // Si commence avant midi (12:00)
-        if(shift.StartTime.hour() < 12) {
-            if(this.morningStart == null || shiftStartTime < this.morningStart) {
-                this.morningStart = shiftStartTime;
-            }
-        }
-        // Si commence à midi ou après
-        else {
-            if(this.afternoonStart == null || shiftStartTime < this.afternoonStart) {
-                this.afternoonStart = shiftStartTime;
-            }
-        }
-    }
-    
-    /**
-     * @description Check if person is working at given time
-     * @param checkTime Time to check
-     * @return Boolean true if working, false otherwise
-     */
-    public Boolean isWorkingAtTime(Time checkTime) {
-        for(Shift shift : this.allShifts) {
-            Time shiftStart = Time.newInstance(
-                shift.StartTime.hour(),
-                shift.StartTime.minute(),
-                shift.StartTime.second(),
-                shift.StartTime.millisecond()
+        // Créer 10 shifts consécutifs
+        for(Integer i = 0; i < 10; i++) {
+            Shift newShift = new Shift();
+            newShift.ServiceResourceId = resource.Id;
+            newShift.StartTime = DateTime.newInstance(
+                startDate.addDays(i), 
+                Time.newInstance(8, 0, 0, 0)
             );
-            
-            Time shiftEnd = Time.newInstance(
-                shift.EndTime.hour(),
-                shift.EndTime.minute(),
-                shift.EndTime.second(),
-                shift.EndTime.millisecond()
+            newShift.EndTime = DateTime.newInstance(
+                startDate.addDays(i), 
+                Time.newInstance(18, 0, 0, 0)
             );
+            newShift.Label = 'Shift Jour ' + (i + 1);
+            newShift.TimeSlotType = 'Normal';
             
-            // Vérifier si checkTime est entre le début et la fin du shift
-            if(checkTime >= shiftStart && checkTime <= shiftEnd) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * @description Check if person is working at given datetime
-     * @param checkDateTime DateTime to check
-     * @return Boolean true if working, false otherwise
-     */
-    public Boolean isWorkingAtDateTime(DateTime checkDateTime) {
-        String checkDateKey = checkDateTime.format('yyyy-MM-dd');
-        
-        // Vérifier si la date correspond
-        if(checkDateKey != this.dateKey) {
-            return false;
+            shiftsToInsert.add(newShift);
         }
         
-        for(Shift shift : this.allShifts) {
-            // Vérifier si checkDateTime est entre le début et la fin du shift
-            if(checkDateTime >= shift.StartTime && checkDateTime <= shift.EndTime) {
-                return true;
-            }
+        try {
+            insert shiftsToInsert;
+            System.debug('✓ ' + shiftsToInsert.size() + ' shifts créés avec succès');
+        } catch(Exception e) {
+            System.debug('Erreur: ' + e.getMessage());
         }
-        return false;
     }
 }
-Exemple d'utilisation :
-// 1. Récupérer les shifts groupés par resource et date
-Set<Id> resourceIds = new Set<Id>{/* vos IDs */};
-Map<Id, Map<String, ShiftTimeSlot>> shiftsData = getShiftsByResourceAndDate(resourceIds);
-
-// 2. Accéder aux informations pour une resource spécifique et une date
-Id resourceId = /* votre resource ID */;
-String dateKey = '2025-11-04'; // format yyyy-MM-dd
-
-if(shiftsData.containsKey(resourceId) && shiftsData.get(resourceId).containsKey(dateKey)) {
-    ShiftTimeSlot timeSlot = shiftsData.get(resourceId).get(dateKey);
-    
-    // Afficher les heures de début
-    System.debug('Début matin: ' + timeSlot.morningStart);
-    System.debug('Début après-midi: ' + timeSlot.afternoonStart);
-    
-    // Vérifier si la personne travaille à 14h30
-    Time checkTime = Time.newInstance(14, 30, 0, 0);
-    Boolean isWorking = timeSlot.isWorkingAtTime(checkTime);
-    System.debug('Travaille à 14h30: ' + isWorking);
-    
-    // Ou vérifier avec une date complète
-    DateTime checkDateTime = DateTime.newInstance(2025, 11, 4, 14, 30, 0);
-    Boolean isWorkingAtDate = timeSlot.isWorkingAtDateTime(checkDateTime);
-    System.debug('Travaille le 04/11/2025 à 14h30: ' + isWorkingAtDate);
-}
-Fonctionnalités :
-✅ Groupement par resource et date : Les shifts sont organisés par ServiceResourceId et par date
-✅ Première heure du matin : morningStart - première heure avant 12h (ou null si aucun shift le matin)
-✅ Première heure de l'après-midi : afternoonStart - première heure après 12h (ou null si aucun shift l'après-midi)
-✅ Vérification si la personne travaille : Méthodes isWorkingAtTime() et isWorkingAtDateTime()
-N'hésite pas si tu veux que je modifie quelque chose !
+Pour exécuter ce code :
+Ouvrez la Developer Console dans Salesforce
+Allez dans Debug > Open Execute Anonymous Window
+Collez : ShiftCreator.createTenDayShifts();
+Cliquez sur Execute
+Points importants :
+Assurez-vous d'avoir au moins une ServiceResource active
+Les shifts sont créés de 8h00 à 18h00 (10 heures)
+Vous pouvez modifier le ServiceResourceId selon vos besoins
+Le code inclut la gestion d'erreurs
+Voulez-vous que j'adapte ce code pour des besoins spécifiques (plusieurs ressources, jours de la semaine uniquement, etc.) ?
