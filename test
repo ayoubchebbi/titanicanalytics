@@ -1,11 +1,63 @@
-/* Pour Chrome, Safari, Edge, Opera */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+<input type="number" 
+    class="slds-grid slds-grid_align-end slds-text-body_small slds-text-title_bold box-quantity"
+    value={productItem.selectedQuantity}
+    min="0" 
+    max={productItem.originalQuantity}
+    onchange={handleQuantityInputChange}
+    data-item-id={productItem.uuid}
+    data-product-id={item.uuid}
+    data-max={productItem.originalQuantity} />
 
-/* Pour Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
+
+handleQuantityInputChange(event) {
+    event.stopPropagation();
+    
+    const input = event.target;
+    const itemId = input.dataset.itemId;
+    const productId = input.dataset.productId;
+    const maxQuantity = parseInt(input.dataset.max, 10);
+    
+    let value = parseInt(input.value, 10);
+    
+    // Si valeur invalide ou négative, mettre à 0
+    if (isNaN(value) || value < 0) {
+        value = 0;
+    }
+    
+    // Si valeur dépasse le max, limiter au max
+    if (value > maxQuantity) {
+        value = maxQuantity;
+    }
+    
+    // Corriger l'affichage
+    input.value = value;
+    
+    // Mettre à jour l'état
+    this.noWithdrawItems = this.noWithdrawItems.map(product => {
+        if (product.uuid !== productId) {
+            return product;
+        }
+        
+        const updatedProductItems = product.productItems.map(item => {
+            if (item.uuid !== itemId) {
+                return item;
+            }
+            
+            return {
+                ...item,
+                selectedQuantity: value
+            };
+        });
+        
+        const totalQuantity = updatedProductItems.reduce(
+            (sum, item) => sum + item.selectedQuantity, 
+            0
+        );
+        
+        return {
+            ...product,
+            productItems: updatedProductItems,
+            totalQuantity
+        };
+    });
 }
