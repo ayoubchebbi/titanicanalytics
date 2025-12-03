@@ -1,63 +1,24 @@
-<input type="number" 
-    class="slds-grid slds-grid_align-end slds-text-body_small slds-text-title_bold box-quantity"
-    value={productItem.selectedQuantity}
-    min="0" 
-    max={productItem.originalQuantity}
-    onchange={handleQuantityInputChange}
-    data-item-id={productItem.uuid}
-    data-product-id={item.uuid}
-    data-max={productItem.originalQuantity} />
+Reformulated Description in English
+
+I need to understand why this bug is appearing and how to resolve it.
+When a user tries to reschedule a service appointment, the system displays an error message and does not allow saving the new appointment time.
+
+Steps to Reproduce the Bug
+
+1. Open this link: [link from the screenshot]
 
 
-handleQuantityInputChange(event) {
-    event.stopPropagation();
-    
-    const input = event.target;
-    const itemId = input.dataset.itemId;
-    const productId = input.dataset.productId;
-    const maxQuantity = parseInt(input.dataset.max, 10);
-    
-    let value = parseInt(input.value, 10);
-    
-    // Si valeur invalide ou négative, mettre à 0
-    if (isNaN(value) || value < 0) {
-        value = 0;
-    }
-    
-    // Si valeur dépasse le max, limiter au max
-    if (value > maxQuantity) {
-        value = maxQuantity;
-    }
-    
-    // Corriger l'affichage
-    input.value = value;
-    
-    // Mettre à jour l'état
-    this.noWithdrawItems = this.noWithdrawItems.map(product => {
-        if (product.uuid !== productId) {
-            return product;
-        }
-        
-        const updatedProductItems = product.productItems.map(item => {
-            if (item.uuid !== itemId) {
-                return item;
-            }
-            
-            return {
-                ...item,
-                selectedQuantity: value
-            };
-        });
-        
-        const totalQuantity = updatedProductItems.reduce(
-            (sum, item) => sum + item.selectedQuantity, 
-            0
-        );
-        
-        return {
-            ...product,
-            productItems: updatedProductItems,
-            totalQuantity
-        };
-    });
-}
+2. Go to the external appointment booking portal.
+
+
+3. Select one of the available service appointments.
+
+
+4. Change the appointment date and/or time (for example, set the scheduled date to 12/12/2025).
+
+
+5. Choose any time slot and click Save.
+
+
+6. The system displays the following error message (shown in the screenshot):
+FS1_ERROR: "Service Appointment update caused by Connected Field Service failed. This feature is not currently enabled for this user."
