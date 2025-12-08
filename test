@@ -1,24 +1,17 @@
-Reformulated Description in English
-
-I need to understand why this bug is appearing and how to resolve it.
-When a user tries to reschedule a service appointment, the system displays an error message and does not allow saving the new appointment time.
-
-Steps to Reproduce the Bug
-
-1. Open this link: [link from the screenshot]
-
-
-2. Go to the external appointment booking portal.
-
-
-3. Select one of the available service appointments.
-
-
-4. Change the appointment date and/or time (for example, set the scheduled date to 12/12/2025).
-
-
-5. Choose any time slot and click Save.
-
-
-6. The system displays the following error message (shown in the screenshot):
-FS1_ERROR: "Service Appointment update caused by Connected Field Service failed. This feature is not currently enabled for this user."
+Steps to Execute a Batch Apex
+Step 1: Open Developer Console
+Go to Setup → Developer Console
+Step 2: Open Execute Anonymous Window
+Click: Debug → Open Execute Anonymous Window
+Step 3: Write Execution Code
+MyBatchClass batch = new MyBatchClass();
+Id batchId = Database.executeBatch(batch, 200);
+Step 4: Execute
+Click "Execute" button
+Step 5: Monitor the Job
+Go to: Setup → Apex Jobs
+Find your batch job by the Job ID
+Check status and progress
+Step 6: Verify Results
+Check that records were processed correctly
+Review any errors in the job details
