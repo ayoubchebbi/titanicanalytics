@@ -1,17 +1,3 @@
-Steps to Execute a Batch Apex
-Step 1: Open Developer Console
-Go to Setup → Developer Console
-Step 2: Open Execute Anonymous Window
-Click: Debug → Open Execute Anonymous Window
-Step 3: Write Execution Code
-MyBatchClass batch = new MyBatchClass();
-Id batchId = Database.executeBatch(batch, 200);
-Step 4: Execute
-Click "Execute" button
-Step 5: Monitor the Job
-Go to: Setup → Apex Jobs
-Find your batch job by the Job ID
-Check status and progress
-Step 6: Verify Results
-Check that records were processed correctly
-Review any errors in the job details
+There seems to be an issue related to the Work Type configuration.
+The validation rule is executed in the EMEA region when the country is set to Italy, and it returns the following error message: “Testtets”.
+After changing the Work Type, the process completes successfully.
