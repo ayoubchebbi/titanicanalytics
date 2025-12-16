@@ -1,3 +1,51 @@
-There seems to be an issue related to the Work Type configuration.
-The validation rule is executed in the EMEA region when the country is set to Italy, and it returns the following error message: “Testtets”.
-After changing the Work Type, the process completes successfully.
+
+Description
+
+After reviewing the data, I identified several issues that explain the observed behavior:
+
+Two Service Appointments are not associated with any Service Territory.
+
+The return-to-branch Service Appointment is marked as completed.
+
+The Planned Tour has not been created.
+
+
+
+---
+
+Steps to Create a Planned Tour
+
+1. Open the Dispatcher Console.
+
+
+2. Click on Create Planned Tour from the menu.
+
+
+3. Provide the following information:
+
+Schedule date
+
+Service Territory
+
+Service Resource
+
+
+
+4. Click Create Planned Tour.
+
+
+5. Check the Tour Order field on the related Service Appointments to confirm it has been populated.
+
+
+
+
+---
+
+Resolution
+
+Added the missing Service Territory to the Service Appointments.
+
+Created a new return-to-branch Service Appointment.
+
+The scenario now works as expected.
+
