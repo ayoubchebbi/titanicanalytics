@@ -1,3 +1,25 @@
-bool overlap =
-    currentSlot.Interval.Start <= slot.Interval.Finish &&
-    currentSlot.Interval.Finish >= slot.Interval.Start;
+for (int i = 0; i < slotResult.Count; i++)
+{
+    var currentSlot = slotResult[i];
+
+    for (int j = i + 1; j < slotResult.Count; j++)
+    {
+        var compareSlot = slotResult[j];
+
+        bool overlap = currentSlot.Interval.Start <= compareSlot.Interval.Finish
+                       && currentSlot.Interval.Finish >= compareSlot.Interval.Start;
+
+        if (overlap)
+        {
+            // Fusionner les intervalles : début = premier start, fin = dernier finish
+            currentSlot.Interval.Start = Math.Min(currentSlot.Interval.Start, compareSlot.Interval.Start);
+            currentSlot.Interval.Finish = Math.Max(currentSlot.Interval.Finish, compareSlot.Interval.Finish);
+
+            // Supprimer le slot chevauchant pour éviter les doublons
+            slotResult.RemoveAt(j);
+
+            // Comme on a supprimé un élément, on doit décrémenter j pour ne pas sauter le suivant
+            j--;
+        }
+    }
+}
