@@ -1,51 +1,52 @@
-
-Description
-
-After reviewing the data, I identified several issues that explain the observed behavior:
-
-Two Service Appointments are not associated with any Service Territory.
-
-The return-to-branch Service Appointment is marked as completed.
-
-The Planned Tour has not been created.
-
-
-
----
-
-Steps to Create a Planned Tour
-
-1. Open the Dispatcher Console.
-
-
-2. Click on Create Planned Tour from the menu.
-
-
-3. Provide the following information:
-
-Schedule date
-
-Service Territory
-
-Service Resource
-
-
-
-4. Click Create Planned Tour.
-
-
-5. Check the Tour Order field on the related Service Appointments to confirm it has been populated.
-
-
-
-
----
-
-Resolution
-
-Added the missing Service Territory to the Service Appointments.
-
-Created a new return-to-branch Service Appointment.
-
-The scenario now works as expected.
-
+Voici le code optimisé :
+public static List<FSL.AppointmentBookingSlot> getFreeSlot(Id appointmentId) {
+    List<FSL.AppointmentBookingSlot> result = new List<FSL.AppointmentBookingSlot>();
+    Map<String, FSL.AppointmentBookingSlot> slotMap = new Map<String, FSL.AppointmentBookingSlot>();
+    
+    DateTime now = DateTime.now();
+    DateTime endDate = now.addSeconds((UserInfo.getTimezone().getOffset(now)/1000));
+    
+    try {
+        ServiceAppointment appt = PointOfServiceAndChannelSchedulingHelper.getAppointmentDetails(appointmentId)[0];
+        
+        FSL.GradeSlotsService gradeService = new FSL.GradeSlotsService(getPolicy(appt), appt.Id);
+        FSL.AdvancedGapMatrix gapMatrix = gradeService.getGradedMatrix(true);
+        Map<Id, FSL.ResourceScheduleData> resourceData = gapMatrix.ResourceIDToScheduleData;
+        
+        for (Id resourceId : resourceData.keySet()) {
+            for (FSL.SchedulingOption option : resourceData.get(resourceId).SchedulingOptions) {
+                FSL.AppointmentBookingSlot slot = new FSL.AppointmentBookingSlot();
+                slot.Interval = new FSL.TimeInterval(option.Interval.Start, option.Interval.Finish);
+                result.add(slot);
+            }
+        }
+        
+        for (FSL.AppointmentBookingSlot slot : result) {
+            DateTime start = slot.Interval.Start;
+            DateTime end = slot.Interval.Finish;
+            Decimal duration = appt.DurationType == ServiceAppointmentHelper.DURATION_TYPE_MINUTES ? 
+                              appt.Duration : appt.Duration * 60;
+            
+            while(start.getTime() + (duration * 60000) <= end.getTime()) {
+                DateTime newEnd = start.addMinutes(duration.intValue());
+                
+                if(start > endDate && newEnd > endDate) {
+                    FSL.AppointmentBookingSlot newSlot = new FSL.AppointmentBookingSlot();
+                    newSlot.Interval = new FSL.TimeInterval(start, newEnd);
+                    
+                    String key = slot.Interval.Start + '' + slot.Interval.Finish;
+                    if(!slotMap.containsKey(key)) {
+                        slotMap.put(key, newSlot);
+                    }
+                }
+                
+                start = newEnd;
+            }
+        }
+        
+        return slotMap.values();
+        
+    } catch (Exception e) {
+        return new List<FSL.AppointmentBookingSlot>();
+    }
+}
