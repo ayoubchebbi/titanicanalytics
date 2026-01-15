@@ -1,29 +1,3 @@
-for (Id resourceId : resourceData.keySet()) {
-    for (FSL.SchedulingOption option : resourceData.get(resourceId).SchedulingOptions) {
-        FSL.AppointmentBookingSlot slot = new FSL.AppointmentBookingSlot();
-        slot.Interval = new FSL.TimeInterval(option.Interval.Start, option.Interval.Finish);
-        
-        // Vérifier et fusionner avec les slots existants en conflit
-        boolean merged = false;
-        for (FSL.AppointmentBookingSlot existingSlot : slotResult) {
-            // Vérifier si les intervalles se chevauchent
-            if (existingSlot.Interval.Start < slot.Interval.Finish && 
-                slot.Interval.Start < existingSlot.Interval.Finish) {
-                
-                // Fusionner en étendant l'intervalle existant
-                DateTime newStart = existingSlot.Interval.Start < slot.Interval.Start ? 
-                                    existingSlot.Interval.Start : slot.Interval.Start;
-                DateTime newFinish = existingSlot.Interval.Finish > slot.Interval.Finish ? 
-                                     existingSlot.Interval.Finish : slot.Interval.Finish;
-                
-                existingSlot.Interval = new FSL.TimeInterval(newStart, newFinish);
-                merged = true;
-                break;
-            }
-        }
-        
-        if (!merged) {
-            slotResult.add(slot);
-        }
-    }
-}
+bool overlap =
+    currentSlot.Interval.Start <= slot.Interval.Finish &&
+    currentSlot.Interval.Finish >= slot.Interval.Start;
