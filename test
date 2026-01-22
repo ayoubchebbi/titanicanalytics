@@ -1,1 +1,5 @@
-login access has been granted to Salesforce Support for a few days; the affected Org ID is 00012938E8. The issue was working fine previously and started occurring afterward without any code changes, and it is related to a Portal Community with Guest User. I have added the portal link in the case description for your reference. Please let me know if you need any additional information. Best
+this.patientsFromPolygon = [];
+((data)?.uiapi?.query?.Address?.edges || []).forEach(item => {
+  const id = item?.node?.ACCCO_RelatedAccount__c?.value;
+  if (id) this.patientsFromPolygon.push(id);
+});
