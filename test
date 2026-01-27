@@ -1,10 +1,4 @@
-worked in the QA org without any issues, and I’m able to reproduce the behavior using the following elements:
-Portal link:
-https://airliquidehhc-emea-qa.sandbox.my.site.com/s/safe/lndaxs/s/?language=en_US&pId=MD4AOMVEMDAMMVUULEYSUF0
-SA Number: SA-06137
-Lightning link:
-https://airliquidehhc-emea-qa.sandbox.lightning.force.com/lightning/r/ServiceAppointment/08pAa000002uLILLAY/view
-Organization ID: 00D0E000000HLLJ
-I added access to this org accordingly.
-Please let me know if you need any additional information.
-Best regards,
+To confirm, no modifications have been made on any component, configuration, or automation in our org.
+Additionally, QA and UAT environments are fully aligned — they are running the same codebase, same permissions, same profiles, and same configuration.
+There has been no recent change or update introduced that could trigger a different behavior when the Guest User updates the SA.
+Please let us know if you need any specific details or logs from our side to assist with the troubleshooting.
