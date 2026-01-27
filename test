@@ -1,59 +1,10 @@
-const prepareAssets = (_assets, therapyId) => {
-    let assetDevices = [];
-    let assetAccessories = [];
-    let assetConsumables = [];
-    let assetWaitingForReturn = [];
-    _assets.forEach((el) => {
-        let asset = {
-            id: el?.node?.Id,
-            productName: el?.node?.TEKDI_ProductName__c?.value,
-            productCode: el?.node?.ProductCode?.value,
-            serialNumber: el?.node?.SerialNumber?.value,
-            batchNumber: el?.node?.FWMCO_BatchNumber__c?.value,
-            installDate: el?.node?.InstallDate?.displayValue,
-            status: el?.node?.Status?.displayValue,
-            statusValue: el?.node?.Status?.value,
-            subStatus: el?.node?.PASDI_SubStatus__c?.displayValue,
-            subStatusValue: el?.node?.PASDI_SubStatus__c?.value,
-            condition: el?.node?.OSMCO_Condition__c?.displayValue,
-            isDevice: ASSET_DEVICE_TYPE.includes(el?.node?.WOMCO_ProductType__c?.value),
-            isAccessory: ASSET_ACCESSORY_TYPE.includes(el?.node?.WOMCO_ProductType__c?.value),
-            isConsumable: ASSET_CONSUMABLE_TYPE.includes(el?.node?.WOMCO_ProductType__c?.value),
-            main: el?.node?.PRSCO_Therapy__r?.Id == therapyId,
-            matNumber: el?.node?.CUSDI_MatriculeNumber__c?.value,
-            mfNumber: el?.node?.FSIT_ManufacturerSerialNumber__c?.value
-        };
-
-        if (asset.statusValue == WITHDRAWEN_STATUS) {
-            assetWaitingForReturn.push(asset);
-            return;
-        }
-
-        if (asset.isDevice) {
-            assetDevices.push(asset);
-        }
-
-        if (asset.isAccessory) {
-            assetAccessories.push(asset);
-        }
-
-        if (asset.isConsumable) {
-            assetConsumables.push(asset);
-        }
-    });
-    
-    // Fonction de tri par installDate décroissant (plus récentes en premier)
-    const orderByInstallDateDesc = (a, b) => {
-        if (!a.installDate) return 1;
-        if (!b.installDate) return -1;
-        return new Date(b.installDate) - new Date(a.installDate);
-    };
-    
-    return {
-        devices: assetDevices.length > 0 ? assetDevices.sort(orderByMain) : null,
-        accessories: assetAccessories.length > 0 ? assetAccessories.sort(orderByInstallDateDesc).slice(0, 10) : null,
-        consumables: assetConsumables.length > 0 ? assetConsumables.sort(orderByInstallDateDesc).slice(0, 10) : null,
-        waitingForReturn: assetWaitingForReturn.length > 0 ? assetWaitingForReturn.sort(orderByMain) : null,
-        hasAssets: assetAccessories.length > 0 || assetConsumables.length > 0 || assetDevices.length > 0
-    };
-}
+worked in the QA org without any issues, and I’m able to reproduce the behavior using the following elements:
+Portal link:
+https://airliquidehhc-emea-qa.sandbox.my.site.com/s/safe/lndaxs/s/?language=en_US&pId=MD4AOMVEMDAMMVUULEYSUF0
+SA Number: SA-06137
+Lightning link:
+https://airliquidehhc-emea-qa.sandbox.lightning.force.com/lightning/r/ServiceAppointment/08pAa000002uLILLAY/view
+Organization ID: 00D0E000000HLLJ
+I added access to this org accordingly.
+Please let me know if you need any additional information.
+Best regards,
