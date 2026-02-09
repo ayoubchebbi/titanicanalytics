@@ -1,4 +1,31 @@
-To confirm, no modifications have been made on any component, configuration, or automation in our org.
-Additionally, QA and UAT environments are fully aligned — they are running the same codebase, same permissions, same profiles, and same configuration.
-There has been no recent change or update introduced that could trigger a different behavior when the Guest User updates the SA.
-Please let us know if you need any specific details or logs from our side to assist with the troubleshooting.
+Post-Deployment Steps – Field Service Mobile Settings
+
+Navigate to Field Service Mobile Settings in Salesforce Setup.
+
+Clone the existing setting:
+
+Name: Field service Guest User Portal
+
+Developer Name: FieldServiceGuestUserPortal
+
+In the cloned setting:
+
+Locate the checkbox “Send appointment notification on assignment”
+
+Uncheck this checkbox
+
+Save the setting.
+
+Assign the setting to the Guest User profile:
+
+Open the newly created Field service Guest User Portal setting
+
+Click Assign to Profiles
+
+Select the profile Scheduled Appointments Calendar Profile
+
+Click Change Assignment
+
+Choose Assign new settings
+
+Save the changes
