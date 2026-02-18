@@ -1,1 +1,22 @@
+private static List<FSL.AppointmentBookingSlot> generateMockSlots(ServiceAppointment appointment) {
+    List<FSL.AppointmentBookingSlot> mockSlots = new List<FSL.AppointmentBookingSlot>();
 
+    Decimal durationMinutes = appointment.DurationType == ServiceAppointmentHelper.DURATION_TYPE_MINUTES
+        ? appointment.Duration
+        : appointment.Duration * 60;
+
+    Long durationMillis = durationMinutes.longValue() * 60000;
+    DateTime slotStart = DateTime.now().addDays(1);
+
+    // Génère 1 slot par jour sur 10 jours
+    for (Integer i = 0; i < 10; i++) {
+        DateTime start  = slotStart.addDays(i);
+        DateTime finish = DateTime.newInstance(start.getTime() + durationMillis);
+
+        FSL.AppointmentBookingSlot slot = new FSL.AppointmentBookingSlot();
+        slot.Interval = new FSL.TimeInterval(start, finish);
+        mockSlots.add(slot);
+    }
+
+    return mockSlots;
+}
