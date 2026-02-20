@@ -1,22 +1,18 @@
-private static List<FSL.AppointmentBookingSlot> generateMockSlots(ServiceAppointment appointment) {
-    List<FSL.AppointmentBookingSlot> mockSlots = new List<FSL.AppointmentBookingSlot>();
+We are facing an error message on the Salesforce Experience Cloud (Community Portal) when attempting to reschedule a Service Appointment in Field Service.
 
-    Decimal durationMinutes = appointment.DurationType == ServiceAppointmentHelper.DURATION_TYPE_MINUTES
-        ? appointment.Duration
-        : appointment.Duration * 60;
+The error indicates an issue related to a Permission Set on the Guest User.
 
-    Long durationMillis = durationMinutes.longValue() * 60000;
-    DateTime slotStart = DateTime.now().addDays(1);
+We previously created a case regarding this issue, and we were advised to create or update Field Service Mobile Settings by disabling the notification setting.
+This solution works correctly in other Salesforce orgs.
 
-    // Génère 1 slot par jour sur 10 jours
-    for (Integer i = 0; i < 10; i++) {
-        DateTime start  = slotStart.addDays(i);
-        DateTime finish = DateTime.newInstance(start.getTime() + durationMillis);
+However, in our FR org, the issue still persists and the error message continues to appear.
 
-        FSL.AppointmentBookingSlot slot = new FSL.AppointmentBookingSlot();
-        slot.Interval = new FSL.TimeInterval(start, finish);
-        mockSlots.add(slot);
-    }
+Could you please help us:
 
-    return mockSlots;
-}
+Identify the root cause of this issue in the FR org
+
+Explain why the same configuration works in other orgs but not in this one
+
+Provide guidance on how to resolve this issue permanently
+
+Thank you for your support.
