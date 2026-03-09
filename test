@@ -1,1 +1,16 @@
+Post-Deployment Step 1 – Field Service Settings
 
+Naviguer vers Setup > Field Service Settings
+Dans la section des notifications, décocher le champ de notification concerné
+Activer l'option dans Field Service Settings Mobile
+Sauvegarder les modifications
+
+
+Post-Deployment Step 2 – Guest User Calendar Timezone
+
+Naviguer vers Setup > Sites et ouvrir le site concerné
+Cliquer sur Public Access Settings pour accéder au profil du Guest User
+Aller dans les détails de l'utilisateur Guest User du portail
+Dans le champ Time Zone, sélectionner le fuseau horaire correspondant à l'org :
+
+OrgTime Zone à configurerFrance(GMT+1:00) Central European Time (Europe/Paris)
