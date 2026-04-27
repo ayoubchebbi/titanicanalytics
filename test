@@ -1,107 +1,60 @@
-/**
- * Sets the delivery mode (default and eligible) on each WorkOrder
- * based on its associated ServiceContract business type and address pickup location.
- *
- * @param workOrders List of WorkOrder records to process
- */
-public static void setDeliveryMode(List<WorkOrder> workOrders) {
+Date startDate = Date.today().addDays(1);
+Date endDate = Date.newInstance(Date.today().year(), 5, 31);
 
-    // Guard clause: exit early if the list is null or empty
-    if (workOrders == null || workOrders.isEmpty()) {
-        return;
-    }
+Id serviceTerritoryId = 'STTIX_TERRITORY_ID';
+Id serviceResourceId  = 'STTIX_RESOURCE_ID';
 
-    // Collect IDs needed for SOQL queries
-    Set<Id> serviceContractIds = new Set<Id>();
-    Set<Id> addressIds         = new Set<Id>();
+List<Shift> shiftsToInsert = new List<Shift>();
 
-    for (WorkOrder workOrder : workOrders) {
-        serviceContractIds.add(workOrder.ServiceContractId);
-        addressIds.add(workOrder.WOMCO_Address__c);
-    }
+for(Date d = startDate; d <= endDate; d = d.addDays(1)) {
 
-    // Query all related Addresses (keyed by Id)
-    Map<Id, Schema.Address> addressById = new Map<Id, Schema.Address>(
-        [SELECT Id, ORMDI_IsPickUpLocation__c
-         FROM   Address
-         WHERE  Id IN :addressIds]
-    );
+    // 1 = Dimanche, 7 = Samedi
+    Integer dayOfWeek = d.toStartOfWeek().daysBetween(d) + 1;
 
-    // Query all related ServiceContracts (keyed by Id)
-    Map<Id, ServiceContract> serviceContractById = new Map<Id, ServiceContract>(
-        [SELECT Id, ORMIT_BusinessType__c
-         FROM   ServiceContract
-         WHERE  Id IN :serviceContractIds]
-    );
+    // Skip dimanche
+    if(dayOfWeek == 1) continue;
 
-    // Build filter sets for the DeliveryManagement query
-    Set<String>  businessTypes    = new Set<String>();
-    Set<Boolean> pickUpLocations  = new Set<Boolean>();
+    // Samedi
+    if(dayOfWeek == 7) {
+        Datetime startMorning = Datetime.newInstance(d, Time.newInstance(8, 0, 0, 0));
+        Datetime endMorning   = Datetime.newInstance(d, Time.newInstance(13, 0, 0, 0));
 
-    for (WorkOrder workOrder : workOrders) {
-        ServiceContract serviceContract = serviceContractById.get(workOrder.ServiceContractId);
-        Schema.Address  address         = addressById.get(workOrder.WOMCO_Address__c);
+        shiftsToInsert.add(new Shift(
+            StartTime = startMorning,
+            EndTime = endMorning,
+            ServiceTerritoryId = serviceTerritoryId,
+            ServiceResourceId = serviceResourceId,
+            Status = 'Draft'
+        ));
+    } 
+    // Lundi → Vendredi
+    else {
+        // Matin
+        Datetime startMorning = Datetime.newInstance(d, Time.newInstance(8, 0, 0, 0));
+        Datetime endMorning   = Datetime.newInstance(d, Time.newInstance(12, 30, 0, 0));
 
-        // Skip this work order if related records are missing
-        if (serviceContract == null || address == null) {
-            continue;
-        }
+        // Après-midi
+        Datetime startAfternoon = Datetime.newInstance(d, Time.newInstance(14, 0, 0, 0));
+        Datetime endAfternoon   = Datetime.newInstance(d, Time.newInstance(18, 0, 0, 0));
 
-        pickUpLocations.add(address.ORMDI_IsPickUpLocation__c);
+        shiftsToInsert.add(new Shift(
+            StartTime = startMorning,
+            EndTime = endMorning,
+            ServiceTerritoryId = serviceTerritoryId,
+            ServiceResourceId = serviceResourceId,
+            Status = 'Draft'
+        ));
 
-        if (ServiceContractHelper.BUSINESS_TYPE_B_TO_B.contains(serviceContract.ORMIT_BusinessType__c)) {
-            businessTypes.add('001');
-        } else {
-            businessTypes.add('002');
-        }
-    }
-
-    // Query DeliveryManagement records matching the collected filters
-    List<FSCO_DeliveryManagement__c> deliveryManagementList = [
-        SELECT Id,
-               FSCO_BusinessProcess__c,
-               FSCO_DefaultMode__c,
-               FSCO_EligibleModes__c,
-               IsPickUpLocation__c
-        FROM   FSCO_DeliveryManagement__c
-        WHERE  FSCO_BusinessType__c    IN :businessTypes
-        AND    IsPickUpLocation__c     IN :pickUpLocations
-    ];
-
-    // Assign delivery mode to each WorkOrder
-    for (WorkOrder workOrder : workOrders) {
-        ServiceContract serviceContract = serviceContractById.get(workOrder.ServiceContractId);
-        Schema.Address  address         = addressById.get(workOrder.WOMCO_Address__c);
-
-        if (serviceContract == null || address == null) {
-            continue;
-        }
-
-        for (FSCO_DeliveryManagement__c dm : deliveryManagementList) {
-
-            // Match on pickup location flag
-            if (dm.IsPickUpLocation__c != address.ORMDI_IsPickUpLocation__c) {
-                continue;
-            }
-
-            Boolean isB2B = ServiceContractHelper.BUSINESS_TYPE_B_TO_B
-                                .contains(serviceContract.ORMIT_BusinessType__c);
-
-            Boolean isB2CToG = ServiceContractHelper.BUSINESS_TYPE_B_TO_C_TO_G
-                                .contains(serviceContract.ORMIT_BusinessType__c);
-
-            // Apply B2B delivery mode
-            if (isB2B && dm.FSCO_BusinessProcess__c == '001') {
-                workOrder.FSCO_DefaultMode__c   = dm.FSCO_DefaultMode__c;
-                workOrder.FSCO_EligibleModes__c = dm.FSCO_EligibleModes__c; // ⚠️ was dm.FSCO_DefaultMode__c — likely a bug
-                break;
-
-            // Apply B2C/G delivery mode
-            } else if (isB2CToG && dm.FSCO_BusinessProcess__c == '002') {
-                workOrder.FSCO_DefaultMode__c   = dm.FSCO_DefaultMode__c;
-                workOrder.FSCO_EligibleModes__c = dm.FSCO_EligibleModes__c;
-                break;
-            }
-        }
+        shiftsToInsert.add(new Shift(
+            StartTime = startAfternoon,
+            EndTime = endAfternoon,
+            ServiceTerritoryId = serviceTerritoryId,
+            ServiceResourceId = serviceResourceId,
+            Status = 'Draft'
+        ));
     }
 }
+
+insert shiftsToInsert;
+
+System.debug('Shifts créés: ' + shiftsToInsert.size());
