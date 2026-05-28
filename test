@@ -1,5 +1,1 @@
-La scheduling policy est récupérée pour chaque service appointment selon les critères suivants :
-Même pays que le service appointment
-Même marque que le service appointment
-Si le canal d'exécution est POS ou Remote (téléphone ou visio), le système vérifie si le champ FSCO_AppointmentBooking__c est coché. Si ce n'est pas le cas, il vérifie FSCO_BookAppointment__c.
-Chaque scheduling policy contient des work rules spécifiquement paramétrées pour récupérer les créneaux disponibles réels.
+
