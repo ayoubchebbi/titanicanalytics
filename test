@@ -1,84 +1,31 @@
-/**
-     * @description Block deletion of WorkOrderLineItems whose parent WorkOrder has already been synchronized with the ERP (CXHHC-50143)
-     * @param deletedRecords WorkOrderLineItems being deleted
-     */
-    public static void blockDeletionForSyncedWorkOrders(List<WorkOrderLineItem> deletedRecords) {
-        if (deletedRecords == null || deletedRecords.isEmpty()) {
-            return;
-        }
+@IsTest
+static void blockDeletionOfWoli_whenParentWorkOrderSynced_throwsError() {
+    WorkOrder workOrder = [SELECT Id FROM WorkOrder LIMIT 1];
+    WorkOrderLineItem woli = Test_WorkOrderLineItemHelper.createDummyItem(
+            workOrder.Id, null, false, 'Test WOLI', null, 1, null, null, true
+    );
 
-        Set<Id> workOrderIds = new Set<Id>();
-        for (WorkOrderLineItem woli : deletedRecords) {
-            if (woli.WorkOrderId != null) {
-                workOrderIds.add(woli.WorkOrderId);
-            }
-        }
+    workOrder.CXFCO_Status__c = CXFCO_OutboundValueSetStatuses.SYNCHRONIZED_SUCCESSFULLY;
+    update workOrder;
 
-        if (workOrderIds.isEmpty()) {
-            return;
-        }
+    Test.startTest();
+    Database.DeleteResult result = Database.delete(woli, false);
+    Test.stopTest();
 
-        Map<Id, WorkOrder> workOrdersById = new Map<Id, WorkOrder>([
-                SELECT Id, CXFCO_Status__c
-                FROM WorkOrder
-                WHERE Id IN :workOrderIds
-        ]);
+    Assert.isFalse(result.isSuccess());
+    Assert.isTrue(result.getErrors()[0].getMessage().contains('already synchronized with the ERP'));
+}
 
-        // TODO: replace with Label.CXFCO_WOLIBlockedDeleteSyncedWorkOrder once the Custom Label is created
-        // FR: Ce Work Order est déjà synchronisé avec l'ERP. Les éléments ne peuvent pas être supprimés ; veuillez utiliser l'action Annuler à la place.
-        // IT: Questo Work Order è già stato sincronizzato con l'ERP. Gli elementi non possono essere eliminati; utilizzare invece l'azione Annulla.
-        // DE: Dieser Work Order wurde bereits mit dem ERP synchronisiert. Elemente können nicht gelöscht werden; bitte stattdessen die Aktion "Abbrechen" verwenden.
-        String blockedDeleteMessage = 'This Work Order is already synchronized with the ERP. Items cannot be deleted; please use the Cancel action instead.';
+@IsTest
+static void blockDeletionOfWoli_whenParentWorkOrderNotSynced_allowsDeletion() {
+    WorkOrder workOrder = [SELECT Id FROM WorkOrder LIMIT 1];
+    WorkOrderLineItem woli = Test_WorkOrderLineItemHelper.createDummyItem(
+            workOrder.Id, null, false, 'Test WOLI', null, 1, null, null, true
+    );
 
-        for (WorkOrderLineItem woli : deletedRecords) {
-            WorkOrder parentWorkOrder = workOrdersById.get(woli.WorkOrderId);
-            if (parentWorkOrder != null
-                    && parentWorkOrder.CXFCO_Status__c == CXFCO_OutboundValueSetStatuses.SYNCHRONIZED_SUCCESSFULLY) {
-                woli.addError(blockedDeleteMessage);
-            }
-        }
-    }
+    Test.startTest();
+    Database.DeleteResult result = Database.delete(woli, false);
+    Test.stopTest();
 
-
-
-   /**
-     * @description contains logic for before delete trigger event
-     * @param deletedObjects - list of objects being deleted
-     * @param oldObjectsMap - map of objects being deleted by Id
-    */
-    public override void onBeforeDelete(List<SObject> deletedObjects, Map<Id, SObject> oldObjectsMap) {
-        CORE_SM_WorkOrderLineItem.blockDeletionForSyncedWorkOrders(deletedObjects);
-    }
-
-
-   @IsTest
-    static void blockDeletionOfWoli_whenParentWorkOrderSynced_throwsError() {
-        WorkOrder workOrder = [SELECT Id FROM WorkOrder LIMIT 1];
-        WorkOrderLineItem woli = Test_WorkOrderLineItemHelper.createDummyItem(
-                workOrder.Id, null, false, 'Test WOLI', null, 1, null, null, true
-        );
-
-        workOrder.CXFCO_Status__c = CXFCO_OutboundValueSetStatuses.SYNCHRONIZED_SUCCESSFULLY;
-        update workOrder;
-
-        Test.startTest();
-        Database.DeleteResult result = Database.delete(woli, false);
-        Test.stopTest();
-
-        Assert.isFalse(result.isSuccess());
-        Assert.isTrue(result.getErrors()[0].getMessage().contains('already synchronized with the ERP'));
-    }
-
-    @IsTest
-    static void blockDeletionOfWoli_whenParentWorkOrderNotSynced_allowsDeletion() {
-        WorkOrder workOrder = [SELECT Id FROM WorkOrder LIMIT 1];
-        WorkOrderLineItem woli = Test_WorkOrderLineItemHelper.createDummyItem(
-                workOrder.Id, null, false, 'Test WOLI', null, 1, null, null, true
-        );
-
-        Test.startTest();
-        Database.DeleteResult result = Database.delete(woli, false);
-        Test.stopTest();
-
-        Assert.isTrue(result.isSuccess());
-    }
+    Assert.isTrue(result.isSuccess());
+}
