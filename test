@@ -1,2 +1,33 @@
-TEST::FRANCE_SM_WorkOrder_DeliveryModeTest,CORE_SM_CaseTest,QMECO_FillInQuestionnaireControllerTest,KRN_PortalWorkplaceControllerTest,KRN_ITFormConfigurationControllerTest,KRN_PatientIntakeITAHelperTest,KRN_PortalPatientPageControllerTest,KRN_PrPortalCaseListControllerTest,BellNotificationHelperTest,CreateWorkOrderForFinalReturnCTTest,KRN_PatientIntakeControllerTest,DisplayPatientTherapyPDFControllerTest,KRN_PatientValidationControllerTest,LightningAppointmentReassignCtrlTest,WorkOrderTriggerHandlerTest,WorkOrderTriggerTest,ServiceAppointmentTriggerHandlerTest,CaseTest,CaseTest_NIC,ResourceAbsenceTriggerTest,QuestionnaireGroupTest,TagAssignmentTriggerHandlerTest,TEKCO_ExecutableTest,CareLearningObjectiveTest_FR,LearningAssignmentTriggerHandlerTest,TrainingPlanAssignmentTriggerHandlerTest,KRN_SM_CongaTemplateTest,FSFR_MpAddressControllerTest,FSCO_AutoBindlingFeatureTest,RecalculateOverdueServiceApp_Test_BA,ApplyGeneralCarePlanControllerTest,CarePlanTest,CareInterruptionTest,EventTriggerTest,AssignedResourceHandlerTest,WorkOrderLineItemTriggerTest_FR,WorkOrderLineItemTriggerTest,CreateAppiniumUserTriggerTest,KRN_PrescriberCaseContextNotifierTest,UserTriggerTest,AddressTest::
+public class WorkDay {
+    private List<SObject> items = new List<SObject>();
+    private Long workingMinutes = 0;
 
+    public void addItem(SObject item) {
+        this.items.add(item);
+        this.workingMinutes += getDurationMinutes(item);
+    }
+
+    public List<SObject> getItems() { return this.items; }
+    public Long getWorkingMinutes() { return this.workingMinutes; }
+
+    private Long getDurationMinutes(SObject item) {
+        Object startVal = item.get('StartTime');
+        Object endVal   = item.get('EndTime');
+        if (startVal == null || endVal == null) return 0;
+
+        // Shift, ServiceAppointment... (Datetime)
+        if (startVal instanceof Datetime) {
+            return (((Datetime) endVal).getTime() - ((Datetime) startVal).getTime()) / 60000;
+        }
+        // TimeSlot (Time)
+        if (startVal instanceof Time) {
+            Time s = (Time) startVal;
+            Time e = (Time) endVal;
+            Long debut = s.hour() * 60 + s.minute();
+            Long fin   = e.hour() * 60 + e.minute();
+            if (fin <= debut) fin += 24 * 60; // créneau qui finit à minuit
+            return fin - debut;
+        }
+        return 0;
+    }
+}
