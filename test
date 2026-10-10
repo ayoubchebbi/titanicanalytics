@@ -1,33 +1,151 @@
-public class WorkDay {
-    private List<SObject> items = new List<SObject>();
-    private Long workingMinutes = 0;
-
-    public void addItem(SObject item) {
-        this.items.add(item);
-        this.workingMinutes += getDurationMinutes(item);
-    }
-
-    public List<SObject> getItems() { return this.items; }
-    public Long getWorkingMinutes() { return this.workingMinutes; }
-
-    private Long getDurationMinutes(SObject item) {
-        Object startVal = item.get('StartTime');
-        Object endVal   = item.get('EndTime');
-        if (startVal == null || endVal == null) return 0;
-
-        // Shift, ServiceAppointment... (Datetime)
-        if (startVal instanceof Datetime) {
-            return (((Datetime) endVal).getTime() - ((Datetime) startVal).getTime()) / 60000;
-        }
-        // TimeSlot (Time)
-        if (startVal instanceof Time) {
-            Time s = (Time) startVal;
-            Time e = (Time) endVal;
-            Long debut = s.hour() * 60 + s.minute();
-            Long fin   = e.hour() * 60 + e.minute();
-            if (fin <= debut) fin += 24 * 60; // créneau qui finit à minuit
-            return fin - debut;
-        }
-        return 0;
-    }
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CXHHC-49831</description>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.FSCO_Active__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.FSCO_CapacityUnit__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.FSCO_MultipleDates__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.FSCO_NumberOfBlock__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.FSCO_PeriodFrom__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.FSCO_PeriodTo__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.TEKCO_Brand__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.TEKCO_Country__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>FSCO_AvailabilityManagement__c.TEKCO_DataMigrationId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>FSCO_AvailabilityManagement__c.TEKCO_ExternalId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>FSCO_AvailabilityManagement__c.TEKCO_FHIRId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>FSCO_AvailabilityManagement__c.TEKCO_Resources__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <flowAccesses>
+        <enabled>true</enabled>
+        <flowName>FSCO_ManageIncreasingTime</flowName>
+    </flowAccesses>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>FSCO Availability Management Access</label>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>FSCO_AvailabilityManagement__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <recordTypeVisibilities>
+        <recordType>FSCO_AvailabilityManagement__c.FSCO_ManageIncreasingTime</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <tabSettings>
+        <tab>FSCO_AvailabilityManagement__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+</PermissionSet>
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>FRA_ShareAvailabilityManagementWithCSAndFSLUsersVIT_RW</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>CXHHC-49831</description>
+        <label>France Share VitalAire Availability Management with CS and FSL Users RW</label>
+        <sharedTo>
+            <group>FRA_CS_FSL_VIT</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>France</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire France</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>FRA_ShareAvailabilityManagementWithFSLUsersVIT_RW</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>CXHHC-49831</description>
+        <label>France Share VitalAire Availability Management with FSL Users RW</label>
+        <sharedTo>
+            <group>FRA_FSL_VIT</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>France</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire France</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>FRA_ShareAvailabilityManagementWithFSManagers_RO</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>CXHHC-49831</description>
+        <label>France Share VitalAire Availability Management with FS Managers RO</label>
+        <sharedTo>
+            <group>FRA_FSManagerAndDirectorOfOperations</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>France</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire France</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+</SharingRules>
