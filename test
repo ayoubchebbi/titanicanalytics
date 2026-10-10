@@ -1,1 +1,192 @@
 
+Voici tout dans un seul bloc, avec un commentaire pour chaque fichier :
+
+```xml
+<!-- ===================== labels/CustomLabels.labels-meta.xml ===================== -->
+    <labels>
+        <fullName>FSCO_Capacity</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Capacity</shortDescription>
+        <value>Capacity</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_ManageIncreasingTimeSteps</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_ManageIncreasingTimeSteps</shortDescription>
+        <value>Service Resources;Reservation Date;Capacity</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_NoDateSelected</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_NoDateSelected</shortDescription>
+        <value>No date selected</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectAtLeastOneDate</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectAtLeastOneDate</shortDescription>
+        <value>Please select at least one date.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectAtLeastOneServiceResource</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectAtLeastOneServiceResource</shortDescription>
+        <value>Please select at least one service resource.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectedDates</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectedDates</shortDescription>
+        <value>Selected Dates ({0})</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectionByDate</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectionByDate</shortDescription>
+        <value>Selection by date</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectionByPeriod</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectionByPeriod</shortDescription>
+        <value>Selection by period</value>
+    </labels>
+
+<!-- ===================== translations/fr.translation-meta.xml ===================== -->
+    <customLabels>
+        <label>Capacité</label>
+        <name>FSCO_Capacity</name>
+    </customLabels>
+    <customLabels>
+        <label>Ressources de service;Date de réservation;Capacité</label>
+        <name>FSCO_ManageIncreasingTimeSteps</name>
+    </customLabels>
+    <customLabels>
+        <label>Aucune date sélectionnée</label>
+        <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Veuillez sélectionner au moins une date.</label>
+        <name>FSCO_SelectAtLeastOneDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Veuillez sélectionner au moins une ressource de service.</label>
+        <name>FSCO_SelectAtLeastOneServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Dates sélectionnées ({0})</label>
+        <name>FSCO_SelectedDates</name>
+    </customLabels>
+    <customLabels>
+        <label>Sélection par date</label>
+        <name>FSCO_SelectionByDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Sélection par période</label>
+        <name>FSCO_SelectionByPeriod</name>
+    </customLabels>
+    <customLabels>
+        <label>Supprimer</label>
+        <name>TEKCO_DeleteButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Informations</label>
+        <name>TEKCO_Information</name>
+    </customLabels>
+
+<!-- ===================== translations/de.translation-meta.xml ===================== -->
+    <customLabels>
+        <label>Kapazität</label>
+        <name>FSCO_Capacity</name>
+    </customLabels>
+    <customLabels>
+        <label>Serviceressourcen;Reservierungsdatum;Kapazität</label>
+        <name>FSCO_ManageIncreasingTimeSteps</name>
+    </customLabels>
+    <customLabels>
+        <label>Kein Datum ausgewählt</label>
+        <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Bitte wählen Sie mindestens ein Datum aus.</label>
+        <name>FSCO_SelectAtLeastOneDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Bitte wählen Sie mindestens eine Serviceressource aus.</label>
+        <name>FSCO_SelectAtLeastOneServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Ausgewählte Daten ({0})</label>
+        <name>FSCO_SelectedDates</name>
+    </customLabels>
+    <customLabels>
+        <label>Auswahl nach Datum</label>
+        <name>FSCO_SelectionByDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Auswahl nach Zeitraum</label>
+        <name>FSCO_SelectionByPeriod</name>
+    </customLabels>
+    <customLabels>
+        <label>Informationen</label>
+        <name>TEKCO_Information</name>
+    </customLabels>
+
+<!-- ===================== translations/it.translation-meta.xml ===================== -->
+    <customLabels>
+        <label>Aggiorna</label>
+        <name>FSCCO_RefreshButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Capacità</label>
+        <name>FSCO_Capacity</name>
+    </customLabels>
+    <customLabels>
+        <label>Risorse di servizio;Data di prenotazione;Capacità</label>
+        <name>FSCO_ManageIncreasingTimeSteps</name>
+    </customLabels>
+    <customLabels>
+        <label>Nessuna data selezionata</label>
+        <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezionare almeno una data.</label>
+        <name>FSCO_SelectAtLeastOneDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezionare almeno una risorsa di servizio.</label>
+        <name>FSCO_SelectAtLeastOneServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Date selezionate ({0})</label>
+        <name>FSCO_SelectedDates</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezione per data</label>
+        <name>FSCO_SelectionByDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezione per periodo</label>
+        <name>FSCO_SelectionByPeriod</name>
+    </customLabels>
+    <customLabels>
+        <label>Elimina</label>
+        <name>TEKCO_DeleteButtonLabel</name>
+    </customLabels>
+```
