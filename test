@@ -1,1 +1,44 @@
+<!-- labels/CustomLabels.labels-meta.xml -->
+    <labels>
+        <fullName>FSCO_GenerateServiceAppointmentsQuestion</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_GenerateServiceAppointmentsQuestion</shortDescription>
+        <value>Do you want to generate the Service Appointments?</value>
+    </labels>
+
+<!-- translations/fr.translation-meta.xml -->
+    <customLabels>
+        <label>Voulez-vous générer les rendez-vous de service ?</label>
+        <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Oui</label>
+        <name>TEKCO_ChoiceYes</name>
+    </customLabels>
+    <customLabels>
+        <label>Non</label>
+        <name>TEKCO_ChoiceNo</name>
+    </customLabels>
+
+<!-- translations/de.translation-meta.xml -->
+    <customLabels>
+        <label>Möchten Sie die Serviceeinsätze generieren?</label>
+        <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+
+<!-- translations/it.translation-meta.xml -->
+    <customLabels>
+        <label>Vuoi generare gli appuntamenti di servizio?</label>
+        <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Sì</label>
+        <name>TEKCO_ChoiceYes</name>
+    </customLabels>
+    <customLabels>
+        <label>No</label>
+        <name>TEKCO_ChoiceNo</name>
+    </customLabels>
 
