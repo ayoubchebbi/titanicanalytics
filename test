@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Availability Management (CXHHC-49831) - custom labels and FR / IT / DE translations, retrieved from ayoubdev -->
+<!-- CXHHC-49831 - Availability Management custom labels and FR / IT / DE translations -->
 <AvailabilityManagementLabels>
 
     <!-- ===== Copy into labels/CustomLabels.labels-meta.xml ===== -->
@@ -16,7 +16,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_BlockDuration</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Duration of each block (min)</value>
     </labels>
     <labels>
@@ -24,7 +24,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_BlockDurationHelp</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Between 15 and 180 minutes.</value>
     </labels>
     <labels>
@@ -32,7 +32,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_BlockDurationRange</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>The duration of each block must be between 15 and 180 minutes.</value>
     </labels>
     <labels>
@@ -40,7 +40,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_Capacity</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Capacity</value>
     </labels>
     <labels>
@@ -48,7 +48,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_CapacityPercentage</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Capacity (%)</value>
     </labels>
     <labels>
@@ -56,7 +56,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_CapacityPercentageHelp</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Percentage of the resource&apos;s working hours for the day.</value>
     </labels>
     <labels>
@@ -64,7 +64,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_CapacityPercentageRange</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>The capacity must be between 1 and 100%.</value>
     </labels>
     <labels>
@@ -72,7 +72,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_CapacityType</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Capacity Type</value>
     </labels>
     <labels>
@@ -80,7 +80,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_Cold</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Cold</value>
     </labels>
     <labels>
@@ -88,7 +88,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_EachResource</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Each resource</value>
     </labels>
     <labels>
@@ -96,7 +96,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_EachResourceDescription</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Create one reservation per selected resource</value>
     </labels>
     <labels>
@@ -104,7 +104,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_GenerateServiceAppointmentsQuestion</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Do you want to generate the Service Appointments?</value>
     </labels>
     <labels>
@@ -112,7 +112,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_Hot</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Hot</value>
     </labels>
     <labels>
@@ -120,7 +120,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_ManageIncreasingTimeSteps</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Service Resources;Reservation Date;Capacity</value>
     </labels>
     <labels>
@@ -128,7 +128,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_NoDateSelected</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>No date selected</value>
     </labels>
     <labels>
@@ -136,7 +136,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_NoPrimaryServiceResource</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>No active primary service resource found for this service territory.</value>
     </labels>
     <labels>
@@ -144,7 +144,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_NumberOfBlocksHelp</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>How many separate slots should be created?</value>
     </labels>
     <labels>
@@ -152,7 +152,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_Percentage</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Percentage (%)</value>
     </labels>
     <labels>
@@ -160,7 +160,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_PercentageDescription</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>A share of the resource&apos;s working day</value>
     </labels>
     <labels>
@@ -168,7 +168,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_ReservationMode</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Create reservation for</value>
     </labels>
     <labels>
@@ -176,7 +176,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_SelectAtLeastOneDate</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Please select at least one date.</value>
     </labels>
     <labels>
@@ -184,7 +184,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_SelectAtLeastOneServiceResource</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Please select at least one service resource.</value>
     </labels>
     <labels>
@@ -192,7 +192,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_SelectedDates</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Selected Dates ({0})</value>
     </labels>
     <labels>
@@ -200,7 +200,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_SelectionByDate</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Selection by date</value>
     </labels>
     <labels>
@@ -208,14 +208,14 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_SelectionByPeriod</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Selection by period</value>
     </labels>
     <labels>
         <fullName>FSCO_ServiceTerritory</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_ServiceTerritory</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Service Territory</value>
     </labels>
     <labels>
@@ -223,7 +223,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_TeamReservationInfo</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>One reservation will be created for this team.</value>
     </labels>
     <labels>
@@ -231,7 +231,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_TheTeam</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>The team</value>
     </labels>
     <labels>
@@ -239,7 +239,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_TheTeamDescription</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Create one shared reservation for the whole team</value>
     </labels>
     <labels>
@@ -247,7 +247,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_Time</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Time</value>
     </labels>
     <labels>
@@ -255,7 +255,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_TimeDescription</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>One or more blocks with a fixed duration</value>
     </labels>
     <labels>
@@ -263,7 +263,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_Typology</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Typology</value>
     </labels>
     <labels>
@@ -271,7 +271,7 @@
         <categories>Availability Management</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>FSCO_Warm</shortDescription>
+        <shortDescription>CXHHC-49831</shortDescription>
         <value>Warm</value>
     </labels>
     <labels>
@@ -322,18 +322,62 @@
         <value>Search...</value>
     </labels>
 
-    <!-- ===== Copy into translations/fr.translation-meta.xml (15 translated) ===== -->
+    <!-- ===== Copy into translations/fr.translation-meta.xml ===== -->
     <customLabels>
         <label>Confirmer</label>
         <name>ConfirmButton</name>
+    </customLabels>
+    <customLabels>
+        <label>Durée de chaque bloc (min)</label>
+        <name>FSCO_BlockDuration</name>
+    </customLabels>
+    <customLabels>
+        <label>Entre 15 et 180 minutes.</label>
+        <name>FSCO_BlockDurationHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>La durée de chaque bloc doit être comprise entre 15 et 180 minutes.</label>
+        <name>FSCO_BlockDurationRange</name>
     </customLabels>
     <customLabels>
         <label>Capacité</label>
         <name>FSCO_Capacity</name>
     </customLabels>
     <customLabels>
+        <label>Capacité (%)</label>
+        <name>FSCO_CapacityPercentage</name>
+    </customLabels>
+    <customLabels>
+        <label>Pourcentage des heures de travail de la ressource pour la journée.</label>
+        <name>FSCO_CapacityPercentageHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>La capacité doit être comprise entre 1 et 100 %.</label>
+        <name>FSCO_CapacityPercentageRange</name>
+    </customLabels>
+    <customLabels>
+        <label>Type de capacité</label>
+        <name>FSCO_CapacityType</name>
+    </customLabels>
+    <customLabels>
+        <label>Froid</label>
+        <name>FSCO_Cold</name>
+    </customLabels>
+    <customLabels>
+        <label>Chaque ressource</label>
+        <name>FSCO_EachResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Créer une réservation par ressource sélectionnée</label>
+        <name>FSCO_EachResourceDescription</name>
+    </customLabels>
+    <customLabels>
         <label>Voulez-vous générer les rendez-vous de service ?</label>
         <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Chaud</label>
+        <name>FSCO_Hot</name>
     </customLabels>
     <customLabels>
         <label>Ressources de service;Date de réservation;Capacité</label>
@@ -342,6 +386,26 @@
     <customLabels>
         <label>Aucune date sélectionnée</label>
         <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Aucune ressource de service principale active trouvée pour ce territoire de service.</label>
+        <name>FSCO_NoPrimaryServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Combien de créneaux distincts faut-il créer ?</label>
+        <name>FSCO_NumberOfBlocksHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>Pourcentage (%)</label>
+        <name>FSCO_Percentage</name>
+    </customLabels>
+    <customLabels>
+        <label>Une part de la journée de travail de la ressource</label>
+        <name>FSCO_PercentageDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Créer la réservation pour</label>
+        <name>FSCO_ReservationMode</name>
     </customLabels>
     <customLabels>
         <label>Veuillez sélectionner au moins une date.</label>
@@ -364,6 +428,38 @@
         <name>FSCO_SelectionByPeriod</name>
     </customLabels>
     <customLabels>
+        <label>Territoire de service</label>
+        <name>FSCO_ServiceTerritory</name>
+    </customLabels>
+    <customLabels>
+        <label>Une réservation sera créée pour cette équipe.</label>
+        <name>FSCO_TeamReservationInfo</name>
+    </customLabels>
+    <customLabels>
+        <label>L&apos;équipe</label>
+        <name>FSCO_TheTeam</name>
+    </customLabels>
+    <customLabels>
+        <label>Créer une réservation partagée pour toute l&apos;équipe</label>
+        <name>FSCO_TheTeamDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Temps</label>
+        <name>FSCO_Time</name>
+    </customLabels>
+    <customLabels>
+        <label>Un ou plusieurs blocs d&apos;une durée fixe</label>
+        <name>FSCO_TimeDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Typologie</label>
+        <name>FSCO_Typology</name>
+    </customLabels>
+    <customLabels>
+        <label>Tiède</label>
+        <name>FSCO_Warm</name>
+    </customLabels>
+    <customLabels>
         <label>Annuler</label>
         <name>TEKCO_CancelButtonLabel</name>
     </customLabels>
@@ -383,16 +479,67 @@
         <label>Suivant</label>
         <name>TEKCO_NavigationNext</name>
     </customLabels>
-    <!-- Not translated in fr: FSCO_BlockDuration, FSCO_BlockDurationHelp, FSCO_BlockDurationRange, FSCO_CapacityPercentage, FSCO_CapacityPercentageHelp, FSCO_CapacityPercentageRange, FSCO_CapacityType, FSCO_Cold, FSCO_EachResource, FSCO_EachResourceDescription, FSCO_Hot, FSCO_NoPrimaryServiceResource, FSCO_NumberOfBlocksHelp, FSCO_Percentage, FSCO_PercentageDescription, FSCO_ReservationMode, FSCO_ServiceTerritory, FSCO_TeamReservationInfo, FSCO_TheTeam, FSCO_TheTeamDescription, FSCO_Time, FSCO_TimeDescription, FSCO_Typology, FSCO_Warm, TEKCO_Search -->
+    <customLabels>
+        <label>Rechercher...</label>
+        <name>TEKCO_Search</name>
+    </customLabels>
 
-    <!-- ===== Copy into translations/it.translation-meta.xml (16 translated) ===== -->
+    <!-- ===== Copy into translations/it.translation-meta.xml ===== -->
+    <customLabels>
+        <label>Conferma</label>
+        <name>ConfirmButton</name>
+    </customLabels>
+    <customLabels>
+        <label>Durata di ogni blocco (min)</label>
+        <name>FSCO_BlockDuration</name>
+    </customLabels>
+    <customLabels>
+        <label>Tra 15 e 180 minuti.</label>
+        <name>FSCO_BlockDurationHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>La durata di ogni blocco deve essere compresa tra 15 e 180 minuti.</label>
+        <name>FSCO_BlockDurationRange</name>
+    </customLabels>
     <customLabels>
         <label>Capacità</label>
         <name>FSCO_Capacity</name>
     </customLabels>
     <customLabels>
+        <label>Capacità (%)</label>
+        <name>FSCO_CapacityPercentage</name>
+    </customLabels>
+    <customLabels>
+        <label>Percentuale delle ore lavorative della risorsa per la giornata.</label>
+        <name>FSCO_CapacityPercentageHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>La capacità deve essere compresa tra 1 e 100%.</label>
+        <name>FSCO_CapacityPercentageRange</name>
+    </customLabels>
+    <customLabels>
+        <label>Tipo di capacità</label>
+        <name>FSCO_CapacityType</name>
+    </customLabels>
+    <customLabels>
+        <label>Freddo</label>
+        <name>FSCO_Cold</name>
+    </customLabels>
+    <customLabels>
+        <label>Ogni risorsa</label>
+        <name>FSCO_EachResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Creare una prenotazione per ogni risorsa selezionata</label>
+        <name>FSCO_EachResourceDescription</name>
+    </customLabels>
+    <customLabels>
         <label>Vuoi generare gli appuntamenti di servizio?</label>
         <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Caldo</label>
+        <name>FSCO_Hot</name>
     </customLabels>
     <customLabels>
         <label>Risorse di servizio;Data di prenotazione;Capacità</label>
@@ -401,6 +548,26 @@
     <customLabels>
         <label>Nessuna data selezionata</label>
         <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Nessuna risorsa di servizio primaria attiva trovata per questo territorio di servizio.</label>
+        <name>FSCO_NoPrimaryServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Quanti slot separati devono essere creati?</label>
+        <name>FSCO_NumberOfBlocksHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>Percentuale (%)</label>
+        <name>FSCO_Percentage</name>
+    </customLabels>
+    <customLabels>
+        <label>Una parte della giornata lavorativa della risorsa</label>
+        <name>FSCO_PercentageDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Crea prenotazione per</label>
+        <name>FSCO_ReservationMode</name>
     </customLabels>
     <customLabels>
         <label>Selezionare almeno una data.</label>
@@ -427,6 +594,34 @@
         <name>FSCO_ServiceTerritory</name>
     </customLabels>
     <customLabels>
+        <label>Verrà creata una prenotazione per questo team.</label>
+        <name>FSCO_TeamReservationInfo</name>
+    </customLabels>
+    <customLabels>
+        <label>Il team</label>
+        <name>FSCO_TheTeam</name>
+    </customLabels>
+    <customLabels>
+        <label>Creare una prenotazione condivisa per l&apos;intero team</label>
+        <name>FSCO_TheTeamDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Tempo</label>
+        <name>FSCO_Time</name>
+    </customLabels>
+    <customLabels>
+        <label>Uno o più blocchi con una durata fissa</label>
+        <name>FSCO_TimeDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Tipologia</label>
+        <name>FSCO_Typology</name>
+    </customLabels>
+    <customLabels>
+        <label>Tiepido</label>
+        <name>FSCO_Warm</name>
+    </customLabels>
+    <customLabels>
         <label>Annulla</label>
         <name>TEKCO_CancelButtonLabel</name>
     </customLabels>
@@ -450,20 +645,63 @@
         <label>Cercare...</label>
         <name>TEKCO_Search</name>
     </customLabels>
-    <!-- Not translated in it: ConfirmButton, FSCO_BlockDuration, FSCO_BlockDurationHelp, FSCO_BlockDurationRange, FSCO_CapacityPercentage, FSCO_CapacityPercentageHelp, FSCO_CapacityPercentageRange, FSCO_CapacityType, FSCO_Cold, FSCO_EachResource, FSCO_EachResourceDescription, FSCO_Hot, FSCO_NoPrimaryServiceResource, FSCO_NumberOfBlocksHelp, FSCO_Percentage, FSCO_PercentageDescription, FSCO_ReservationMode, FSCO_TeamReservationInfo, FSCO_TheTeam, FSCO_TheTeamDescription, FSCO_Time, FSCO_TimeDescription, FSCO_Typology, FSCO_Warm -->
 
-    <!-- ===== Copy into translations/de.translation-meta.xml (17 translated) ===== -->
+    <!-- ===== Copy into translations/de.translation-meta.xml ===== -->
     <customLabels>
         <label>Bestätigen</label>
         <name>ConfirmButton</name>
+    </customLabels>
+    <customLabels>
+        <label>Dauer jedes Blocks (Min.)</label>
+        <name>FSCO_BlockDuration</name>
+    </customLabels>
+    <customLabels>
+        <label>Zwischen 15 und 180 Minuten.</label>
+        <name>FSCO_BlockDurationHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>Die Dauer jedes Blocks muss zwischen 15 und 180 Minuten liegen.</label>
+        <name>FSCO_BlockDurationRange</name>
     </customLabels>
     <customLabels>
         <label>Kapazität</label>
         <name>FSCO_Capacity</name>
     </customLabels>
     <customLabels>
+        <label>Kapazität (%)</label>
+        <name>FSCO_CapacityPercentage</name>
+    </customLabels>
+    <customLabels>
+        <label>Prozentsatz der Arbeitszeit der Ressource für den Tag.</label>
+        <name>FSCO_CapacityPercentageHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>Die Kapazität muss zwischen 1 und 100 % liegen.</label>
+        <name>FSCO_CapacityPercentageRange</name>
+    </customLabels>
+    <customLabels>
+        <label>Kapazitätstyp</label>
+        <name>FSCO_CapacityType</name>
+    </customLabels>
+    <customLabels>
+        <label>Kalt</label>
+        <name>FSCO_Cold</name>
+    </customLabels>
+    <customLabels>
+        <label>Jede Ressource</label>
+        <name>FSCO_EachResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Eine Reservierung pro ausgewählter Ressource erstellen</label>
+        <name>FSCO_EachResourceDescription</name>
+    </customLabels>
+    <customLabels>
         <label>Möchten Sie die Serviceeinsätze generieren?</label>
         <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Heiß</label>
+        <name>FSCO_Hot</name>
     </customLabels>
     <customLabels>
         <label>Serviceressourcen;Reservierungsdatum;Kapazität</label>
@@ -472,6 +710,26 @@
     <customLabels>
         <label>Kein Datum ausgewählt</label>
         <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Keine aktive primäre Serviceressource für dieses Servicegebiet gefunden.</label>
+        <name>FSCO_NoPrimaryServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Wie viele separate Zeitfenster sollen erstellt werden?</label>
+        <name>FSCO_NumberOfBlocksHelp</name>
+    </customLabels>
+    <customLabels>
+        <label>Prozentsatz (%)</label>
+        <name>FSCO_Percentage</name>
+    </customLabels>
+    <customLabels>
+        <label>Ein Anteil des Arbeitstages der Ressource</label>
+        <name>FSCO_PercentageDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Reservierung erstellen für</label>
+        <name>FSCO_ReservationMode</name>
     </customLabels>
     <customLabels>
         <label>Bitte wählen Sie mindestens ein Datum aus.</label>
@@ -498,6 +756,34 @@
         <name>FSCO_ServiceTerritory</name>
     </customLabels>
     <customLabels>
+        <label>Für dieses Team wird eine Reservierung erstellt.</label>
+        <name>FSCO_TeamReservationInfo</name>
+    </customLabels>
+    <customLabels>
+        <label>Das Team</label>
+        <name>FSCO_TheTeam</name>
+    </customLabels>
+    <customLabels>
+        <label>Eine gemeinsame Reservierung für das gesamte Team erstellen</label>
+        <name>FSCO_TheTeamDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Zeit</label>
+        <name>FSCO_Time</name>
+    </customLabels>
+    <customLabels>
+        <label>Ein oder mehrere Blöcke mit fester Dauer</label>
+        <name>FSCO_TimeDescription</name>
+    </customLabels>
+    <customLabels>
+        <label>Typologie</label>
+        <name>FSCO_Typology</name>
+    </customLabels>
+    <customLabels>
+        <label>Warm</label>
+        <name>FSCO_Warm</name>
+    </customLabels>
+    <customLabels>
         <label>Stornieren</label>
         <name>TEKCO_CancelButtonLabel</name>
     </customLabels>
@@ -521,6 +807,5 @@
         <label>Suchen...</label>
         <name>TEKCO_Search</name>
     </customLabels>
-    <!-- Not translated in de: FSCO_BlockDuration, FSCO_BlockDurationHelp, FSCO_BlockDurationRange, FSCO_CapacityPercentage, FSCO_CapacityPercentageHelp, FSCO_CapacityPercentageRange, FSCO_CapacityType, FSCO_Cold, FSCO_EachResource, FSCO_EachResourceDescription, FSCO_Hot, FSCO_NoPrimaryServiceResource, FSCO_NumberOfBlocksHelp, FSCO_Percentage, FSCO_PercentageDescription, FSCO_ReservationMode, FSCO_TeamReservationInfo, FSCO_TheTeam, FSCO_TheTeamDescription, FSCO_Time, FSCO_TimeDescription, FSCO_Typology, FSCO_Warm -->
 
 </AvailabilityManagementLabels>
