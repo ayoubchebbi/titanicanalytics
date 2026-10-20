@@ -1,1 +1,48 @@
 
+<!-- ===== fr.translation-meta.xml ===== -->
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customLabels><label>Aucune ressource de service principale active trouvée pour ce territoire de service.</label><name>FSCO_NoPrimaryServiceResource</name></customLabels>
+    <customLabels><label>Combien de créneaux distincts doivent être créés ?</label><name>FSCO_NumberOfBlocksHelp</name></customLabels>
+    <customLabels><label>Chaque ressource</label><name>FSCO_EachResource</name></customLabels>
+    <customLabels><label>Pourcentage (%)</label><name>FSCO_Percentage</name></customLabels>
+    <customLabels><label>L&apos;équipe</label><name>FSCO_TheTeam</name></customLabels>
+    <customLabels><label>Heure</label><name>FSCO_Time</name></customLabels>
+    <customLabels><label>Pourcentage des heures de travail de la ressource pour la journée.</label><name>FSCO_CapacityPercentageHelp</name></customLabels>
+    <customLabels><label>La capacité doit être comprise entre 1 et 100 %.</label><name>FSCO_CapacityPercentageRange</name></customLabels>
+    <customLabels><label>Créer une réservation pour</label><name>FSCO_ReservationMode</name></customLabels>
+    <customLabels><label>Une réservation sera créée pour cette équipe.</label><name>FSCO_TeamReservationInfo</name></customLabels>
+    <customLabels><label>Durée du bloc</label><name>FSCO_BlockDuration</name></customLabels>
+    <customLabels><label>Plage de durée du bloc</label><name>FSCO_BlockDurationRange</name></customLabels>
+    <customLabels><label>Aide sur la durée du bloc</label><name>FSCO_BlockDurationHelp</name></customLabels>
+</Translations>
+
+<!-- ===== it.translation-meta.xml ===== -->
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customLabels><label>Nessuna risorsa di servizio principale attiva trovata per questo territorio di servizio.</label><name>FSCO_NoPrimaryServiceResource</name></customLabels>
+    <customLabels><label>Quanti slot separati devono essere creati?</label><name>FSCO_NumberOfBlocksHelp</name></customLabels>
+    <customLabels><label>Ogni risorsa</label><name>FSCO_EachResource</name></customLabels>
+    <customLabels><label>Percentuale (%)</label><name>FSCO_Percentage</name></customLabels>
+    <customLabels><label>Il team</label><name>FSCO_TheTeam</name></customLabels>
+    <customLabels><label>Ora</label><name>FSCO_Time</name></customLabels>
+    <customLabels><label>Percentuale delle ore lavorative della risorsa per la giornata.</label><name>FSCO_CapacityPercentageHelp</name></customLabels>
+    <customLabels><label>La capacità deve essere compresa tra 1 e 100%.</label><name>FSCO_CapacityPercentageRange</name></customLabels>
+    <customLabels><label>Crea prenotazione per</label><name>FSCO_ReservationMode</name></customLabels>
+    <customLabels><label>Verrà creata una prenotazione per questo team.</label><name>FSCO_TeamReservationInfo</name></customLabels>
+    <customLabels><label>Durata del blocco</label><name>FSCO_BlockDuration</name></customLabels>
+    <customLabels><label>Intervallo di durata del blocco</label><name>FSCO_BlockDurationRange</name></customLabels>
+    <customLabels><label>Aiuto sulla durata del blocco</label><name>FSCO_BlockDurationHelp</name></customLabels>
+</Translations>
+
+<!-- ===== de.translation-meta.xml ===== -->
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customLabels><label>Keine aktive primäre Serviceressource für dieses Servicegebiet gefunden.</label><name>FSCO_NoPrimaryServiceResource</name></customLabels>
+    <customLabels><label>Wie viele separate Zeitfenster sollen erstellt werden?</label><name>FSCO_NumberOfBlocksHelp</name></customLabels>
+    <customLabels><label>Jede Ressource</label><name>FSCO_EachResource</name></customLabels>
+    <customLabels><label>Prozentsatz (%)</label><name>FSCO_Percentage</name></customLabels>
+    <customLabels><label>Das Team</label><name>FSCO_TheTeam</name></customLabels>
+    <customLabels><label>Uhrzeit</label><name>FSCO_Time</name></customLabels>
+    <customLabels><label>Prozentsatz der Arbeitsstunden der Ressource für den Tag.</label><name>FSCO_CapacityPercentageHelp</name></customLabels>
+    <customLabels>
