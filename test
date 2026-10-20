@@ -1,92 +1,526 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- MR !30864 - CXHHC-49831_dev (hors CustomLabels et Translations) -->
-<Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>AvailabilityManagementHelper</members>
-        <members>CORE_EM_Shift</members>
-        <members>FSCO_AvailabilityManagement_BATest</members>
-        <members>FSCO_ReturnToBranchExecutionHelper</members>
-        <members>FSCO_UnAvailabilityDelete_BA</members>
-        <members>FSCO_UnAvailabilityExecution_BA</members>
-        <members>FSCO_UnAvailabilityExecutionHelper</members>
-        <members>FSCO_UnAvailabilityManager_BA</members>
-        <members>ServiceAppointmentHelper</members>
-        <members>ServiceResourceHelper</members>
-        <members>ServiceTerritoryMemberHelper</members>
-        <members>TimeSlotHelper</members>
-        <members>WorkOrderHelper</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>FSCO_ManagementIncreasingTime</members>
-        <name>CustomPermission</name>
-    </types>
-    <types>
-        <members>FSCO_AvailabilityManagement__c</members>
-        <name>CustomObject</name>
-    </types>
-    <types>
-        <!-- A VERIFIER : nom tronqué dans la MR -->
-        <members>ServiceAppointment.FSCO_AvailabilityManagement__c</members>
-        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyColdColor__c</members>
-        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyCold__c</members>
-        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyHotColor__c</members>
-        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyHot__c</members>
-        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyWarmColor__c</members>
-        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyWarm__c</members>
-        <name>CustomField</name>
-    </types>
-    <types>
-        <members>FSCO_AvailabilityManagementRecordPage</members>
-        <members>FSCO_ServiceTerritoryRecordPage</members>
-        <name>FlexiPage</name>
-    </types>
-    <types>
-        <members>FSCO_ExecuteAvailabilityManagement</members>
-        <members>FSCO_ManageIncreasingTime</members>
-        <name>Flow</name>
-    </types>
-    <types>
-        <members>ACCCO_WorkTypeVisitTypes</members>
-        <members>FSCO_ReservationTypology</members>
-        <name>GlobalValueSet</name>
-    </types>
-    <types>
-        <!-- A VERIFIER : noms tronqués dans la MR -->
-        <members>FSCO_AvailabilityManagement__c-Availability Management Layout</members>
-        <members>TEKCO_CountryBrandSettingFS__mdt-Country Brand Setting FS Layout</members>
-        <name>Layout</name>
-    </types>
-    <types>
-        <members>tekcoCalendarSelection</members>
-        <members>tekcoProgressIndicator</members>
-        <name>LightningComponentBundle</name>
-    </types>
-    <types>
-        <members>FSCO_Scheduler</members>
-        <members>FSCO_SchedulingManager</members>
-        <name>PermissionSetGroup</name>
-    </types>
-    <types>
-        <members>CSFR_LocalAdminPermissions</members>
-        <members>FSCO_AvailabilityManagementPermissionSet</members>
-        <members>FSCO_FieldServiceManagerPermission</members>
-        <members>FSCO_SchedulerPermissions</members>
-        <name>PermissionSet</name>
-    </types>
-    <types>
-        <members>Admin</members>
-        <name>Profile</name>
-    </types>
-    <types>
-        <!-- A VERIFIER : nom tronqué dans la MR (...Appointments) -->
-        <members>FSCO_AvailabilityManagement__c.XXX_Appointments</members>
-        <members>ServiceTerritory.FSCO_ManageIncreasingTime</members>
-        <name>QuickAction</name>
-    </types>
-    <types>
-        <members>FSCO_AvailabilityManagement__c</members>
-        <name>SharingRules</name>
-    </types>
-    <version>62.0</version>
-</Package>
+<!-- Availability Management (CXHHC-49831) - custom labels and FR / IT / DE translations, retrieved from ayoubdev -->
+<AvailabilityManagementLabels>
+
+    <!-- ===== Copy into labels/CustomLabels.labels-meta.xml ===== -->
+    <labels>
+        <fullName>ConfirmButton</fullName>
+        <categories>Button Labels, Prescriber Community Nurse Authorization</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirm Button</shortDescription>
+        <value>Confirm</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_BlockDuration</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_BlockDuration</shortDescription>
+        <value>Duration of each block (min)</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_BlockDurationHelp</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_BlockDurationHelp</shortDescription>
+        <value>Between 15 and 180 minutes.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_BlockDurationRange</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_BlockDurationRange</shortDescription>
+        <value>The duration of each block must be between 15 and 180 minutes.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_Capacity</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Capacity</shortDescription>
+        <value>Capacity</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_CapacityPercentage</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_CapacityPercentage</shortDescription>
+        <value>Capacity (%)</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_CapacityPercentageHelp</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_CapacityPercentageHelp</shortDescription>
+        <value>Percentage of the resource&apos;s working hours for the day.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_CapacityPercentageRange</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_CapacityPercentageRange</shortDescription>
+        <value>The capacity must be between 1 and 100%.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_CapacityType</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_CapacityType</shortDescription>
+        <value>Capacity Type</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_Cold</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Cold</shortDescription>
+        <value>Cold</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_EachResource</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_EachResource</shortDescription>
+        <value>Each resource</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_EachResourceDescription</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_EachResourceDescription</shortDescription>
+        <value>Create one reservation per selected resource</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_GenerateServiceAppointmentsQuestion</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_GenerateServiceAppointmentsQuestion</shortDescription>
+        <value>Do you want to generate the Service Appointments?</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_Hot</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Hot</shortDescription>
+        <value>Hot</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_ManageIncreasingTimeSteps</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_ManageIncreasingTimeSteps</shortDescription>
+        <value>Service Resources;Reservation Date;Capacity</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_NoDateSelected</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_NoDateSelected</shortDescription>
+        <value>No date selected</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_NoPrimaryServiceResource</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_NoPrimaryServiceResource</shortDescription>
+        <value>No active primary service resource found for this service territory.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_NumberOfBlocksHelp</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_NumberOfBlocksHelp</shortDescription>
+        <value>How many separate slots should be created?</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_Percentage</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Percentage</shortDescription>
+        <value>Percentage (%)</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_PercentageDescription</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_PercentageDescription</shortDescription>
+        <value>A share of the resource&apos;s working day</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_ReservationMode</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_ReservationMode</shortDescription>
+        <value>Create reservation for</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectAtLeastOneDate</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectAtLeastOneDate</shortDescription>
+        <value>Please select at least one date.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectAtLeastOneServiceResource</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectAtLeastOneServiceResource</shortDescription>
+        <value>Please select at least one service resource.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectedDates</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectedDates</shortDescription>
+        <value>Selected Dates ({0})</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectionByDate</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectionByDate</shortDescription>
+        <value>Selection by date</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_SelectionByPeriod</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_SelectionByPeriod</shortDescription>
+        <value>Selection by period</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_ServiceTerritory</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_ServiceTerritory</shortDescription>
+        <value>Service Territory</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_TeamReservationInfo</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_TeamReservationInfo</shortDescription>
+        <value>One reservation will be created for this team.</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_TheTeam</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_TheTeam</shortDescription>
+        <value>The team</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_TheTeamDescription</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_TheTeamDescription</shortDescription>
+        <value>Create one shared reservation for the whole team</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_Time</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Time</shortDescription>
+        <value>Time</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_TimeDescription</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_TimeDescription</shortDescription>
+        <value>One or more blocks with a fixed duration</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_Typology</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Typology</shortDescription>
+        <value>Typology</value>
+    </labels>
+    <labels>
+        <fullName>FSCO_Warm</fullName>
+        <categories>Availability Management</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>FSCO_Warm</shortDescription>
+        <value>Warm</value>
+    </labels>
+    <labels>
+        <fullName>TEKCO_CancelButtonLabel</fullName>
+        <categories>Button Labels</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Cancel button label</shortDescription>
+        <value>Cancel</value>
+    </labels>
+    <labels>
+        <fullName>TEKCO_DeleteButtonLabel</fullName>
+        <categories>Button Labels, KRN, Prescriber Community Patient Intake</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Delete button label</shortDescription>
+        <value>Delete</value>
+    </labels>
+    <labels>
+        <fullName>TEKCO_Finish</fullName>
+        <categories>Labels</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Finish</shortDescription>
+        <value>Finish</value>
+    </labels>
+    <labels>
+        <fullName>TEKCO_Information</fullName>
+        <categories>Words</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Information</shortDescription>
+        <value>Information</value>
+    </labels>
+    <labels>
+        <fullName>TEKCO_NavigationNext</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Next page, record, item</shortDescription>
+        <value>Next</value>
+    </labels>
+    <labels>
+        <fullName>TEKCO_Search</fullName>
+        <categories>Options</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Placeholder for Search input</shortDescription>
+        <value>Search...</value>
+    </labels>
+
+    <!-- ===== Copy into translations/fr.translation-meta.xml (15 translated) ===== -->
+    <customLabels>
+        <label>Confirmer</label>
+        <name>ConfirmButton</name>
+    </customLabels>
+    <customLabels>
+        <label>Capacité</label>
+        <name>FSCO_Capacity</name>
+    </customLabels>
+    <customLabels>
+        <label>Voulez-vous générer les rendez-vous de service ?</label>
+        <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Ressources de service;Date de réservation;Capacité</label>
+        <name>FSCO_ManageIncreasingTimeSteps</name>
+    </customLabels>
+    <customLabels>
+        <label>Aucune date sélectionnée</label>
+        <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Veuillez sélectionner au moins une date.</label>
+        <name>FSCO_SelectAtLeastOneDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Veuillez sélectionner au moins une ressource de service.</label>
+        <name>FSCO_SelectAtLeastOneServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Dates sélectionnées ({0})</label>
+        <name>FSCO_SelectedDates</name>
+    </customLabels>
+    <customLabels>
+        <label>Sélection par date</label>
+        <name>FSCO_SelectionByDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Sélection par période</label>
+        <name>FSCO_SelectionByPeriod</name>
+    </customLabels>
+    <customLabels>
+        <label>Annuler</label>
+        <name>TEKCO_CancelButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Supprimer</label>
+        <name>TEKCO_DeleteButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Terminer</label>
+        <name>TEKCO_Finish</name>
+    </customLabels>
+    <customLabels>
+        <label>Informations</label>
+        <name>TEKCO_Information</name>
+    </customLabels>
+    <customLabels>
+        <label>Suivant</label>
+        <name>TEKCO_NavigationNext</name>
+    </customLabels>
+    <!-- Not translated in fr: FSCO_BlockDuration, FSCO_BlockDurationHelp, FSCO_BlockDurationRange, FSCO_CapacityPercentage, FSCO_CapacityPercentageHelp, FSCO_CapacityPercentageRange, FSCO_CapacityType, FSCO_Cold, FSCO_EachResource, FSCO_EachResourceDescription, FSCO_Hot, FSCO_NoPrimaryServiceResource, FSCO_NumberOfBlocksHelp, FSCO_Percentage, FSCO_PercentageDescription, FSCO_ReservationMode, FSCO_ServiceTerritory, FSCO_TeamReservationInfo, FSCO_TheTeam, FSCO_TheTeamDescription, FSCO_Time, FSCO_TimeDescription, FSCO_Typology, FSCO_Warm, TEKCO_Search -->
+
+    <!-- ===== Copy into translations/it.translation-meta.xml (16 translated) ===== -->
+    <customLabels>
+        <label>Capacità</label>
+        <name>FSCO_Capacity</name>
+    </customLabels>
+    <customLabels>
+        <label>Vuoi generare gli appuntamenti di servizio?</label>
+        <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Risorse di servizio;Data di prenotazione;Capacità</label>
+        <name>FSCO_ManageIncreasingTimeSteps</name>
+    </customLabels>
+    <customLabels>
+        <label>Nessuna data selezionata</label>
+        <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezionare almeno una data.</label>
+        <name>FSCO_SelectAtLeastOneDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezionare almeno una risorsa di servizio.</label>
+        <name>FSCO_SelectAtLeastOneServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Date selezionate ({0})</label>
+        <name>FSCO_SelectedDates</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezione per data</label>
+        <name>FSCO_SelectionByDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Selezione per periodo</label>
+        <name>FSCO_SelectionByPeriod</name>
+    </customLabels>
+    <customLabels>
+        <label>Territorio di servizio</label>
+        <name>FSCO_ServiceTerritory</name>
+    </customLabels>
+    <customLabels>
+        <label>Annulla</label>
+        <name>TEKCO_CancelButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Elimina</label>
+        <name>TEKCO_DeleteButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Termina</label>
+        <name>TEKCO_Finish</name>
+    </customLabels>
+    <customLabels>
+        <label>Informazioni generali</label>
+        <name>TEKCO_Information</name>
+    </customLabels>
+    <customLabels>
+        <label>Prossimo</label>
+        <name>TEKCO_NavigationNext</name>
+    </customLabels>
+    <customLabels>
+        <label>Cercare...</label>
+        <name>TEKCO_Search</name>
+    </customLabels>
+    <!-- Not translated in it: ConfirmButton, FSCO_BlockDuration, FSCO_BlockDurationHelp, FSCO_BlockDurationRange, FSCO_CapacityPercentage, FSCO_CapacityPercentageHelp, FSCO_CapacityPercentageRange, FSCO_CapacityType, FSCO_Cold, FSCO_EachResource, FSCO_EachResourceDescription, FSCO_Hot, FSCO_NoPrimaryServiceResource, FSCO_NumberOfBlocksHelp, FSCO_Percentage, FSCO_PercentageDescription, FSCO_ReservationMode, FSCO_TeamReservationInfo, FSCO_TheTeam, FSCO_TheTeamDescription, FSCO_Time, FSCO_TimeDescription, FSCO_Typology, FSCO_Warm -->
+
+    <!-- ===== Copy into translations/de.translation-meta.xml (17 translated) ===== -->
+    <customLabels>
+        <label>Bestätigen</label>
+        <name>ConfirmButton</name>
+    </customLabels>
+    <customLabels>
+        <label>Kapazität</label>
+        <name>FSCO_Capacity</name>
+    </customLabels>
+    <customLabels>
+        <label>Möchten Sie die Serviceeinsätze generieren?</label>
+        <name>FSCO_GenerateServiceAppointmentsQuestion</name>
+    </customLabels>
+    <customLabels>
+        <label>Serviceressourcen;Reservierungsdatum;Kapazität</label>
+        <name>FSCO_ManageIncreasingTimeSteps</name>
+    </customLabels>
+    <customLabels>
+        <label>Kein Datum ausgewählt</label>
+        <name>FSCO_NoDateSelected</name>
+    </customLabels>
+    <customLabels>
+        <label>Bitte wählen Sie mindestens ein Datum aus.</label>
+        <name>FSCO_SelectAtLeastOneDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Bitte wählen Sie mindestens eine Serviceressource aus.</label>
+        <name>FSCO_SelectAtLeastOneServiceResource</name>
+    </customLabels>
+    <customLabels>
+        <label>Ausgewählte Daten ({0})</label>
+        <name>FSCO_SelectedDates</name>
+    </customLabels>
+    <customLabels>
+        <label>Auswahl nach Datum</label>
+        <name>FSCO_SelectionByDate</name>
+    </customLabels>
+    <customLabels>
+        <label>Auswahl nach Zeitraum</label>
+        <name>FSCO_SelectionByPeriod</name>
+    </customLabels>
+    <customLabels>
+        <label>Servicegebiet</label>
+        <name>FSCO_ServiceTerritory</name>
+    </customLabels>
+    <customLabels>
+        <label>Stornieren</label>
+        <name>TEKCO_CancelButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Löschen</label>
+        <name>TEKCO_DeleteButtonLabel</name>
+    </customLabels>
+    <customLabels>
+        <label>Beenden</label>
+        <name>TEKCO_Finish</name>
+    </customLabels>
+    <customLabels>
+        <label>Informationen</label>
+        <name>TEKCO_Information</name>
+    </customLabels>
+    <customLabels>
+        <label>Weiter</label>
+        <name>TEKCO_NavigationNext</name>
+    </customLabels>
+    <customLabels>
+        <label>Suchen...</label>
+        <name>TEKCO_Search</name>
+    </customLabels>
+    <!-- Not translated in de: FSCO_BlockDuration, FSCO_BlockDurationHelp, FSCO_BlockDurationRange, FSCO_CapacityPercentage, FSCO_CapacityPercentageHelp, FSCO_CapacityPercentageRange, FSCO_CapacityType, FSCO_Cold, FSCO_EachResource, FSCO_EachResourceDescription, FSCO_Hot, FSCO_NoPrimaryServiceResource, FSCO_NumberOfBlocksHelp, FSCO_Percentage, FSCO_PercentageDescription, FSCO_ReservationMode, FSCO_TeamReservationInfo, FSCO_TheTeam, FSCO_TheTeamDescription, FSCO_Time, FSCO_TimeDescription, FSCO_Typology, FSCO_Warm -->
+
+</AvailabilityManagementLabels>
