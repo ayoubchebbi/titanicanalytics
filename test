@@ -1,4 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- MR !30864 - CXHHC-49831_dev (hors CustomLabels et Translations) -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>AvailabilityManagementHelper</members>
+        <members>CORE_EM_Shift</members>
+        <members>FSCO_AvailabilityManagement_BATest</members>
+        <members>FSCO_ReturnToBranchExecutionHelper</members>
+        <members>FSCO_UnAvailabilityDelete_BA</members>
+        <members>FSCO_UnAvailabilityExecution_BA</members>
+        <members>FSCO_UnAvailabilityExecutionHelper</members>
+        <members>FSCO_UnAvailabilityManager_BA</members>
+        <members>ServiceAppointmentHelper</members>
+        <members>ServiceResourceHelper</members>
+        <members>ServiceTerritoryMemberHelper</members>
+        <members>TimeSlotHelper</members>
+        <members>WorkOrderHelper</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>FSCO_ManagementIncreasingTime</members>
+        <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>FSCO_AvailabilityManagement__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <!-- A VERIFIER : nom tronqué dans la MR -->
+        <members>ServiceAppointment.FSCO_AvailabilityManagement__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyColdColor__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyCold__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyHotColor__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyHot__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyWarmColor__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyWarm__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>FSCO_AvailabilityManagementRecordPage</members>
+        <members>FSCO_ServiceTerritoryRecordPage</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>FSCO_ExecuteAvailabilityManagement</members>
+        <members>FSCO_ManageIncreasingTime</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>ACCCO_WorkTypeVisitTypes</members>
+        <members>FSCO_ReservationTypology</members>
+        <name>GlobalValueSet</name>
+    </types>
+    <types>
+        <!-- A VERIFIER : noms tronqués dans la MR -->
+        <members>FSCO_AvailabilityManagement__c-Availability Management Layout</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt-Country Brand Setting FS Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>tekcoCalendarSelection</members>
+        <members>tekcoProgressIndicator</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>FSCO_Scheduler</members>
+        <members>FSCO_SchedulingManager</members>
+        <name>PermissionSetGroup</name>
+    </types>
+    <types>
+        <members>CSFR_LocalAdminPermissions</members>
+        <members>FSCO_AvailabilityManagementPermissionSet</members>
+        <members>FSCO_FieldServiceManagerPermission</members>
+        <members>FSCO_SchedulerPermissions</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>Admin</members>
+        <name>Profile</name>
+    </types>
+    <types>
+        <!-- A VERIFIER : nom tronqué dans la MR (...Appointments) -->
+        <members>FSCO_AvailabilityManagement__c.XXX_Appointments</members>
+        <members>ServiceTerritory.FSCO_ManageIncreasingTime</members>
+        <name>QuickAction</name>
+    </types>
+    <types>
+        <members>FSCO_AvailabilityManagement__c</members>
+        <name>SharingRules</name>
+    </types>
+    <version>62.0</version>
+</Package>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- CXHHC-49831 - Availability Management custom labels and FR / IT / DE translations -->
 <AvailabilityManagementLabels>
 
