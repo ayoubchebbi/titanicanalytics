@@ -1,48 +1,92 @@
-
-<!-- ===== fr.translation-meta.xml ===== -->
 <?xml version="1.0" encoding="UTF-8"?>
-<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
-    <customLabels><label>Aucune ressource de service principale active trouvée pour ce territoire de service.</label><name>FSCO_NoPrimaryServiceResource</name></customLabels>
-    <customLabels><label>Combien de créneaux distincts doivent être créés ?</label><name>FSCO_NumberOfBlocksHelp</name></customLabels>
-    <customLabels><label>Chaque ressource</label><name>FSCO_EachResource</name></customLabels>
-    <customLabels><label>Pourcentage (%)</label><name>FSCO_Percentage</name></customLabels>
-    <customLabels><label>L&apos;équipe</label><name>FSCO_TheTeam</name></customLabels>
-    <customLabels><label>Heure</label><name>FSCO_Time</name></customLabels>
-    <customLabels><label>Pourcentage des heures de travail de la ressource pour la journée.</label><name>FSCO_CapacityPercentageHelp</name></customLabels>
-    <customLabels><label>La capacité doit être comprise entre 1 et 100 %.</label><name>FSCO_CapacityPercentageRange</name></customLabels>
-    <customLabels><label>Créer une réservation pour</label><name>FSCO_ReservationMode</name></customLabels>
-    <customLabels><label>Une réservation sera créée pour cette équipe.</label><name>FSCO_TeamReservationInfo</name></customLabels>
-    <customLabels><label>Durée du bloc</label><name>FSCO_BlockDuration</name></customLabels>
-    <customLabels><label>Plage de durée du bloc</label><name>FSCO_BlockDurationRange</name></customLabels>
-    <customLabels><label>Aide sur la durée du bloc</label><name>FSCO_BlockDurationHelp</name></customLabels>
-</Translations>
-
-<!-- ===== it.translation-meta.xml ===== -->
-<?xml version="1.0" encoding="UTF-8"?>
-<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
-    <customLabels><label>Nessuna risorsa di servizio principale attiva trovata per questo territorio di servizio.</label><name>FSCO_NoPrimaryServiceResource</name></customLabels>
-    <customLabels><label>Quanti slot separati devono essere creati?</label><name>FSCO_NumberOfBlocksHelp</name></customLabels>
-    <customLabels><label>Ogni risorsa</label><name>FSCO_EachResource</name></customLabels>
-    <customLabels><label>Percentuale (%)</label><name>FSCO_Percentage</name></customLabels>
-    <customLabels><label>Il team</label><name>FSCO_TheTeam</name></customLabels>
-    <customLabels><label>Ora</label><name>FSCO_Time</name></customLabels>
-    <customLabels><label>Percentuale delle ore lavorative della risorsa per la giornata.</label><name>FSCO_CapacityPercentageHelp</name></customLabels>
-    <customLabels><label>La capacità deve essere compresa tra 1 e 100%.</label><name>FSCO_CapacityPercentageRange</name></customLabels>
-    <customLabels><label>Crea prenotazione per</label><name>FSCO_ReservationMode</name></customLabels>
-    <customLabels><label>Verrà creata una prenotazione per questo team.</label><name>FSCO_TeamReservationInfo</name></customLabels>
-    <customLabels><label>Durata del blocco</label><name>FSCO_BlockDuration</name></customLabels>
-    <customLabels><label>Intervallo di durata del blocco</label><name>FSCO_BlockDurationRange</name></customLabels>
-    <customLabels><label>Aiuto sulla durata del blocco</label><name>FSCO_BlockDurationHelp</name></customLabels>
-</Translations>
-
-<!-- ===== de.translation-meta.xml ===== -->
-<?xml version="1.0" encoding="UTF-8"?>
-<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
-    <customLabels><label>Keine aktive primäre Serviceressource für dieses Servicegebiet gefunden.</label><name>FSCO_NoPrimaryServiceResource</name></customLabels>
-    <customLabels><label>Wie viele separate Zeitfenster sollen erstellt werden?</label><name>FSCO_NumberOfBlocksHelp</name></customLabels>
-    <customLabels><label>Jede Ressource</label><name>FSCO_EachResource</name></customLabels>
-    <customLabels><label>Prozentsatz (%)</label><name>FSCO_Percentage</name></customLabels>
-    <customLabels><label>Das Team</label><name>FSCO_TheTeam</name></customLabels>
-    <customLabels><label>Uhrzeit</label><name>FSCO_Time</name></customLabels>
-    <customLabels><label>Prozentsatz der Arbeitsstunden der Ressource für den Tag.</label><name>FSCO_CapacityPercentageHelp</name></customLabels>
-    <customLabels>
+<!-- MR !30864 - CXHHC-49831_dev (hors CustomLabels et Translations) -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>AvailabilityManagementHelper</members>
+        <members>CORE_EM_Shift</members>
+        <members>FSCO_AvailabilityManagement_BATest</members>
+        <members>FSCO_ReturnToBranchExecutionHelper</members>
+        <members>FSCO_UnAvailabilityDelete_BA</members>
+        <members>FSCO_UnAvailabilityExecution_BA</members>
+        <members>FSCO_UnAvailabilityExecutionHelper</members>
+        <members>FSCO_UnAvailabilityManager_BA</members>
+        <members>ServiceAppointmentHelper</members>
+        <members>ServiceResourceHelper</members>
+        <members>ServiceTerritoryMemberHelper</members>
+        <members>TimeSlotHelper</members>
+        <members>WorkOrderHelper</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>FSCO_ManagementIncreasingTime</members>
+        <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>FSCO_AvailabilityManagement__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <!-- A VERIFIER : nom tronqué dans la MR -->
+        <members>ServiceAppointment.FSCO_AvailabilityManagement__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyColdColor__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyCold__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyHotColor__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyHot__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyWarmColor__c</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt.FSCO_TypologyWarm__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>FSCO_AvailabilityManagementRecordPage</members>
+        <members>FSCO_ServiceTerritoryRecordPage</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>FSCO_ExecuteAvailabilityManagement</members>
+        <members>FSCO_ManageIncreasingTime</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>ACCCO_WorkTypeVisitTypes</members>
+        <members>FSCO_ReservationTypology</members>
+        <name>GlobalValueSet</name>
+    </types>
+    <types>
+        <!-- A VERIFIER : noms tronqués dans la MR -->
+        <members>FSCO_AvailabilityManagement__c-Availability Management Layout</members>
+        <members>TEKCO_CountryBrandSettingFS__mdt-Country Brand Setting FS Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>tekcoCalendarSelection</members>
+        <members>tekcoProgressIndicator</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>FSCO_Scheduler</members>
+        <members>FSCO_SchedulingManager</members>
+        <name>PermissionSetGroup</name>
+    </types>
+    <types>
+        <members>CSFR_LocalAdminPermissions</members>
+        <members>FSCO_AvailabilityManagementPermissionSet</members>
+        <members>FSCO_FieldServiceManagerPermission</members>
+        <members>FSCO_SchedulerPermissions</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>Admin</members>
+        <name>Profile</name>
+    </types>
+    <types>
+        <!-- A VERIFIER : nom tronqué dans la MR (...Appointments) -->
+        <members>FSCO_AvailabilityManagement__c.XXX_Appointments</members>
+        <members>ServiceTerritory.FSCO_ManageIncreasingTime</members>
+        <name>QuickAction</name>
+    </types>
+    <types>
+        <members>FSCO_AvailabilityManagement__c</members>
+        <name>SharingRules</name>
+    </types>
+    <version>62.0</version>
+</Package>
