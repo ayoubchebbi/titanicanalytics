@@ -1,20 +1,7 @@
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>FSL__Scheduling_Policy_Goal__c.FSL__Weight__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>FSL__Scheduling_Policy__c.FSL__Service_Clustering_Weight__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>FSL__Scheduling_Policy__c.FSL__Service_Priority_Weight__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>FSL__Scheduling_Policy__c.FSL__Travel_Mode__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+Object Return to Branch
+Aspect Field Label
+3. Add the French translations for the object and its fields.
+4. Click Save.
+5. Repeat the process for each field of the Return to Branch object.
+6. Validate that the French labels are displayed correctly.
+Note: Translation Workbench and French language are already enabled. No activation steps are required.
