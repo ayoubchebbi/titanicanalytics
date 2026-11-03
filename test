@@ -1,7 +1,7 @@
-Object Return to Branch
-Aspect Field Label
-3. Add the French translations for the object and its fields.
-4. Click Save.
-5. Repeat the process for each field of the Return to Branch object.
-6. Validate that the French labels are displayed correctly.
-Note: Translation Workbench and French language are already enabled. No activation steps are required.
+1. Open the settings. In Setup, enter Field Service Mobile in Quick Find, then open Field Service Mobile Settings.
+2. Record the Austria values. Open the Austria settings and take a screenshot of the current values.
+3. Clone the Austria settings. Use the row action or the Clone button. If Clone isn't available, click New and copy the Austria values manually.
+4. Name the new settings. Enter the Ireland name from the table above.
+5. Change the Ireland values. Update only the fields listed in the table below, then save.
+6. Assign the profile. Open the assignment option for the new settings, add the Ireland minimum access profile, then save. If the profile is already assigned to other settings, stop and contact the requester.
+7. Check the result. Log in to the Field Service mobile app with an Ireland test user and confirm that the changed values apply.
