@@ -1,21 +1,22 @@
+    <!-- ===== WorkOrder ===== -->
     <sharingCriteriaRules>
-        <fullName>CSAT_Share_Brand_SA_with_CS_and_FSL_Users</fullName>
+        <fullName>CSIE_Share_Brand_WO_with_CS_and_FSL_Users</fullName>
         <accessLevel>Edit</accessLevel>
-        <description>Grant access to Austria Brand Service Appointments to CS and FSL Brand Users</description>
-        <label>Austria Share Brand SA with CS and FSL Users</label>
+        <description>Grant access to CORE Brand Work Orders to CS and FSL Brand Users</description>
+        <label>Ireland Share Brand WO with CS and FSL Users</label>
         <sharedTo>
-            <group>CSAT_CS_and_FSL_VitalAire</group>
+            <group>CSIE_CS_and_FSL_VitalAire</group>
         </sharedTo>
         <booleanFilter>(1 AND 2) AND ((3 AND 4) OR 5)</booleanFilter>
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_DeliveryPlanID__c</field>
@@ -35,23 +36,22 @@
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>SMAT_ShareAustriaServiceAppointmentWithSMVitalAire</fullName>
+        <fullName>SMIE_ShareIrelandWorkOrderWithSMVitalAire</fullName>
         <accessLevel>Read</accessLevel>
-        <description>CXHHC-44125 SR 09/05/2025</description>
-        <label>Austria Share Service Appointment With SM VitalAire</label>
+        <label>Ireland Share Work Order With SM VitalAire</label>
         <sharedTo>
-            <group>SMAT_Sales_and_Marketing_VitalAire</group>
+            <group>SMIE_Sales_and_Marketing_VitalAire</group>
         </sharedTo>
         <booleanFilter>(1 AND 2) AND ((3 AND 4) OR 5)</booleanFilter>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_DeliveryPlanID__c</field>
@@ -71,22 +71,286 @@
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>SMAT_ShareServiceAppointmentwithAllAustriaSalesUsers_RO</fullName>
+        <fullName>SMIE_ShareWorkOrderwithAllIrelandSalesUsers_RO</fullName>
         <accessLevel>Read</accessLevel>
-        <description>CXHHC-43317 NT 06/05/2025</description>
-        <label>Share ServiceAppointments with All Austria SalesUsers</label>
+        <label>Share WorkOrders with All Ireland SalesUsers</label>
         <sharedTo>
-            <roleAndSubordinatesInternal>SMAT_AustriaSalesAdmin</roleAndSubordinatesInternal>
+            <roleAndSubordinatesInternal>SMIE_IrelandSalesAdmin</roleAndSubordinatesInternal>
         </sharedTo>
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <!-- ===== WorkType ===== -->
+    <sharingCriteriaRules>
+        <fullName>CSIE_Share_Brand_WT_with_Users</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Grant access to Ireland Brand Work Types to Brand Users</description>
+        <label>Ireland Share Brand WT with Users</label>
+        <sharedTo>
+            <group>CSIE_CS_and_FSL_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>SMIE_ShareWorkTypeswithAllIrelandSalesUsers_RO</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Share WorkType with All Ireland SalesUsers</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>SMIE_IrelandSalesAdmin</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <!-- ===== ServiceTerritory ===== -->
+    <sharingCriteriaRules>
+        <fullName>CSIE_ShareServiceTerritoriesWithCSUsers_RO</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Ireland - Share Service Territories with CS Users</label>
+        <sharedTo>
+            <group>IE_CS_AllUsers</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>FSIE_ShareSTWithFSLUsers_RW</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Grant access to IRL Service Territories to FSL Users</description>
+        <label>Ireland Share ST with FSL Users</label>
+        <sharedTo>
+            <group>CSIE_FSL_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <!-- ===== ServiceResource ===== -->
+    <sharingCriteriaRules>
+        <fullName>CSIE_ShareServiceResourcesWithCSUsers_RO</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Ireland - Share Service Resources with CS Users</label>
+        <sharedTo>
+            <group>IE_CS_AllUsers</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>FSIE_ShareSRWithFSLUsers_RW</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Grant access to IRL SR to FSL Users</description>
+        <label>Ireland Share SR with FSL Users</label>
+        <sharedTo>
+            <group>CSIE_FSL_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <!-- ===== ServiceContract ===== -->
+    <sharingCriteriaRules>
+        <fullName>CUSIE_IrelandShareConsignemntSCWithCSVitalAire_R</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Ireland Share ConsignmentSC With CS VitalAire Users</label>
+        <sharedTo>
+            <group>IE_CS_AllUsers</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>CUSIE_IrelandShareServiceContractsWithCSVitalAire_RW</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Ireland Share ServiceContract With CS VitalAire Users</label>
+        <sharedTo>
+            <group>IE_CS_AllUsers</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>notEqual</operation>
+            <value>Consignment SC</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>FSIE_ShareServiceContractsWithFSLAll_RO</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>IRL - Share B2B Service Contracts With FSL All UsersRO</label>
+        <sharedTo>
+            <group>CSIE_FSL_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>FSIE_ShareServiceContractsWithFSLAll_RW</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>IRL - Share Service Contracts With FSL All Users</label>
+        <sharedTo>
+            <group>CSIE_FSL_VitalAire</group>
+        </sharedTo>
+        <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>B2B Service Contract</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>B2C SC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>SMIE_ShareIrelandServiceContractWithMarketingManagers</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Ireland Share Service Contract With Marketing Managers</label>
+        <sharedTo>
+            <group>SMIE_Marketing_Managers_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>SMIE_ShareIrelandServiceContractsWithAllBillingAdmins_RO</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Ireland Share All ServiceContracts With Billing Admins</label>
+        <sharedTo>
+            <group>SMIE_BillingAdmin</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>SMIE_ShareVitalAireIrelandServiceContractsWithTenderSpecialists_RO</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Ireland Share VitalAire Ireland ServiceContracts With Tender Specialists</label>
+        <sharedTo>
+            <group>SMIE_TenderTeam_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Ireland</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Ireland</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
