@@ -1,18 +1,18 @@
-Les 7 règles dans un seul bloc :
+Le bloc XML généré pour Ireland :
 
 ```xml
     <sharingCriteriaRules>
-        <fullName>CSAT_Share_POointOfService_with_all_Austria_brand_Users</fullName>
+        <fullName>FSIE_Share_POointOfService_with_all_Ireland_brand_Users</fullName>
         <accessLevel>Read</accessLevel>
         <accountSettings>
             <caseAccessLevel>Edit</caseAccessLevel>
             <contactAccessLevel>Read</contactAccessLevel>
             <opportunityAccessLevel>None</opportunityAccessLevel>
         </accountSettings>
-        <description>Share all shared accounts with all Austria brand Users</description>
-        <label>Share all shared Point Of Service with all Austria brand Users</label>
+        <description>Share all shared accounts with all Ireland brand Users</description>
+        <label>Share all shared Point Of Service with all Ireland brand Users</label>
         <sharedTo>
-            <group>CSAT_All_VitalAire</group>
+            <group>IE_CS_AllUsers</group>
         </sharedTo>
         <criteriaItems>
             <field>RecordTypeId</field>
@@ -22,27 +22,27 @@ Les 7 règles dans un seul bloc :
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>CSAT_Share_all_shared_accounts_with_all_Austria_brand_Users</fullName>
+        <fullName>FSIE_Share_all_shared_accounts_with_all_Ireland_brand_Users</fullName>
         <accessLevel>Read</accessLevel>
         <accountSettings>
             <caseAccessLevel>Edit</caseAccessLevel>
             <contactAccessLevel>Read</contactAccessLevel>
             <opportunityAccessLevel>None</opportunityAccessLevel>
         </accountSettings>
-        <description>Share all shared accounts with all Austria brand Users</description>
-        <label>Share all shared accounts with all Austria brand Users</label>
+        <description>Share all shared accounts with all Ireland brand Users</description>
+        <label>Share all shared accounts with all Ireland brand Users</label>
         <sharedTo>
-            <group>CSAT_All_VitalAire</group>
+            <group>IE_CS_AllUsers</group>
         </sharedTo>
         <criteriaItems>
             <field>RecordTypeId</field>
@@ -52,27 +52,27 @@ Les 7 règles dans un seul bloc :
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>CSAT_Share_Brand_Patients_With_CS_and_FSL_Users</fullName>
+        <fullName>FSIE_Share_Brand_Patients_With_CS_and_FSL_Users</fullName>
         <accessLevel>Edit</accessLevel>
         <accountSettings>
             <caseAccessLevel>Edit</caseAccessLevel>
             <contactAccessLevel>Edit</contactAccessLevel>
             <opportunityAccessLevel>None</opportunityAccessLevel>
         </accountSettings>
-        <description>Grant Access to Brand patient profiles for all Austria Brand CS and FSL Users</description>
-        <label>Austria Share Brand Patients With CS and FSL Users</label>
+        <description>Grant Access to Brand patient profiles for all Ireland Brand CS and FSL Users</description>
+        <label>Ireland Share Brand Patients With CS and FSL Users</label>
         <sharedTo>
-            <group>CSAT_CS_and_FSL_VitalAire</group>
+            <group>CSIE_CS_and_FSL_VitalAire</group>
         </sharedTo>
         <criteriaItems>
             <field>RecordTypeId</field>
@@ -82,27 +82,27 @@ Les 7 règles dans un seul bloc :
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>CSAT_Share_HCP_With_CS_and_FSL_All_Brands</fullName>
+        <fullName>FSIE_Share_HCP_With_CS_and_FSL_All_Brands</fullName>
         <accessLevel>Read</accessLevel>
         <accountSettings>
             <caseAccessLevel>Edit</caseAccessLevel>
             <contactAccessLevel>Read</contactAccessLevel>
             <opportunityAccessLevel>None</opportunityAccessLevel>
         </accountSettings>
-        <description>Share Healthcare Professional (HCP) Accounts with All CS and FSL Austria brands</description>
-        <label>Austria Share HCP With CS and FSL All Brands</label>
+        <description>Share Healthcare Professional (HCP) Accounts with All CS and FSL Ireland brands</description>
+        <label>Ireland Share HCP With CS and FSL All Brands</label>
         <sharedTo>
-            <group>CSAT_CS_and_FSL_VitalAire</group>
+            <group>CSIE_CS_and_FSL_VitalAire</group>
         </sharedTo>
         <criteriaItems>
             <field>RecordTypeId</field>
@@ -112,12 +112,12 @@ Les 7 règles dans un seul bloc :
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>CSAT_Share_POointOfService_with_DirOfOpp_brand_Users</fullName>
+        <fullName>FSIE_Share_POointOfService_with_DirOfOpp_brand_Users</fullName>
         <accessLevel>Edit</accessLevel>
         <accountSettings>
             <caseAccessLevel>Edit</caseAccessLevel>
@@ -127,7 +127,7 @@ Les 7 règles dans un seul bloc :
         <description>Share all Point of service with Dir of Opp brand Users</description>
         <label>Share all Point of service with Dir of Opp brand Users</label>
         <sharedTo>
-            <group>FSAT_FSManagerAndDOP</group>
+            <group>FSIE_FSManagerAndDOP</group>
         </sharedTo>
         <criteriaItems>
             <field>RecordTypeId</field>
@@ -137,17 +137,17 @@ Les 7 règles dans un seul bloc :
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>FSAT_ShareWarehouseWithFSUsers_RW</fullName>
+        <fullName>FSIE_ShareWarehouseWithFSUsers_RW</fullName>
         <accessLevel>Edit</accessLevel>
         <accountSettings>
             <caseAccessLevel>None</caseAccessLevel>
@@ -155,19 +155,19 @@ Les 7 règles dans un seul bloc :
             <opportunityAccessLevel>None</opportunityAccessLevel>
         </accountSettings>
         <description>CXHHC-43189 SD 08-04-2025</description>
-        <label>AUT Share Warehouses With FS Users</label>
+        <label>IRL Share Warehouses With FS Users</label>
         <sharedTo>
-            <group>FSAT_FSManagerAndDOP</group>
+            <group>FSIE_FSManagerAndDOP</group>
         </sharedTo>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>RecordTypeId</field>
@@ -177,7 +177,7 @@ Les 7 règles dans un seul bloc :
         <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
-        <fullName>CSAT_Share_POointOfService_with_Scheduler_brand_Users</fullName>
+        <fullName>FSIE_Share_POointOfService_with_Scheduler_brand_Users</fullName>
         <accessLevel>Edit</accessLevel>
         <accountSettings>
             <caseAccessLevel>Edit</caseAccessLevel>
@@ -187,7 +187,7 @@ Les 7 règles dans un seul bloc :
         <description>Share Point Of Service with Scheduler brand Users</description>
         <label>Share Point Of Service with Scheduler brand Users</label>
         <sharedTo>
-            <group>FSAT_FS_Scheduler</group>
+            <group>FSIE_FS_Scheduler</group>
         </sharedTo>
         <criteriaItems>
             <field>RecordTypeId</field>
@@ -197,13 +197,15 @@ Les 7 règles dans un seul bloc :
         <criteriaItems>
             <field>TEKCO_Brand__c</field>
             <operation>equals</operation>
-            <value>VitalAire Austria</value>
+            <value>VitalAire Ireland</value>
         </criteriaItems>
         <criteriaItems>
             <field>TEKCO_Country__c</field>
             <operation>equals</operation>
-            <value>Austria</value>
+            <value>Ireland</value>
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
 ```
+
+Je n'ai rien écrit dans le projet ni déployé. Les points à vérifier de mon message précédent restent valables : le groupe `CSIE_CS_and_FSL_VitalAire` n'existe pas, la valeur `VitalAire Ireland` du brand est à confirmer, et il ne reste que 2 places sur Account.
