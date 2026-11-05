@@ -1,6 +1,5 @@
-Le bloc XML généré pour Ireland :
-
-```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <sharingCriteriaRules>
         <fullName>FSIE_Share_POointOfService_with_all_Ireland_brand_Users</fullName>
         <accessLevel>Read</accessLevel>
@@ -154,7 +153,6 @@ Le bloc XML généré pour Ireland :
             <contactAccessLevel>Edit</contactAccessLevel>
             <opportunityAccessLevel>None</opportunityAccessLevel>
         </accountSettings>
-        <description>CXHHC-43189 SD 08-04-2025</description>
         <label>IRL Share Warehouses With FS Users</label>
         <sharedTo>
             <group>FSIE_FSManagerAndDOP</group>
@@ -206,6 +204,4 @@ Le bloc XML généré pour Ireland :
         </criteriaItems>
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
-```
-
-Je n'ai rien écrit dans le projet ni déployé. Les points à vérifier de mon message précédent restent valables : le groupe `CSIE_CS_and_FSL_VitalAire` n'existe pas, la valeur `VitalAire Ireland` du brand est à confirmer, et il ne reste que 2 places sur Account.
+</SharingRules>
