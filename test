@@ -1,1 +1,209 @@
-Get-ChildItem -Recurse -File -Filter "*FSIR*" | Rename-Item -NewName { $_.Name -creplace 'FSIR','FSIE' }
+Les 7 règles dans un seul bloc :
+
+```xml
+    <sharingCriteriaRules>
+        <fullName>CSAT_Share_POointOfService_with_all_Austria_brand_Users</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>Share all shared accounts with all Austria brand Users</description>
+        <label>Share all shared Point Of Service with all Austria brand Users</label>
+        <sharedTo>
+            <group>CSAT_All_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Point of Service</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Austria</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Austria</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>CSAT_Share_all_shared_accounts_with_all_Austria_brand_Users</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>Share all shared accounts with all Austria brand Users</description>
+        <label>Share all shared accounts with all Austria brand Users</label>
+        <sharedTo>
+            <group>CSAT_All_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>POS,Warehouse</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Austria</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Austria</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>CSAT_Share_Brand_Patients_With_CS_and_FSL_Users</fullName>
+        <accessLevel>Edit</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Edit</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>Grant Access to Brand patient profiles for all Austria Brand CS and FSL Users</description>
+        <label>Austria Share Brand Patients With CS and FSL Users</label>
+        <sharedTo>
+            <group>CSAT_CS_and_FSL_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Patient</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Austria</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Austria</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>CSAT_Share_HCP_With_CS_and_FSL_All_Brands</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>Share Healthcare Professional (HCP) Accounts with All CS and FSL Austria brands</description>
+        <label>Austria Share HCP With CS and FSL All Brands</label>
+        <sharedTo>
+            <group>CSAT_CS_and_FSL_VitalAire</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Healthcare Professional (HCP)</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Austria</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>CSAT_Share_POointOfService_with_DirOfOpp_brand_Users</fullName>
+        <accessLevel>Edit</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Edit</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>Share all Point of service with Dir of Opp brand Users</description>
+        <label>Share all Point of service with Dir of Opp brand Users</label>
+        <sharedTo>
+            <group>FSAT_FSManagerAndDOP</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Point of Service</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Austria</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Austria</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>FSAT_ShareWarehouseWithFSUsers_RW</fullName>
+        <accessLevel>Edit</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>None</caseAccessLevel>
+            <contactAccessLevel>Edit</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>CXHHC-43189 SD 08-04-2025</description>
+        <label>AUT Share Warehouses With FS Users</label>
+        <sharedTo>
+            <group>FSAT_FSManagerAndDOP</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Austria</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Austria</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Warehouse</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>CSAT_Share_POointOfService_with_Scheduler_brand_Users</fullName>
+        <accessLevel>Edit</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Edit</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>Share Point Of Service with Scheduler brand Users</description>
+        <label>Share Point Of Service with Scheduler brand Users</label>
+        <sharedTo>
+            <group>FSAT_FS_Scheduler</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Point of Service</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Brand__c</field>
+            <operation>equals</operation>
+            <value>VitalAire Austria</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>TEKCO_Country__c</field>
+            <operation>equals</operation>
+            <value>Austria</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+```
