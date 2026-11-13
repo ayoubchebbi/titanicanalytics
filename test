@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
+        <members>FSCO_AvailabilityManagement__c.FSCO_Description__c</members>
         <members>FSCO_AvailabilityManagement__c.FSCO_TypologyDays__c</members>
         <name>CustomField</name>
     </types>
@@ -34,4 +35,3 @@
     </types>
     <version>66.0</version>
 </Package>
-
