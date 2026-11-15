@@ -1,37 +1,90 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>FSCO_AvailabilityManagement__c.FSCO_Description__c</members>
-        <members>FSCO_AvailabilityManagement__c.FSCO_TypologyDays__c</members>
-        <name>CustomField</name>
-    </types>
-    <types>
-        <members>FSCO_AvailabilityManagement__c-FSCO_AvailabilityManagement Layout</members>
-        <name>Layout</name>
-    </types>
-    <types>
-        <members>FSCO_AvailabilityManagementPermissionSet</members>
-        <members>FSCO_AvailabilityManagementPermisson</members>
-        <name>PermissionSet</name>
-    </types>
-    <types>
-        <members>FSCO_ManageIncreasingTime</members>
-        <name>Flow</name>
-    </types>
-    <types>
-        <members>AvailabilityManagementTrigger</members>
-        <name>ApexTrigger</name>
-    </types>
-    <types>
-        <members>AvailabilityManagementHelper</members>
-        <members>AvailabilityManagementTriggerHandler</members>
-        <members>AvailabilityManagementTriggerHandlerTest</members>
-        <members>CORE_EM_AvailabilityManagement</members>
-        <members>CORE_SM_AvailabilityManagement</members>
-        <members>FSCO_AvailabilityManagement_BATest</members>
-        <members>FSCO_UnAvailabilityDelete_BA</members>
-        <members>FSCO_UnAvailabilityExecutionHelper</members>
-        <name>ApexClass</name>
-    </types>
-    <version>66.0</version>
-</Package>
+# Post Deployment Steps – CXHHC-49831 Availability Management translations
+
+## Prerequisites
+
+1. Log in to the target org as a System Administrator.
+2. Go to **Setup > Translation Workbench > Translation Language Settings**.
+3. Check that **French** is listed and **Active**. If not, click **Add**, select **French**, tick **Active**, and **Save**.
+4. Edit **French** and add your user to **Assigned Translators**. Click **Save**.
+
+---
+
+## Section 1 – Translate the Availability Management object and its fields
+
+### 1.1 Object label
+
+1. Go to **Setup > User Interface > Rename Tabs and Labels**.
+2. Set **Select Language** to **French**.
+3. Under **Custom Tabs / Objects**, click **Edit** next to **Availability Management**.
+4. Fill in the values below and click **Next**, then **Save**.
+
+| Field | English label | French label |
+|---|---|---|
+| Singular | Availability Management | Gestion des disponibilités |
+| Plural | Availability Managements | Gestions des disponibilités |
+| Record Name | Availability Management Name | Nom de la gestion des disponibilités |
+
+### 1.2 Field labels
+
+1. Go to **Setup > Translation Workbench > Translate**.
+2. Set **Language** to **French**.
+3. Set **Setup Component** to **Custom Field**.
+4. Set **Object** to **Availability Management**.
+5. For each row below, double-click the **Field Label Translation** cell, enter the French label, and press **Enter**.
+6. Click **Save**.
+
+| API Name | English label | French label |
+|---|---|---|
+| FSCO_Active__c | Active | Actif |
+| FSCO_Capacity__c | Capacity | Capacité |
+| FSCO_CapacityType__c | Capacity Type | Type de capacité |
+| FSCO_DateSelectionType__c | Date Selection Type | Type de sélection de date |
+| FSCO_Description__c | Description | Description |
+| FSCO_MultipleDates__c | Multiple Dates | Dates multiples |
+| FSCO_NumberOfBlock__c | Number of Block | Nombre de blocs |
+| FSCO_PeriodFrom__c | Period From | Période du |
+| FSCO_PeriodTo__c | Period To | Période au |
+| FSCO_ReservationMode__c | Reservation Mode | Mode de réservation |
+| FSCO_ServiceTerritory__c | Service Territory | Territoire de service |
+| FSCO_Typology__c | Typology | Typologie |
+| FSCO_TypologyDays__c | Typology Days | Jours de typologie |
+| FSCO_WorkType__c | Work Type | Type de travail |
+| TEKCO_Brand__c | Brand | Marque |
+| TEKCO_Country__c | Country | Pays |
+| TEKCO_DataMigrationId__c | Data Migration Id | ID de migration des données |
+| TEKCO_ExternalId__c | External ID | ID externe |
+| TEKCO_FHIRId__c | FHIR Id | ID FHIR |
+| TEKCO_Resources__c | Resources | Ressources |
+
+### 1.3 Verification
+
+1. Set your user language to **French**.
+2. Open an Availability Management record.
+3. Check that the object name and all field labels appear in French.
+
+---
+
+## Section 2 – Translate the "Dedicated Slot" Work Type visit type
+
+1. Go to **Setup > Translation Workbench > Translate**.
+2. Set **Language** to **French**.
+3. Set **Setup Component** to **Picklist Value**.
+4. Set **Object** to **Global Value Set**.
+5. Select the value set **Work Type Visit Types** (`ACCCO_WorkTypeVisitTypes`).
+6. Find the row for **Dedicated Slot** (API value `036`).
+7. Double-click the **Translation** cell and enter **Créneau dédié**.
+8. Click **Save**.
+9. To verify, switch your user language to **French**, open a Work Type with visit type `036`, and check that **Visit Type** shows **Créneau dédié**.
+
+---
+
+## Section 3 – Rename the "Manage Increasing Time" button on Service Territory
+
+1. Go to **Setup > Translation Workbench > Translate**.
+2. Set **Language** to **French**.
+3. Set **Setup Component** to **Quick Action**.
+4. Set **Object** to **Service Territory**.
+5. Find the action **FSCO_ManageIncreasingTime** (English label **Manage Increasing Time**).
+6. Double-click the **Label Translation** cell and enter **Gestion des réserves de temps**.
+7. Click **Save**.
+8. To verify, switch your user language to **French**, open a Service Territory record, and check that the button reads **Gestion des réserves de temps**.
